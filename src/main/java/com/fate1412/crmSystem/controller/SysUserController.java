@@ -1,4 +1,4 @@
-package com.fate1412.crmSystem.Controller;
+package com.fate1412.crmSystem.controller;
 
 import com.fate1412.crmSystem.security.pojo.SysUser;
 import com.fate1412.crmSystem.security.service.ISysUserService;

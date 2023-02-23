@@ -1,4 +1,4 @@
-package com.fate1412.crmSystem.generator;
+package com.fate1412.generator;
 
 import com.baomidou.mybatisplus.generator.AutoGenerator;
 import com.baomidou.mybatisplus.generator.config.DataSourceConfig;
@@ -36,7 +36,7 @@ public class MysqlGenerator {
 
         // 3、包配置
         PackageConfig pc = new PackageConfig();
-        pc.setParent("com.fate1412.mybatis");
+        pc.setParent("com.fate1412.generator.mybatis");
         pc.setEntity("pojo");
 //        pc.setMapper("mapper.oa");
 //        pc.setXml("mapper.oa");
@@ -47,13 +47,16 @@ public class MysqlGenerator {
 
         // 4、策略配置
         StrategyConfig strategy = new StrategyConfig();
-        strategy.setNaming(NamingStrategy.underline_to_camel);
-        strategy.setColumnNaming(NamingStrategy.underline_to_camel);
+        strategy.setNaming(NamingStrategy.underline_to_camel);//表名命名策略
+        strategy.setColumnNaming(NamingStrategy.underline_to_camel);//字段命名策略
         strategy.setEntityLombokModel(true); //使用lombok
-        mpg.setTemplateEngine(new VelocityTemplateEngine());
+        strategy.setLogicDeleteFieldName("del_flag");
         strategy.setEntityTableFieldAnnotationEnable(true);
-        strategy.setInclude("sys_user","sys_role","sys_user_role","sys_role_permission","sys_permission");  // 逆向工程使用的表   如果要生成多个,这里可以传入String[]
+        strategy.setInclude("customer","invoice","invoice_product","product","sales_order","order_product","stock_list","stock_list_product");  // 逆向工程使用的表   如果要生成多个,这里可以传入String[]
         mpg.setStrategy(strategy);
+        
+        mpg.setTemplateEngine(new VelocityTemplateEngine());
+        
 
         //5、执行
         mpg.execute();
