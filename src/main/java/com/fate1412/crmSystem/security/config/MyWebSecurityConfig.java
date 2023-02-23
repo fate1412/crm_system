@@ -1,8 +1,10 @@
 package com.fate1412.crmSystem.security.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fate1412.crmSystem.security.service.impl.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -12,8 +14,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.session.SessionInformationExpiredStrategy;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 public class MyWebSecurityConfig extends WebSecurityConfigurerAdapter  {
@@ -25,15 +31,17 @@ public class MyWebSecurityConfig extends WebSecurityConfigurerAdapter  {
         AuthenticationFailureHandler authenticationFailureHandler = new MyAuthenticationFailureHandler();
         LogoutSuccessHandler logoutSuccessHandler = new MyLogoutSuccessHandler();
         SessionInformationExpiredStrategy sessionInformationExpiredStrategy = new MySessionInformationExpiredStrategy();
+
         
         http.csrf().disable()
+                .cors(Customizer.withDefaults())
                 .authorizeRequests()
 //                .antMatchers("/user/login").hasAnyAuthority("TEST_R1")
 //                .antMatchers("/user/login").permitAll()
 //                .anyRequest().authenticated()// 用户访问其它URL都必须认证后访问（登录后访问）
                 //登录
                 .and().formLogin()
-                .loginProcessingUrl("/login")
+                .loginProcessingUrl("/user/login")
                 .usernameParameter("account")
                 .successHandler(authenticationSuccessHandler)//登录成功处理逻辑
                 .failureHandler(authenticationFailureHandler)//登录失败处理逻辑.
@@ -54,6 +62,7 @@ public class MyWebSecurityConfig extends WebSecurityConfigurerAdapter  {
                 .and().sessionManagement()
                 .maximumSessions(1)
                 .expiredSessionStrategy(sessionInformationExpiredStrategy);
+
     }
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -68,5 +77,18 @@ public class MyWebSecurityConfig extends WebSecurityConfigurerAdapter  {
     @Bean
     public PasswordEncoder getPasswordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+    
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        
+        CorsConfiguration configuration = new CorsConfiguration();
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        configuration.setAllowCredentials(true);
+        configuration.addAllowedOrigin("http://localhost:8080");
+        configuration.addAllowedHeader(CorsConfiguration.ALL);
+        configuration.addAllowedMethod(CorsConfiguration.ALL);
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }
