@@ -17,11 +17,11 @@ public class SysUserController {
     @Autowired
     private ISysUserService sysUserService;
     
-    @PostMapping("/login")
-    @PreAuthorize("hasAnyAuthority(\"TEST_R1\")")
+    @PostMapping("/logina")
+    @PreAuthorize("isAuthenticated()")
     public String login(@RequestBody SysUser sysUser) {
-        SysUser djj = sysUserService.getByUserName("djj");
-        log.info(djj.toString());
+//        SysUser djj = sysUserService.getByUserName("djj");
+//        log.info(djj.toString());
         return "djj";
     }
 }

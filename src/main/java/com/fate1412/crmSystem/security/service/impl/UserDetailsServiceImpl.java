@@ -40,10 +40,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        
         //获取用户
         QueryWrapper<SysUser> userQueryWrapper = new QueryWrapper<>();
-        userQueryWrapper.lambda().eq(SysUser::getUsername,username);
+        userQueryWrapper.lambda().eq(SysUser::getAccount,username);
         SysUser sysUser = userService.getOne(userQueryWrapper);
         if (sysUser == null) {
             throw new InternalAuthenticationServiceException("账号不存在");
@@ -73,7 +72,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(permissionCode);
             grantedAuthorities.add(grantedAuthority);
         });
-        log.info(sysUser.isLock()+"");
+        log.info("isLock:{}",sysUser.isLock());
         return new User(sysUser.getAccount(),sysUser.getPassword(),!sysUser.isDel(),true,true,!sysUser.isLock(),grantedAuthorities);
     }
 }

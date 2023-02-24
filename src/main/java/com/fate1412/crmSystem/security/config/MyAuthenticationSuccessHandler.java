@@ -1,6 +1,7 @@
 package com.fate1412.crmSystem.security.config;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.fate1412.crmSystem.security.mapper.SysUserMapper;
 import com.fate1412.crmSystem.security.pojo.SysUser;
 import com.fate1412.crmSystem.security.service.ISysUserService;
@@ -43,7 +44,9 @@ public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHand
         //进而前台动态的控制菜单的显示等，具体根据自己的业务需求进行扩展
     
         //返回json数据
-        JsonResult<?> result = ResultTool.success();
+        JSONObject jsonObject= new JSONObject();
+        jsonObject.put("token","admin");
+        JsonResult<?> result = ResultTool.success(jsonObject);
         //处理编码方式，防止中文乱码的情况
         response.setContentType("text/json;charset=utf-8");
         //塞到HttpServletResponse中返回给前台
