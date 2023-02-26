@@ -42,6 +42,7 @@ public class MyUsernamePasswordAuthenticationFilter extends AbstractAuthenticati
     
     private boolean postOnly = true;
     
+    
     public MyUsernamePasswordAuthenticationFilter() {
         super(DEFAULT_ANT_PATH_REQUEST_MATCHER);
     }
@@ -49,6 +50,7 @@ public class MyUsernamePasswordAuthenticationFilter extends AbstractAuthenticati
     public MyUsernamePasswordAuthenticationFilter(AuthenticationManager authenticationManager) {
         super(DEFAULT_ANT_PATH_REQUEST_MATCHER, authenticationManager);
     }
+
     
     
     @Nullable
