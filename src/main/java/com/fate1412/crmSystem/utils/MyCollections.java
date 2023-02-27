@@ -3,10 +3,12 @@ package com.fate1412.crmSystem.utils;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fate1412.crmSystem.annotations.MapKey;
+import org.springframework.beans.BeanUtils;
 
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class MyCollections {
@@ -207,7 +209,14 @@ public class MyCollections {
         return o;
     }
     
-    public static boolean isNull(Object o) {
-        return o == null;
+    public static <S,T> List<T> copyListProperties(List<S> sources, Supplier<T> target) {
+        List<T> list = new ArrayList<>(sources.size());
+        for (S source : sources) {
+            T t = target.get();
+            BeanUtils.copyProperties(source,t);
+            list.add(t);
+        }
+        return list;
     }
+    
 }

@@ -9,6 +9,11 @@ spring:
     username: root
     password: a136936858
 
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss # 时间格式
+    time-zone: GMT+8 # 时区
+#    serialization: false # 不返回时间戳
+
 mybatis-plus:
   global-config:
     db-config:
