@@ -47,7 +47,10 @@ public class ResultTool {
             TableResultData.TableColumn tableColumn = getTableColumn(title, fieldName);
             tableColumn
                     .setFixed(tableTitle.fixed())
-                    .setLink(tableTitle.link());
+                    .setLink(tableTitle.link())
+                    .setDisabled(tableTitle.disabled())
+                    .setFormType(tableTitle.formType());
+                    
             tableColumnList.add(tableColumn);
         }
         return new TableResultData(tableColumnList, entities);

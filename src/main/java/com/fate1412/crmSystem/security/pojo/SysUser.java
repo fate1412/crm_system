@@ -28,7 +28,7 @@ public class SysUser implements Serializable {
      * 主键ID
      */
     @TableId(value = "user_id", type = IdType.AUTO)
-    private Integer userId;
+    private Long userId;
     
     @TableField("account")
     private String account;

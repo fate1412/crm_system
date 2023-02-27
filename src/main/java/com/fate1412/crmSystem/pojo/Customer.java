@@ -27,7 +27,7 @@ public class Customer implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @TableId("id")
-    private Integer id;
+    private Long id;
 
     /**
      * 客户名称
@@ -63,13 +63,13 @@ public class Customer implements Serializable {
      * 创建人
      */
     @TableField("creater")
-    private Integer creater;
+    private Long creater;
 
     /**
      * 更新者
      */
     @TableField("update_member")
-    private Integer updateMember;
+    private Long updateMember;
 
     @TableField("del_flag")
     @TableLogic
@@ -79,7 +79,7 @@ public class Customer implements Serializable {
      * 负责人
      */
     @TableField("owner")
-    private Integer owner;
+    private Long owner;
 
 
 }

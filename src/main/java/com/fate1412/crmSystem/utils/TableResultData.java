@@ -1,5 +1,7 @@
 package com.fate1412.crmSystem.utils;
 
+import com.fate1412.crmSystem.annotations.TableTitle;
+import com.fate1412.crmSystem.annotations.TableTitle.FormType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -26,6 +28,8 @@ public class TableResultData {
         private String name;
         private Boolean fixed = false;
         private Boolean link = false;
+        private Boolean disabled = false;
+        private FormType formType = FormType.Input;
     
         public TableColumn(String title, String name) {
             this.title = title;

@@ -35,10 +35,18 @@ public class CustomerController {
     private ICustomerService customerService;
     
     @PreAuthorize("permitAll()")
-    @GetMapping("/select")
-    public JsonResult<Object> select(@Param("thisPage") long thisPage) {
+    @GetMapping("/page/select")
+    public JsonResult<Object> selectByPage(@Param("thisPage") long thisPage) {
         IPage<CustomerDTO> page = customerService.listByPage(thisPage, 10);
         TableResultData tableResultData = ResultTool.createTableResultData(page,CustomerDTO.class);
+        return ResultTool.success(tableResultData);
+    }
+    
+    @PreAuthorize("permitAll()")
+    @GetMapping("/select")
+    public JsonResult<Object> select(@Param("id") Long id) {
+        List<CustomerDTO> customerDTOList = customerService.getDTDListById(MyCollections.toList(id));
+        TableResultData tableResultData = ResultTool.createTableResultData(customerDTOList, CustomerDTO.class);
         return ResultTool.success(tableResultData);
     }
 }

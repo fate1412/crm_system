@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fate1412.crmSystem.annotations.TableTitle;
+import com.fate1412.crmSystem.annotations.TableTitle.FormType;
+import com.fate1412.crmSystem.utils.IdToName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -28,7 +30,7 @@ public class CustomerDTO implements Serializable {
 
     @TableId("id")
     @TableTitle(value = "客户ID",fixed = true)
-    private Integer id;
+    private Long id;
 
     /**
      * 客户名称
@@ -41,7 +43,7 @@ public class CustomerDTO implements Serializable {
      * 客户类型
      */
     @TableField("customer_type")
-    @TableTitle("客户类型")
+    @TableTitle(value = "客户类型",formType = FormType.Select)
     private String customerType;
 
     /**
@@ -55,42 +57,42 @@ public class CustomerDTO implements Serializable {
      * 创建时间
      */
     @TableField("create_time")
-    @TableTitle("创建时间")
+    @TableTitle(value = "创建时间",disabled = true,formType = FormType.Date)
     private Date createTime;
 
     /**
      * 更新时间
      */
     @TableField("update_time")
-    @TableTitle("更新时间")
+    @TableTitle(value = "更新时间",disabled = true,formType = FormType.Date)
     private Date updateTime;
 
     /**
      * 创建人
      */
     @TableField("creater")
-    private Integer creater;
+    private Long creater;
     
-    @TableTitle(value = "创建人",link = true)
-    private String createrR;
+    @TableTitle(value = "创建人",link = true,disabled = true)
+    private IdToName createrR;
 
     /**
      * 更新者
      */
     @TableField("update_member")
-    private Integer updateMember;
+    private Long updateMember;
     
-    @TableTitle(value = "更新者",link = true)
-    private String updateMemberR;
+    @TableTitle(value = "更新者",link = true,disabled = true)
+    private IdToName updateMemberR;
 
     /**
      * 负责人
      */
     @TableField("owner")
-    private Integer owner;
+    private Long owner;
     
-    @TableTitle(value = "负责人",link = true)
-    private String ownerR;
+    @TableTitle(value = "负责人",link = true,disabled = true)
+    private IdToName ownerR;
 
 
 }

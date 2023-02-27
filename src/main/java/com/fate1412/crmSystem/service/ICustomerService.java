@@ -18,4 +18,6 @@ import java.util.List;
 public interface ICustomerService extends IService<Customer> {
 
     IPage<CustomerDTO> listByPage(long thisPage, long pageSize);
+    
+    List<CustomerDTO> getDTDListById(List<Long> ids);
 }
