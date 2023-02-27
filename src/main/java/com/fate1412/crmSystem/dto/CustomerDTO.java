@@ -27,7 +27,7 @@ public class CustomerDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @TableId("id")
-    @TableTitle("客户ID")
+    @TableTitle(value = "客户ID",fixed = true)
     private Integer id;
 
     /**
@@ -69,22 +69,28 @@ public class CustomerDTO implements Serializable {
      * 创建人
      */
     @TableField("creater")
-    @TableTitle("创建人")
     private Integer creater;
+    
+    @TableTitle(value = "创建人",link = true)
+    private String createrR;
 
     /**
      * 更新者
      */
     @TableField("update_member")
-    @TableTitle("更新者")
     private Integer updateMember;
+    
+    @TableTitle(value = "更新者",link = true)
+    private String updateMemberR;
 
     /**
      * 负责人
      */
     @TableField("owner")
-    @TableTitle("负责人")
     private Integer owner;
+    
+    @TableTitle(value = "负责人",link = true)
+    private String ownerR;
 
 
 }

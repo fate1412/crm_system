@@ -1,5 +1,6 @@
 package com.fate1412.crmSystem.utils;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.fate1412.crmSystem.annotations.MapKey;
 import com.fate1412.crmSystem.annotations.TableTitle;
 import org.apache.logging.log4j.util.Strings;
@@ -43,9 +44,24 @@ public class ResultTool {
                 continue;
             }
             String title = tableTitle.value();
-            tableColumnList.add(getTableColumn(title, fieldName));
+            TableResultData.TableColumn tableColumn = getTableColumn(title, fieldName);
+            tableColumn
+                    .setFixed(tableTitle.fixed())
+                    .setLink(tableTitle.link());
+            tableColumnList.add(tableColumn);
         }
         return new TableResultData(tableColumnList, entities);
         
+    }
+    
+    public static <T> TableResultData createTableResultData(List<T> entities, Class<T> entityClass, long thisPage, long total) {
+        TableResultData tableResultData = createTableResultData(entities, entityClass);
+        tableResultData.setThisPage(thisPage);
+        tableResultData.setTotal(total);
+        return tableResultData;
+    }
+    
+    public static <T> TableResultData createTableResultData(IPage<T> page,Class<T> entityClass) {
+        return createTableResultData(page.getRecords(),entityClass, page.getPages(), page.getTotal());
     }
 }

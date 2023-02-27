@@ -11,7 +11,7 @@
         <result column="create_time" property="createTime" />
         <result column="update_time" property="updateTime" />
         <result column="creater" property="creater" />
-        <result column="update_manber" property="updateManber" />
+        <result column="update_member" property="updateMember" />
         <result column="del_flag" property="delFlag" />
         <result column="owner" property="owner" />
     </resultMap>

@@ -7,4 +7,7 @@ import java.lang.annotation.*;
 @Target(ElementType.FIELD)
 public @interface TableTitle {
     String value();
+    boolean fixed() default false;
+    boolean link() default false;
+    
 }

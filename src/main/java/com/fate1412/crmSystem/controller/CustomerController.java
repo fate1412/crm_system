@@ -14,7 +14,6 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
@@ -38,13 +37,8 @@ public class CustomerController {
     @PreAuthorize("permitAll()")
     @GetMapping("/select")
     public JsonResult<Object> select(@Param("thisPage") long thisPage) {
-        IPage<Customer> page = new Page<>(thisPage,10);
-        customerService.page(page);
-        List<Customer> customerList = page.getRecords();
-        List<CustomerDTO> customerDTOList = MyCollections.copyListProperties(customerList, CustomerDTO::new);
-        TableResultData tableResultData = ResultTool.createTableResultData(customerDTOList,CustomerDTO.class);
-        tableResultData.setThisPage(page.getPages());
-        tableResultData.setLastPage(page.getTotal());
+        IPage<CustomerDTO> page = customerService.listByPage(thisPage, 10);
+        TableResultData tableResultData = ResultTool.createTableResultData(page,CustomerDTO.class);
         return ResultTool.success(tableResultData);
     }
 }

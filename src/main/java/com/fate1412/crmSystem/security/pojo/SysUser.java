@@ -35,6 +35,9 @@ public class SysUser implements Serializable {
 
     @TableField("username")
     private String username;
+    
+    @TableField("real_name")
+    private String realName;
 
     @TableField("password")
     private String password;

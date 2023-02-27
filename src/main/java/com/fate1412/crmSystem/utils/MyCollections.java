@@ -133,11 +133,27 @@ public class MyCollections {
     /**
      * 合并集合并返回新集合
      */
-    public static <T> List<T> addList(List<T> l1, List<T> l2) {
-        List<T> list = new ArrayList<>();
-        list.addAll(l1);
-        list.addAll(l2);
-        return list;
+    public static <T> List<T> addList(List<T>... lists) {
+        return addList(false,lists);
+    }
+    
+    /**
+     * 合并集合并返回新集合（去重）
+     */
+    public static <T> List<T> addList(boolean notRepetition,List<T>... lists) {
+        if (notRepetition) {
+            Set<T> set = new HashSet<>();
+            for (List<T> list : lists) {
+                set.addAll(list);
+            }
+            return new ArrayList<>(set);
+        } else {
+            List<T> list2 = new ArrayList<>();
+            for (List<T> list : lists) {
+                list2.addAll(list);
+            }
+            return list2;
+        }
     }
     
     /**
