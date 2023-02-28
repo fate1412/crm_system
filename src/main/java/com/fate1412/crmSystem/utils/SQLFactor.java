@@ -14,28 +14,53 @@ import java.util.List;
 
 @Slf4j
 @Data
-public class SQLFactor {
+public class SQLFactor<T> {
+    private String TableName;
     private String field;
     private String factor;
-    private Object value;
-    private Object value2;
-    private List<Object> values;
+    private T value;
+    private T value2;
+    private List<T> values;
+    
+    
+    public SQLFactor(String factor) {
+        this.factor = factor;
+    }
+    
+    public SQLFactor(String field, String factor, T value) {
+        this.field = field;
+        this.factor = factor;
+        this.value = value;
+    }
+    
+    public SQLFactor(String field, String factor, T value, T value2) {
+        this.field = field;
+        this.factor = factor;
+        this.value = value;
+        this.value2 = value2;
+    }
+    
+    public SQLFactor(String field, String factor, List<T> values) {
+        this.field = field;
+        this.factor = factor;
+        this.values = values;
+    }
     
     /**
      * 查询条件注入queryWrapper
      * @param factors 查询条件
      * @param queryWrapper
      */
-    public static void toQueryWrapper(List<SQLFactor> factors, QueryWrapper<?> queryWrapper) {
+    public static void toQueryWrapper(List<SQLFactor<Object>> factors, QueryWrapper<?> queryWrapper) {
         if (factors == null) {
             factors = new ArrayList<>();
         }
-        for (SQLFactor factor : factors) {
+        for (SQLFactor<Object> factor : factors) {
             setQW(factor, queryWrapper);
         }
     }
     
-    private static void setQW(SQLFactor factor, QueryWrapper<?> queryWrapper) {
+    private static void setQW(SQLFactor<Object> factor, QueryWrapper<?> queryWrapper) {
         switch (factor.factor) {
             case "EQ": queryWrapper.eq(factor.field, factor.value); break;
             case "NE": queryWrapper.ne(factor.field, factor.value); break;

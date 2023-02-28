@@ -37,6 +37,7 @@ public class MyWebSecurityConfig extends WebSecurityConfigurerAdapter  {
         http.csrf().disable()
                 .cors(Customizer.withDefaults())
                 .authorizeRequests()
+//                .antMatchers("/static/**").permitAll()
 //                .antMatchers("/user/login").hasAnyAuthority("TEST_R1")
 //                .antMatchers("/user/login").permitAll()
 //                .anyRequest().authenticated()// 用户访问其它URL都必须认证后访问（登录后访问）
