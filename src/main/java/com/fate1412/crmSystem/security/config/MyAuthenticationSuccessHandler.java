@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Date;
 
 @Component
 public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
@@ -39,8 +40,8 @@ public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHand
         //更新用户表上次登录时间、更新时间等字段
         User userDetails = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         SysUser sysUser = userService.getByUserName(userDetails.getUsername());
-        sysUser.setLastLoginTime(LocalDateTime.now());
-        sysUser.setUpdateTime(LocalDateTime.now());
+        sysUser.setLastLoginTime(new Date());
+//        sysUser.setUpdateTime(new Date());
         userService.updateById(sysUser);
     
         //此处还可以进行一些处理，比如登录成功之后可能需要返回给前台当前用户有哪些菜单权限，

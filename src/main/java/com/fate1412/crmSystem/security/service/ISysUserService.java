@@ -1,5 +1,6 @@
 package com.fate1412.crmSystem.security.service;
 
+import com.fate1412.crmSystem.security.dto.SysUserDTO;
 import com.fate1412.crmSystem.security.pojo.SysUser;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fate1412.crmSystem.security.pojo.SysUserRole;
@@ -16,8 +17,29 @@ import java.util.List;
  */
 public interface ISysUserService extends IService<SysUser> {
     
+    /**
+     * 通过用户名查询
+     */
     SysUser getByUserName(String username);
     
-    List<SysUserRole> getUserRole(String username);
+    /**
+     * 通过账号查询
+     */
+    SysUser getByAccount(String account);
+    
+    /**
+     * 通过用户名获取用户所有权限
+     */
+    List<SysUserRole> getRoleByUserName(String username);
+    
+    /**
+     * 通过账号获取用户所有权限
+     */
+    List<SysUserRole> getRoleByAccount(String account);
+    
+    /**
+     * 通过id查询
+     */
+    List<SysUserDTO> getDTOListById(List<Long> ids);
 
 }

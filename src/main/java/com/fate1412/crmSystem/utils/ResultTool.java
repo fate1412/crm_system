@@ -1,15 +1,11 @@
 package com.fate1412.crmSystem.utils;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.fate1412.crmSystem.annotations.MapKey;
 import com.fate1412.crmSystem.annotations.TableTitle;
-import org.apache.logging.log4j.util.Strings;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class ResultTool {
     public static JsonResult<?> success() {
@@ -26,6 +22,13 @@ public class ResultTool {
     
     public static JsonResult<?> fail(ResultCode resultEnum) {
         return new JsonResult<>(false, resultEnum);
+    }
+    
+    public static JsonResult<?> create(Boolean b) {
+        if (b) {
+            return success();
+        }
+        return fail();
     }
     
     public static TableResultData.TableColumn getTableColumn(String title, String name) {

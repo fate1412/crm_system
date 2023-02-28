@@ -2,11 +2,13 @@ package com.fate1412.crmSystem.utils;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.function.Function;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class IdToName {
     private Long id;
     private String name;

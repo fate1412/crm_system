@@ -72,7 +72,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(permissionCode);
             grantedAuthorities.add(grantedAuthority);
         });
-        log.info("isLock:{}",sysUser.isLock());
-        return new User(sysUser.getAccount(),sysUser.getPassword(),!sysUser.isDel(),true,true,!sysUser.isLock(),grantedAuthorities);
+        log.info("isLock:{}",sysUser.getLockFlag());
+        return new User(sysUser.getAccount(),sysUser.getPassword(),!sysUser.getDelFlag(),true,true,!sysUser.getLockFlag(),grantedAuthorities);
     }
 }

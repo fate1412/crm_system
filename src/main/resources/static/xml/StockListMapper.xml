@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.fate1412.crmSystem.mapper.StockListMapper">
+<mapper namespace="com.fate1412.crmSystem.mainTable.mapper.StockListMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.fate1412.crmSystem.pojo.StockList">
+    <resultMap id="BaseResultMap" type="com.fate1412.crmSystem.mainTable.pojo.StockList">
         <id column="id" property="id" />
         <result column="stock_up_date" property="stockUpDate" />
         <result column="prices" property="prices" />

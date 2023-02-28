@@ -27,7 +27,7 @@ public class SysUser implements Serializable {
     /**
      * 主键ID
      */
-    @TableId(value = "user_id", type = IdType.AUTO)
+    @TableId(value = "user_id", type = IdType.ASSIGN_UUID)
     private Long userId;
     
     @TableField("account")
@@ -49,31 +49,23 @@ public class SysUser implements Serializable {
      * 创建时间
      */
     @TableField("create_time")
-    private LocalDateTime createTime;
+    private Date createTime;
 
     /**
      * 修改时间
      */
     @TableField("update_time")
-    private LocalDateTime updateTime;
+    private Date updateTime;
     
     @TableField("last_login_time")
-    private LocalDateTime lastLoginTime;
+    private Date lastLoginTime;
 
     @TableField("lock_flag")
-    private String lockFlag;
+    private Boolean lockFlag;
     
     @TableLogic
     @TableField(value = "del_flag")
-    private String delFlag;
-    
-    public boolean isDel() {
-        return !delFlag.equals("0");
-    }
-    
-    public boolean isLock() {
-        return !lockFlag.equals("0");
-    }
+    private Boolean delFlag;
 
 
 }
