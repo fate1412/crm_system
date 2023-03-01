@@ -2,10 +2,8 @@ package com.fate1412.crmSystem.security.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fate1412.crmSystem.security.dto.SysUserDTO;
-import com.fate1412.crmSystem.security.mapper.SysUserRoleMapper;
-import com.fate1412.crmSystem.security.pojo.SysUser;
-import com.fate1412.crmSystem.security.mapper.SysUserMapper;
-import com.fate1412.crmSystem.security.pojo.SysUserRole;
+import com.fate1412.crmSystem.security.mapper.*;
+import com.fate1412.crmSystem.security.pojo.*;
 import com.fate1412.crmSystem.security.service.ISysUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fate1412.crmSystem.utils.MyCollections;
@@ -32,34 +30,68 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Autowired
     private SysUserRoleMapper sysUserRoleMapper;
     
+    @Autowired
+    private SysRolePermissionMapper sysRolePermissionMapper;
+    
+    @Autowired
+    private SysPermissionMapper sysPermissionMapper;
+    
+    @Autowired
+    private SysRoleMapper sysRoleMapper;
+    
     @Override
     public SysUser getByUserName(String username) {
-        QueryWrapper<SysUser> userQueryWrapper = new QueryWrapper<>();
-        userQueryWrapper.lambda().eq(SysUser::getUsername,username);
-        return sysUserMapper.selectOne(userQueryWrapper);
+        return sysUserMapper.getByUserName(username);
     }
     
     @Override
-    public SysUser getByAccount(String account) {
-        QueryWrapper<SysUser> userQueryWrapper = new QueryWrapper<>();
-        userQueryWrapper.lambda().eq(SysUser::getAccount,account);
-        return sysUserMapper.selectOne(userQueryWrapper);
+    public List<SysRole> getRoleById(Long id) {
+        //获取用户对应的角色id
+        QueryWrapper<SysUserRole> userRoleQueryWrapper = new QueryWrapper<>();
+        userRoleQueryWrapper.lambda().eq(SysUserRole::getUserId, id);
+        List<SysUserRole> userRoleList = sysUserRoleMapper.selectList(userRoleQueryWrapper);
+        List<Integer> roleIdList = MyCollections.objects2List(userRoleList, SysUserRole::getRoleId);
+        //通过角色id获取角色
+        QueryWrapper<SysRole> roleQueryWrapper = new QueryWrapper<>();
+        roleQueryWrapper.lambda().in(SysRole::getRoleId,roleIdList);
+        return sysRoleMapper.selectList(roleQueryWrapper);
     }
     
     @Override
-    public List<SysUserRole> getRoleByUserName(String username) {
-        SysUser sysUser = getByUserName(username);
+    public List<SysRole> getRoleByUserName(String username) {
+        SysUser sysUser = sysUserMapper.getByUserName(username);
         if (sysUser == null) {
             return null;
         }
-        QueryWrapper<SysUserRole> userRoleQueryWrapper = new QueryWrapper<>();
-        userRoleQueryWrapper.lambda().eq(SysUserRole::getUserId, sysUser.getUserId());
-        return sysUserRoleMapper.selectList(userRoleQueryWrapper);
+        return getRoleById(sysUser.getUserId());
     }
     
     @Override
-    public List<SysUserRole> getRoleByAccount(String account) {
-        return getRoleByUserName(getByAccount(account).getUsername());
+    public List<SysPermission> getPermissionById(Long id) {
+        //获取用户对应的角色id
+        QueryWrapper<SysUserRole> userRoleQueryWrapper = new QueryWrapper<>();
+        userRoleQueryWrapper.lambda().eq(SysUserRole::getUserId, id);
+        List<SysUserRole> userRoleList = sysUserRoleMapper.selectList(userRoleQueryWrapper);
+        List<Integer> roleIdList = MyCollections.objects2List(userRoleList, SysUserRole::getRoleId);
+        //获取角色对应的权限Id
+        QueryWrapper<SysRolePermission> rolePermissionQueryWrapper = new QueryWrapper<>();
+        rolePermissionQueryWrapper.lambda().in(SysRolePermission::getRoleId,roleIdList);
+        List<SysRolePermission> rolePermissions = sysRolePermissionMapper.selectList(rolePermissionQueryWrapper);
+        List<Integer> permissionIds = MyCollections.objects2List(rolePermissions, SysRolePermission::getPermissionId);
+    
+        //获取权限
+        QueryWrapper<SysPermission> permissionQueryWrapper = new QueryWrapper<>();
+        permissionQueryWrapper.lambda().in(SysPermission::getPermissionId,permissionIds);
+        return sysPermissionMapper.selectList(permissionQueryWrapper);
+    }
+    
+    @Override
+    public List<SysPermission> getPermissionByUserName(String username) {
+        SysUser sysUser = sysUserMapper.getByUserName(username);
+        if (sysUser == null) {
+            return null;
+        }
+        return getPermissionById(sysUser.getUserId());
     }
     
     @Override

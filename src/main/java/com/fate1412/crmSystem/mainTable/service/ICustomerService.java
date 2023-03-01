@@ -1,7 +1,8 @@
 package com.fate1412.crmSystem.mainTable.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.fate1412.crmSystem.mainTable.dto.CustomerDTO;
+import com.fate1412.crmSystem.mainTable.dto.CustomerSelectDTO;
+import com.fate1412.crmSystem.mainTable.dto.CustomerUpdateDTO;
 import com.fate1412.crmSystem.mainTable.pojo.Customer;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -17,9 +18,11 @@ import java.util.List;
  */
 public interface ICustomerService extends IService<Customer> {
 
-    IPage<CustomerDTO> listByPage(long thisPage, long pageSize);
+    IPage<CustomerSelectDTO> listByPage(long thisPage, long pageSize);
     
-    List<CustomerDTO> getDTOListById(List<Long> ids);
+    List<CustomerSelectDTO> getDTOListById(List<Long> ids);
     
-    boolean updateById(CustomerDTO customerDTO);
+    boolean updateById(CustomerUpdateDTO customerUpdateDTO);
+    
+    boolean add(CustomerSelectDTO customerSelectDTO);
 }

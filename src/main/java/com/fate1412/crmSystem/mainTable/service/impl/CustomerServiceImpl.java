@@ -2,7 +2,8 @@ package com.fate1412.crmSystem.mainTable.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.fate1412.crmSystem.mainTable.dto.CustomerDTO;
+import com.fate1412.crmSystem.mainTable.dto.CustomerSelectDTO;
+import com.fate1412.crmSystem.mainTable.dto.CustomerUpdateDTO;
 import com.fate1412.crmSystem.mainTable.pojo.Customer;
 import com.fate1412.crmSystem.mainTable.mapper.CustomerMapper;
 import com.fate1412.crmSystem.security.mapper.SysUserMapper;
@@ -15,6 +16,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -36,39 +38,57 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     private SysUserMapper sysUserMapper;
     
     @Override
-    public IPage<CustomerDTO> listByPage(long thisPage, long pageSize) {
+    public IPage<CustomerSelectDTO> listByPage(long thisPage, long pageSize) {
         IPage<Customer> page = new Page<>(thisPage,pageSize);
         customerMapper.selectPage(page,null);
         List<Customer> customerList = page.getRecords();
-        List<CustomerDTO> customerDTOList = getCustomerDTOList(customerList);
+        List<CustomerSelectDTO> customerSelectDTOList = getCustomerDTOList(customerList);
     
-        IPage<CustomerDTO> iPage = new Page<>(thisPage,pageSize);
+        IPage<CustomerSelectDTO> iPage = new Page<>(thisPage,pageSize);
         iPage.setCurrent(page.getCurrent());
-        iPage.setRecords(customerDTOList);
+        iPage.setRecords(customerSelectDTOList);
         return iPage;
     }
     
     @Override
-    public List<CustomerDTO> getDTOListById(List<Long> ids) {
+    public List<CustomerSelectDTO> getDTOListById(List<Long> ids) {
         List<Customer> customerList = customerMapper.selectBatchIds(ids);
         return getCustomerDTOList(customerList);
     }
     
     @Override
-    public boolean updateById(CustomerDTO customerDTO) {
+    public boolean updateById(CustomerUpdateDTO customerUpdateDTO) {
         Customer customer = new Customer();
-        BeanUtils.copyProperties(customerDTO,customer);
+        BeanUtils.copyProperties(customerUpdateDTO,customer);
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//
+//        SysUser sysUser = sysUserMapper.getByUserName(authentication.getName());
         customer
-                .setCreateTime(null)
-                .setCreater(null)
-                .setDelFlag(null)
-                .setOwner(null)
                 .setUpdateTime(new Date());
-//                .setUpdateMember()
+//                .setUpdateMember(sysUser.getUserId());
         return customerMapper.updateById(customer) > 0;
     }
     
-    private List<CustomerDTO> getCustomerDTOList(List<Customer> customerList) {
+    @Override
+    public boolean add(CustomerSelectDTO customerSelectDTO) {
+        Customer customer = new Customer();
+        customer.setId(null);
+        BeanUtils.copyProperties(customerSelectDTO,customer);
+//        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        SysUser sysUser = sysUserMapper.getByUserName(user.getUsername());
+        customer
+                .setCreateTime(new Date())
+//                .setCreater(sysUser.getUserId())
+//                .setOwner(null)
+                .setUpdateTime(new Date());
+//                .setUpdateMember(sysUser.getUserId());
+        return customerMapper.insert(customer) > 0;
+    }
+    
+    private List<CustomerSelectDTO> getCustomerDTOList(List<Customer> customerList) {
+        if (MyCollections.isEmpty(customerList)) {
+            return new ArrayList<>();
+        }
         List<Long> createIds = MyCollections.objects2List(customerList, Customer::getCreater);
         List<Long> updateMemberIds = MyCollections.objects2List(customerList, Customer::getUpdateMember);
         List<Long> ownerIds = MyCollections.objects2List(customerList, Customer::getOwner);
@@ -78,8 +98,8 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     
         Map<Long, String> userMap = MyCollections.list2MapL(sysUserList, SysUser::getUserId, SysUser::getRealName);
     
-        List<CustomerDTO> customerDTOList = MyCollections.copyListProperties(customerList, CustomerDTO::new);
-        customerDTOList.forEach(customerDTO -> {
+        List<CustomerSelectDTO> customerSelectDTOList = MyCollections.copyListProperties(customerList, CustomerSelectDTO::new);
+        customerSelectDTOList.forEach(customerDTO -> {
             Long createId = customerDTO.getCreater();
             Long updateMemberId = customerDTO.getUpdateMember();
             Long ownerId = customerDTO.getOwner();
@@ -87,7 +107,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             customerDTO.setUpdateMemberR(new IdToName(updateMemberId,userMap.get(updateMemberId),"sysUser"));
             customerDTO.setOwnerR(new IdToName(ownerId,userMap.get(ownerId),"sysUser"));
         });
-        return customerDTOList;
+        return customerSelectDTOList;
     }
     
     

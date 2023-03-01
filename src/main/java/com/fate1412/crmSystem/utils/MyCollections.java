@@ -133,6 +133,7 @@ public class MyCollections {
     /**
      * 合并集合并返回新集合
      */
+    @SafeVarargs
     public static <T> List<T> addList(List<T>... lists) {
         return addList(false,lists);
     }
@@ -140,7 +141,8 @@ public class MyCollections {
     /**
      * 合并集合并返回新集合（去重）
      */
-    public static <T> List<T> addList(boolean notRepetition,List<T>... lists) {
+    @SafeVarargs
+    public static <T> List<T> addList(boolean notRepetition, List<T>... lists) {
         if (notRepetition) {
             Set<T> set = new HashSet<>();
             for (List<T> list : lists) {

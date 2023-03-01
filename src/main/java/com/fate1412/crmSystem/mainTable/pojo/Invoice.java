@@ -7,8 +7,11 @@ import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
+import java.util.Date;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 /**
  * <p>
@@ -21,36 +24,37 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @TableName("invoice")
+@Accessors(chain = true)
 public class Invoice implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @TableId("id")
-    private Integer id;
+    private Long id;
 
     /**
      * 销售订单id
      */
     @TableField("sales_order_id")
-    private Integer salesOrderId;
+    private Long salesOrderId;
 
     /**
      * 计划发货日期
      */
     @TableField("plan_invoice_date")
-    private LocalDate planInvoiceDate;
+    private Date planInvoiceDate;
 
     /**
      * 发货日期
      */
     @TableField("invoice_date")
-    private LocalDate invoiceDate;
+    private Date invoiceDate;
 
     /**
      * 是否发货
      */
     @TableField("is_invoice")
-    private Integer isInvoice;
+    private Boolean isInvoice;
 
     /**
      * 物流单号
@@ -68,41 +72,41 @@ public class Invoice implements Serializable {
      * 收货日期
      */
     @TableField("receipt_time")
-    private LocalDateTime receiptTime;
+    private Date receiptTime;
 
     /**
      * 客户id
      */
     @TableField("customer_id")
-    private Integer customerId;
+    private Long customerId;
 
     /**
      * 创建时间
      */
     @TableField("create_time")
-    private LocalDateTime createTime;
+    private Date createTime;
 
     /**
      * 更新时间
      */
     @TableField("update_time")
-    private LocalDateTime updateTime;
+    private Date updateTime;
 
     /**
      * 创建人
      */
     @TableField("creater")
-    private String creater;
+    private Long creater;
 
     /**
      * 修改人
      */
     @TableField("updater")
-    private String updater;
+    private Long updater;
 
     @TableField("del_flag")
     @TableLogic
-    private String delFlag;
+    private Boolean delFlag;
 
 
 }

@@ -1,7 +1,5 @@
 package com.fate1412.crmSystem.annotations;
 
-import lombok.Data;
-
 import java.lang.annotation.*;
 
 @Documented
@@ -17,7 +15,8 @@ public @interface TableTitle {
     enum FormType {
         Input("input"),
         Select("select"),
-        Date("date");
+        Date("date"),
+        DateTime("dateTime");
         private String type;
     
         FormType(String type) {

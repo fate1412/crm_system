@@ -21,12 +21,12 @@ import java.util.Date;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class CustomerDTO implements Serializable {
+public class CustomerSelectDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @TableId("id")
-    @TableTitle(value = "客户ID",fixed = true)
+    @TableTitle(value = "客户ID",fixed = true,disabled = true)
     private Long id;
 
     /**
@@ -54,14 +54,14 @@ public class CustomerDTO implements Serializable {
      * 创建时间
      */
     @TableField("create_time")
-    @TableTitle(value = "创建时间",disabled = true,formType = FormType.Date)
+    @TableTitle(value = "创建时间",disabled = true,formType = FormType.DateTime)
     private Date createTime;
 
     /**
      * 更新时间
      */
     @TableField("update_time")
-    @TableTitle(value = "更新时间",disabled = true,formType = FormType.Date)
+    @TableTitle(value = "更新时间",disabled = true,formType = FormType.DateTime)
     private Date updateTime;
 
     /**
@@ -88,7 +88,7 @@ public class CustomerDTO implements Serializable {
     @TableField("owner")
     private Long owner;
     
-    @TableTitle(value = "负责人",link = true,disabled = true)
+    @TableTitle(value = "负责人",link = true)
     private IdToName ownerR;
 
 

@@ -38,7 +38,7 @@ public class MyWebSecurityConfig extends WebSecurityConfigurerAdapter  {
 //                .anyRequest().authenticated()// 用户访问其它URL都必须认证后访问（登录后访问）
                 //登录
                 .and().formLogin()
-                .permitAll()//允许所有用户
+//                .permitAll()//允许所有用户
                 //记住我
 //                .and().rememberMe()
 //                .tokenValiditySeconds(60*60)
@@ -75,7 +75,6 @@ public class MyWebSecurityConfig extends WebSecurityConfigurerAdapter  {
         AuthenticationFailureHandler authenticationFailureHandler = new MyAuthenticationFailureHandler();
         MyUsernamePasswordAuthenticationFilter usernamePasswordAuthenticationFilter = new MyUsernamePasswordAuthenticationFilter(authenticationManagerBean());
         
-        usernamePasswordAuthenticationFilter.setUsernameParameter("account");
         usernamePasswordAuthenticationFilter.setAuthenticationSuccessHandler(authenticationSuccessHandler);//登录成功处理逻辑
         usernamePasswordAuthenticationFilter.setAuthenticationFailureHandler(authenticationFailureHandler);//登录失败处理逻辑
         usernamePasswordAuthenticationFilter.setAuthenticationManager(authenticationManagerBean());

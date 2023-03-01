@@ -4,10 +4,13 @@ import com.baomidou.mybatisplus.annotation.*;
 
 import java.time.LocalDateTime;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  * <p>
@@ -20,7 +23,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @TableName("sys_user")
-public class SysUser implements Serializable {
+public class SysUser implements UserDetails,Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -30,9 +33,6 @@ public class SysUser implements Serializable {
     @TableId(value = "user_id", type = IdType.ASSIGN_UUID)
     private Long userId;
     
-    @TableField("account")
-    private String account;
-
     @TableField("username")
     private String username;
     
@@ -66,6 +66,41 @@ public class SysUser implements Serializable {
     @TableLogic
     @TableField(value = "del_flag")
     private Boolean delFlag;
-
-
+    
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
+    }
+    
+    /**
+     * 是否未过期
+     */
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+    
+    /**
+     * 是否未锁定
+     */
+    @Override
+    public boolean isAccountNonLocked() {
+        return !lockFlag;
+    }
+    
+    /**
+     * 是否凭证未过期
+     */
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+    
+    /**
+     * 是否启用
+     */
+    @Override
+    public boolean isEnabled() {
+        return !delFlag;
+    }
 }

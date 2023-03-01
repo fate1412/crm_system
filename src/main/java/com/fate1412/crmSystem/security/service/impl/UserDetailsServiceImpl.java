@@ -41,29 +41,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         //获取用户
-        QueryWrapper<SysUser> userQueryWrapper = new QueryWrapper<>();
-        userQueryWrapper.lambda().eq(SysUser::getAccount,username);
-        SysUser sysUser = userService.getOne(userQueryWrapper);
+        SysUser sysUser = userService.getByUserName(username);
         if (sysUser == null) {
             throw new InternalAuthenticationServiceException("账号不存在");
         }
-        
-        //获取用户所有的角色Id
-        QueryWrapper<SysUserRole> userRoleQueryWrapper = new QueryWrapper<>();
-        userRoleQueryWrapper.lambda().eq(SysUserRole::getUserId, sysUser.getUserId());
-        List<SysUserRole> sysUserRoles = userRoleService.list(userRoleQueryWrapper);
-        List<Integer> roleIdList = MyCollections.objects2List(sysUserRoles, SysUserRole::getRoleId);
-        
-        //获取角色对应的权限Id
-        QueryWrapper<SysRolePermission> rolePermissionQueryWrapper = new QueryWrapper<>();
-        rolePermissionQueryWrapper.lambda().in(SysRolePermission::getRoleId,roleIdList);
-        List<SysRolePermission> rolePermissions = rolePermissionService.list(rolePermissionQueryWrapper);
-        List<Integer> permissionIds = MyCollections.objects2List(rolePermissions, SysRolePermission::getPermissionId);
-        
-        //获取权限
-        QueryWrapper<SysPermission> permissionQueryWrapper = new QueryWrapper<>();
-        permissionQueryWrapper.lambda().in(SysPermission::getPermissionId,permissionIds);
-        List<SysPermission> permissions = permissionService.list(permissionQueryWrapper);
+        //获取用户权限
+        List<SysPermission> permissions = userService.getPermissionByUserName(username);
         List<String> permissionCodes = MyCollections.objects2List(permissions, SysPermission::getPermissionCode);
     
         //声明用户授权
@@ -72,7 +55,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(permissionCode);
             grantedAuthorities.add(grantedAuthority);
         });
-        log.info("isLock:{}",sysUser.getLockFlag());
-        return new User(sysUser.getAccount(),sysUser.getPassword(),!sysUser.getDelFlag(),true,true,!sysUser.getLockFlag(),grantedAuthorities);
+        return new User(sysUser.getUsername(),sysUser.getPassword(),sysUser.isEnabled(), sysUser.isAccountNonExpired(), sysUser.isCredentialsNonExpired(), sysUser.isAccountNonLocked(),grantedAuthorities);
     }
 }

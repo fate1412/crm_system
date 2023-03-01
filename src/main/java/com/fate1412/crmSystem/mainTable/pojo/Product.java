@@ -6,6 +6,8 @@ import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
+import java.util.Date;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -25,7 +27,7 @@ public class Product implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @TableId("id")
-    private Integer id;
+    private Long id;
 
     /**
      * 产品名称
@@ -61,43 +63,43 @@ public class Product implements Serializable {
      * 创建时间
      */
     @TableField("create_time")
-    private LocalDateTime createTime;
+    private Date createTime;
 
     /**
      * 更新时间
      */
     @TableField("update_time")
-    private LocalDateTime updateTime;
+    private Date updateTime;
 
     /**
      * 创建人
      */
     @TableField("creater")
-    private String creater;
+    private Long creater;
 
     /**
      * 修改人
      */
     @TableField("updater")
-    private String updater;
+    private Long updater;
 
     /**
      * 是否上架
      */
     @TableField("is_shelf")
-    private Integer isShelf;
+    private Boolean isShelf;
 
     /**
      * 上架时间
      */
     @TableField("on_shelives_time")
-    private LocalDateTime onShelivesTime;
+    private Date onShelivesTime;
 
     /**
      * 下架时间
      */
     @TableField("off_shelives_time")
-    private LocalDateTime offShelivesTime;
+    private Date offShelivesTime;
 
     /**
      * 折扣(0-100)
@@ -107,7 +109,7 @@ public class Product implements Serializable {
 
     @TableField("del_flag")
     @TableLogic
-    private String delFlag;
+    private Boolean delFlag;
 
 
 }

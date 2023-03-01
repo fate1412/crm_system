@@ -1,8 +1,6 @@
 package com.fate1412.crmSystem.mainTable.controller;
 
-import com.fate1412.crmSystem.mainTable.dto.CustomerDTO;
 import com.fate1412.crmSystem.security.dto.SysUserDTO;
-import com.fate1412.crmSystem.security.pojo.SysUser;
 import com.fate1412.crmSystem.security.service.ISysUserService;
 import com.fate1412.crmSystem.utils.JsonResult;
 import com.fate1412.crmSystem.utils.MyCollections;
@@ -27,7 +25,7 @@ public class SysUserController {
     @GetMapping("/select")
     public JsonResult<Object> select(@Param("id") Long id) {
         List<SysUserDTO> sysUserDTOList = sysUserService.getDTOListById(MyCollections.toList(id));
-        TableResultData tableResultData = ResultTool.createTableResultData(sysUserDTOList, SysUserDTO.class);
+        TableResultData tableResultData = TableResultData.createTableResultData(sysUserDTOList, SysUserDTO.class);
         return ResultTool.success(tableResultData);
     }
 }
