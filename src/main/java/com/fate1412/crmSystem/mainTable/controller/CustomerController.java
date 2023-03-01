@@ -2,6 +2,7 @@ package com.fate1412.crmSystem.mainTable.controller;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.fate1412.crmSystem.base.MyPage;
 import com.fate1412.crmSystem.mainTable.dto.CustomerSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.CustomerUpdateDTO;
 import com.fate1412.crmSystem.mainTable.service.ICustomerService;
@@ -40,8 +41,10 @@ public class CustomerController {
     public JsonResult<Object> selectByPage(@Param("thisPage") Long thisPage, @Param("pageSize") Long pageSize) {
         thisPage = thisPage == null ? 1 : thisPage;
         pageSize = pageSize == null ? 20 : pageSize;
-        IPage<CustomerSelectDTO> page = customerService.listByPage(thisPage, pageSize);
-        TableResultData tableResultData = TableResultData.createTableResultData(page, CustomerSelectDTO.class);
+//        IPage<CustomerSelectDTO> page = customerService.listByPage(thisPage, pageSize);
+        MyPage page = customerService.listByPage(thisPage, pageSize);
+        List<?> records = page.getRecords();
+        TableResultData tableResultData = TableResultData.createTableResultData(records, CustomerSelectDTO.class);
         return ResultTool.success(tableResultData);
     }
     
@@ -55,7 +58,7 @@ public class CustomerController {
     @PreAuthorize("permitAll()")
     @GetMapping("/select")
     public JsonResult<Object> select(@Param("id") Long id) {
-        List<CustomerSelectDTO> customerSelectDTOList = customerService.getDTOListById(MyCollections.toList(id));
+        List<?> customerSelectDTOList = customerService.getDTOListById(MyCollections.toList(id));
         TableResultData tableResultData = TableResultData.createTableResultData(customerSelectDTOList, CustomerSelectDTO.class);
         return ResultTool.success(tableResultData);
     }

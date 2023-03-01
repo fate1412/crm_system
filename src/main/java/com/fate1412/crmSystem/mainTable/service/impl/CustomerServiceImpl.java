@@ -1,7 +1,9 @@
 package com.fate1412.crmSystem.mainTable.service.impl;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fate1412.crmSystem.base.MyBaseService;
 import com.fate1412.crmSystem.mainTable.dto.CustomerSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.CustomerUpdateDTO;
 import com.fate1412.crmSystem.mainTable.pojo.Customer;
@@ -38,54 +40,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     private SysUserMapper sysUserMapper;
     
     @Override
-    public IPage<CustomerSelectDTO> listByPage(long thisPage, long pageSize) {
-        IPage<Customer> page = new Page<>(thisPage,pageSize);
-        customerMapper.selectPage(page,null);
-        List<Customer> customerList = page.getRecords();
-        List<CustomerSelectDTO> customerSelectDTOList = getCustomerDTOList(customerList);
-    
-        IPage<CustomerSelectDTO> iPage = new Page<>(thisPage,pageSize);
-        iPage.setCurrent(page.getCurrent());
-        iPage.setRecords(customerSelectDTOList);
-        return iPage;
-    }
-    
-    @Override
-    public List<CustomerSelectDTO> getDTOListById(List<Long> ids) {
-        List<Customer> customerList = customerMapper.selectBatchIds(ids);
-        return getCustomerDTOList(customerList);
-    }
-    
-    @Override
-    public boolean updateById(CustomerUpdateDTO customerUpdateDTO) {
-        Customer customer = new Customer();
-        BeanUtils.copyProperties(customerUpdateDTO,customer);
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//
-//        SysUser sysUser = sysUserMapper.getByUserName(authentication.getName());
-        customer
-                .setUpdateTime(new Date());
-//                .setUpdateMember(sysUser.getUserId());
-        return customerMapper.updateById(customer) > 0;
-    }
-    
-    @Override
-    public boolean add(CustomerSelectDTO customerSelectDTO) {
-        Customer customer = new Customer();
-        customer.setId(null);
-        BeanUtils.copyProperties(customerSelectDTO,customer);
-//        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//        SysUser sysUser = sysUserMapper.getByUserName(user.getUsername());
-        customer
-                .setCreateTime(new Date())
-//                .setCreater(sysUser.getUserId())
-//                .setOwner(null)
-                .setUpdateTime(new Date());
-//                .setUpdateMember(sysUser.getUserId());
-        return customerMapper.insert(customer) > 0;
-    }
-    
-    private List<CustomerSelectDTO> getCustomerDTOList(List<Customer> customerList) {
+    public List<?> getDTOList(List<Customer> customerList) {
         if (MyCollections.isEmpty(customerList)) {
             return new ArrayList<>();
         }
@@ -93,22 +48,64 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         List<Long> updateMemberIds = MyCollections.objects2List(customerList, Customer::getUpdateMember);
         List<Long> ownerIds = MyCollections.objects2List(customerList, Customer::getOwner);
         List<Long> userIdList = MyCollections.addList(true, createIds, updateMemberIds, ownerIds);
-    
+        
         List<SysUser> sysUserList = sysUserMapper.selectBatchIds(userIdList);
-    
+        
         Map<Long, String> userMap = MyCollections.list2MapL(sysUserList, SysUser::getUserId, SysUser::getRealName);
-    
+        
         List<CustomerSelectDTO> customerSelectDTOList = MyCollections.copyListProperties(customerList, CustomerSelectDTO::new);
         customerSelectDTOList.forEach(customerDTO -> {
             Long createId = customerDTO.getCreater();
             Long updateMemberId = customerDTO.getUpdateMember();
             Long ownerId = customerDTO.getOwner();
-            customerDTO.setCreaterR(new IdToName(createId,userMap.get(createId),"sysUser"));
-            customerDTO.setUpdateMemberR(new IdToName(updateMemberId,userMap.get(updateMemberId),"sysUser"));
-            customerDTO.setOwnerR(new IdToName(ownerId,userMap.get(ownerId),"sysUser"));
+            customerDTO.setCreaterR(new IdToName(createId, userMap.get(createId), "sysUser"));
+            customerDTO.setUpdateMemberR(new IdToName(updateMemberId, userMap.get(updateMemberId), "sysUser"));
+            customerDTO.setOwnerR(new IdToName(ownerId, userMap.get(ownerId), "sysUser"));
         });
         return customerSelectDTOList;
     }
     
+    @Override
+    public BaseMapper<Customer> mapper() {
+        return customerMapper;
+    }
     
+    @Override
+    public boolean updateById(CustomerUpdateDTO customerUpdateDTO) {
+        return updateByDTO(customerUpdateDTO, new MyEntity<Customer>() {
+            @Override
+            public Customer get() {
+                return new Customer();
+            }
+            
+            @Override
+            public Customer set(Customer customer) {
+                customer
+                        .setUpdateTime(new Date());
+//                .setUpdateMember(sysUser.getUserId());
+                return customer;
+            }
+        });
+    }
+    
+    @Override
+    public boolean add(CustomerSelectDTO customerSelectDTO) {
+        return add(customerSelectDTO, new MyEntity<Customer>() {
+            @Override
+            public Customer get() {
+                return new Customer();
+            }
+            
+            @Override
+            public Customer set(Customer customer) {
+                customer
+                        .setCreateTime(new Date())
+//                .setCreater(sysUser.getUserId())
+//                .setOwner(null)
+                        .setUpdateTime(new Date());
+//                .setUpdateMember(sysUser.getUserId());
+                return customer;
+            }
+        });
+    }
 }

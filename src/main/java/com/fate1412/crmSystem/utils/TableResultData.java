@@ -44,7 +44,7 @@ public class TableResultData {
         return tableColumnList;
     }
     
-    public static <T> TableResultData createTableResultData(List<T> entities, Class<T> entityClass) {
+    public static <T> TableResultData createTableResultData(List<?> entities, Class<T> entityClass) {
         List<TableColumn> tableColumnList = tableColumnList(entityClass);
         return new TableResultData(tableColumnList, entities);
         
