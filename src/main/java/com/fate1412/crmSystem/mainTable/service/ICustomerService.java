@@ -7,6 +7,8 @@ import com.fate1412.crmSystem.mainTable.dto.CustomerSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.CustomerUpdateDTO;
 import com.fate1412.crmSystem.mainTable.pojo.Customer;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.fate1412.crmSystem.utils.JsonResult;
+import com.fate1412.crmSystem.utils.ResultCode;
 
 import java.util.List;
 
@@ -20,8 +22,8 @@ import java.util.List;
  */
 public interface ICustomerService extends IService<Customer>, MyBaseService<Customer> {
     
-    boolean updateById(CustomerUpdateDTO customerUpdateDTO);
-
-    boolean add(CustomerSelectDTO customerSelectDTO);
+    JsonResult<?> updateById(CustomerUpdateDTO customerUpdateDTO);
+    
+    JsonResult<?> add(CustomerSelectDTO customerSelectDTO);
     
 }

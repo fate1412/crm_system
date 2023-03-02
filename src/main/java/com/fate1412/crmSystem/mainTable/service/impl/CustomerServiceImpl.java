@@ -13,7 +13,9 @@ import com.fate1412.crmSystem.security.pojo.SysUser;
 import com.fate1412.crmSystem.mainTable.service.ICustomerService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fate1412.crmSystem.utils.IdToName;
+import com.fate1412.crmSystem.utils.JsonResult;
 import com.fate1412.crmSystem.utils.MyCollections;
+import com.fate1412.crmSystem.utils.ResultCode;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -71,31 +73,28 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     }
     
     @Override
-    public boolean updateById(CustomerUpdateDTO customerUpdateDTO) {
-        return updateByDTO(customerUpdateDTO, new MyEntity<Customer>() {
-            @Override
-            public Customer get() {
-                return new Customer();
-            }
-            
+    public JsonResult<?> updateById(CustomerUpdateDTO customerUpdateDTO) {
+        return updateByDTO(customerUpdateDTO, new MyEntity<Customer>(new Customer()) {
+
             @Override
             public Customer set(Customer customer) {
                 customer
                         .setUpdateTime(new Date());
 //                .setUpdateMember(sysUser.getUserId());
-                return customer;
+                return new Customer();
+            }
+    
+            @Override
+            public ResultCode verification(Customer customer) {
+                return ResultCode.UPDATE_ERROR;
             }
         });
     }
     
     @Override
-    public boolean add(CustomerSelectDTO customerSelectDTO) {
-        return add(customerSelectDTO, new MyEntity<Customer>() {
-            @Override
-            public Customer get() {
-                return new Customer();
-            }
-            
+    public JsonResult<?> add(CustomerSelectDTO customerSelectDTO) {
+        return add(customerSelectDTO, new MyEntity<Customer>(new Customer()) {
+
             @Override
             public Customer set(Customer customer) {
                 customer
@@ -105,6 +104,11 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                         .setUpdateTime(new Date());
 //                .setUpdateMember(sysUser.getUserId());
                 return customer;
+            }
+    
+            @Override
+            public ResultCode verification(Customer customer) {
+                return ResultCode.INSERT_ERROR;
             }
         });
     }

@@ -51,8 +51,7 @@ public class CustomerController {
     @PreAuthorize("permitAll()")
     @PutMapping("/add")
     public JsonResult<?> add(@RequestBody CustomerSelectDTO customerSelectDTO) {
-        boolean b = customerService.add(customerSelectDTO);
-        return ResultTool.create(b);
+        return customerService.add(customerSelectDTO);
     }
     
     @PreAuthorize("permitAll()")
@@ -66,8 +65,7 @@ public class CustomerController {
     @PreAuthorize("permitAll()")
     @PostMapping("/update")
     public JsonResult<?> update(@RequestBody CustomerUpdateDTO customerUpdateDTO) {
-        boolean b = customerService.updateById(customerUpdateDTO);
-        return ResultTool.create(b);
+        return customerService.updateById(customerUpdateDTO);
     }
     
     @PreAuthorize("permitAll()")
