@@ -1,12 +1,11 @@
 package com.fate1412.crmSystem.mainTable.service;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.fate1412.crmSystem.base.MyBaseService;
 import com.fate1412.crmSystem.mainTable.dto.InvoiceSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.InvoiceUpdateDTO;
 import com.fate1412.crmSystem.mainTable.pojo.Invoice;
 import com.baomidou.mybatisplus.extension.service.IService;
-
-import java.util.List;
+import com.fate1412.crmSystem.utils.JsonResult;
 
 /**
  * <p>
@@ -16,12 +15,9 @@ import java.util.List;
  * @author fate1412
  * @since 2023-02-23
  */
-public interface IInvoiceService extends IService<Invoice> {
-    IPage<InvoiceSelectDTO> listByPage(long thisPage, long pageSize);
+public interface IInvoiceService extends IService<Invoice>, MyBaseService<Invoice> {
     
-    List<InvoiceSelectDTO> getDTOListById(List<Long> ids);
+    JsonResult<?> updateById(InvoiceUpdateDTO invoiceUpdateDTO);
     
-    boolean updateById(InvoiceUpdateDTO invoiceUpdateDTO);
-    
-    boolean add(InvoiceSelectDTO invoiceSelectDTO);
+    JsonResult<?> add(InvoiceSelectDTO invoiceSelectDTO);
 }

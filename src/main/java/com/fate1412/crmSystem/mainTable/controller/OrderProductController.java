@@ -2,6 +2,7 @@ package com.fate1412.crmSystem.mainTable.controller;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.fate1412.crmSystem.base.MyPage;
 import com.fate1412.crmSystem.mainTable.dto.InvoiceProductSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.InvoiceProductUpdateDTO;
 import com.fate1412.crmSystem.mainTable.dto.OrderProductSelectDTO;
@@ -41,22 +42,21 @@ public class OrderProductController {
     public JsonResult<Object> selectByPage(@Param("thisPage") Long thisPage, @Param("pageSize") Long pageSize) {
         thisPage = thisPage == null ? 1 : thisPage;
         pageSize = pageSize == null ? 20 : pageSize;
-        IPage<OrderProductSelectDTO> page = orderProductService.listByPage(thisPage, pageSize);
-        TableResultData tableResultData = TableResultData.createTableResultData(page, OrderProductSelectDTO.class);
+        MyPage page = orderProductService.listByPage(thisPage, pageSize);
+        TableResultData tableResultData = TableResultData.createTableResultData(page.getRecords(), OrderProductSelectDTO.class);
         return ResultTool.success(tableResultData);
     }
     
     @PreAuthorize("permitAll()")
     @PutMapping("/add")
     public JsonResult<?> add(@RequestBody OrderProductSelectDTO orderProductSelectDTO) {
-        boolean b = orderProductService.add(orderProductSelectDTO);
-        return ResultTool.create(b);
+        return orderProductService.add(orderProductSelectDTO);
     }
     
     @PreAuthorize("permitAll()")
     @GetMapping("/select")
     public JsonResult<Object> select(@Param("id") Long id) {
-        List<OrderProductSelectDTO> orderProductSelectDTOList = orderProductService.getDTOListById(MyCollections.toList(id));
+        List<?> orderProductSelectDTOList = orderProductService.getDTOListById(MyCollections.toList(id));
         TableResultData tableResultData = TableResultData.createTableResultData(orderProductSelectDTOList, OrderProductSelectDTO.class);
         return ResultTool.success(tableResultData);
     }
@@ -64,8 +64,7 @@ public class OrderProductController {
     @PreAuthorize("permitAll()")
     @PostMapping("/update")
     public JsonResult<?> update(@RequestBody OrderProductUpdateDTO orderProductUpdateDTO) {
-        boolean b = orderProductService.updateById(orderProductUpdateDTO);
-        return ResultTool.create(b);
+        return orderProductService.updateById(orderProductUpdateDTO);
     }
     
     @PreAuthorize("permitAll()")

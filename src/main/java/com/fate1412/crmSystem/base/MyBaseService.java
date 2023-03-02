@@ -47,8 +47,8 @@ public interface MyBaseService<T> {
         T t = entity.getT();
         BeanUtils.copyProperties(dto, t);
         t = entity.set(t);
-        if (entity.verification(t).equals(ResultCode.SUCCESS)) {
-            return mapper().insert(t) > 0? ResultTool.success() : ResultTool.fail(ResultCode.INSERT_ERROR);
+        if (entity.verification(t).equals(ResultCode.SUCCESS) && (mapper().insert(t) > 0)) {
+            return entity.afterAdd()? ResultTool.success() : ResultTool.fail(ResultCode.INSERT_ERROR);
         } else {
             return ResultTool.fail(entity.verification(t));
         }
@@ -65,6 +65,12 @@ public interface MyBaseService<T> {
         
         public abstract T set(T t);
         
-        public abstract ResultCode verification(T t);
+        public ResultCode verification(T t) {
+            return ResultCode.SUCCESS;
+        }
+        
+        public boolean afterAdd() {
+            return true;
+        }
     }
 }

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fate1412.crmSystem.annotations.TableTitle;
+import com.fate1412.crmSystem.annotations.TableTitle.FormType;
 import com.fate1412.crmSystem.utils.IdToName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -37,7 +38,7 @@ public class InvoiceProductSelectDTO implements Serializable {
     @TableField("invoice_id")
     private Long invoiceId;
     
-    @TableTitle(value = "发货单id",link = true)
+    @TableTitle(value = "发货单id",link = true,disabled = true)
     private IdToName invoiceIdR;
 
     /**
@@ -60,14 +61,14 @@ public class InvoiceProductSelectDTO implements Serializable {
      * 创建时间
      */
     @TableField("create_time")
-    @TableTitle(value = "创建时间",formType = TableTitle.FormType.DateTime)
+    @TableTitle(value = "创建时间",formType = FormType.DateTime, disabled = true)
     private Date createTime;
 
     /**
      * 更新时间
      */
     @TableField("update_time")
-    @TableTitle(value = "更新时间",formType = TableTitle.FormType.DateTime)
+    @TableTitle(value = "更新时间",formType = FormType.DateTime, disabled = true)
     private Date updateTime;
 
     /**

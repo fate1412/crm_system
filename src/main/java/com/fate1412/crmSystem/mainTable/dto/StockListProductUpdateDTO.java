@@ -1,16 +1,15 @@
-package com.fate1412.crmSystem.mainTable.pojo;
+package com.fate1412.crmSystem.mainTable.dto;
 
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import java.time.LocalDateTime;
-import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableField;
-import java.io.Serializable;
-import java.util.Date;
-
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * <p>
@@ -24,7 +23,7 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @TableName("stock_list_product")
 @Accessors(chain = true)
-public class StockListProduct implements Serializable {
+public class StockListProductUpdateDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
     
@@ -49,33 +48,6 @@ public class StockListProduct implements Serializable {
     @TableField("stock_num")
     private Integer stockNum;
 
-    /**
-     * 创建时间
-     */
-    @TableField("create_time")
-    private Date createTime;
-
-    /**
-     * 更新时间
-     */
-    @TableField("update_time")
-    private Date updateTime;
-
-    /**
-     * 创建人
-     */
-    @TableField("creater")
-    private Long creater;
-
-    /**
-     * 修改人
-     */
-    @TableField("updater")
-    private Long updater;
-
-    @TableField("del_flag")
-    @TableLogic
-    private Boolean delFlag;
 
 
 }

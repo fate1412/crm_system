@@ -55,14 +55,14 @@ public class InvoiceSelectDTO implements Serializable {
      * 计划发货日期
      */
     @TableField("plan_invoice_date")
-    @TableTitle(value = "计划发货日期",disabled = true,formType = FormType.Date)
+    @TableTitle(value = "计划发货日期",formType = FormType.Date)
     private Date planInvoiceDate;
 
     /**
      * 发货日期
      */
     @TableField("invoice_date")
-    @TableTitle(value = "发货日期",disabled = true,formType = FormType.Date)
+    @TableTitle(value = "发货日期",formType = FormType.Date)
     private Date invoiceDate;
 
     /**
@@ -98,14 +98,14 @@ public class InvoiceSelectDTO implements Serializable {
      * 创建时间
      */
     @TableField("create_time")
-    @TableTitle(value = "创建时间",formType = FormType.DateTime)
+    @TableTitle(value = "创建时间",disabled = true,formType = FormType.DateTime)
     private Date createTime;
 
     /**
      * 更新时间
      */
     @TableField("update_time")
-    @TableTitle(value = "更新时间",formType = FormType.DateTime)
+    @TableTitle(value = "更新时间",disabled = true,formType = FormType.DateTime)
     private Date updateTime;
 
     /**

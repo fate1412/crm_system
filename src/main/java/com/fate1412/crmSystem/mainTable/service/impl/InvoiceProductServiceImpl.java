@@ -1,14 +1,10 @@
 package com.fate1412.crmSystem.mainTable.service.impl;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.fate1412.crmSystem.mainTable.dto.InvoiceProductSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.InvoiceProductUpdateDTO;
-import com.fate1412.crmSystem.mainTable.dto.InvoiceSelectDTO;
 import com.fate1412.crmSystem.mainTable.mapper.InvoiceMapper;
 import com.fate1412.crmSystem.mainTable.mapper.ProductMapper;
-import com.fate1412.crmSystem.mainTable.pojo.Customer;
-import com.fate1412.crmSystem.mainTable.pojo.Invoice;
 import com.fate1412.crmSystem.mainTable.pojo.InvoiceProduct;
 import com.fate1412.crmSystem.mainTable.mapper.InvoiceProductMapper;
 import com.fate1412.crmSystem.mainTable.pojo.Product;
@@ -17,8 +13,9 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fate1412.crmSystem.security.mapper.SysUserMapper;
 import com.fate1412.crmSystem.security.pojo.SysUser;
 import com.fate1412.crmSystem.utils.IdToName;
+import com.fate1412.crmSystem.utils.JsonResult;
 import com.fate1412.crmSystem.utils.MyCollections;
-import org.springframework.beans.BeanUtils;
+import com.fate1412.crmSystem.utils.ResultCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,52 +44,44 @@ public class InvoiceProductServiceImpl extends ServiceImpl<InvoiceProductMapper,
     private ProductMapper productMapper;
     
     @Override
-    public IPage<InvoiceProductSelectDTO> listByPage(long thisPage, long pageSize) {
-        IPage<InvoiceProduct> page = new Page<>(thisPage,pageSize);
-        invoiceProductMapper.selectPage(page,null);
-        List<InvoiceProduct> invoiceProductList = page.getRecords();
-        List<InvoiceProductSelectDTO> invoiceProductSelectDTOList = getInvoiceDTOList(invoiceProductList);
-    
-        IPage<InvoiceProductSelectDTO> iPage = new Page<>(thisPage,pageSize);
-        iPage.setCurrent(page.getCurrent());
-        iPage.setRecords(invoiceProductSelectDTOList);
-        return iPage;
-    }
-    
-    @Override
-    public List<InvoiceProductSelectDTO> getDTOListById(List<Long> ids) {
-        List<InvoiceProduct> customerList = invoiceProductMapper.selectBatchIds(ids);
-        return getInvoiceDTOList(customerList);
-    }
-    
-    @Override
-    public boolean updateById(InvoiceProductUpdateDTO invoiceProductUpdateDTO) {
-        InvoiceProduct invoiceProduct = new InvoiceProduct();
-        BeanUtils.copyProperties(invoiceProductUpdateDTO,invoiceProduct);
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//
-//        SysUser sysUser = sysUserMapper.getByUserName(authentication.getName());
-        invoiceProduct
-                .setUpdateTime(new Date());
+    public JsonResult<?> updateById(InvoiceProductUpdateDTO invoiceProductUpdateDTO) {
+        return updateByDTO(invoiceProductUpdateDTO, new MyEntity<InvoiceProduct>(new InvoiceProduct()) {
+            @Override
+            public InvoiceProduct set(InvoiceProduct invoiceProduct) {
+                invoiceProduct
+                        .setUpdateTime(new Date());
 //                .setUpdateMember(sysUser.getUserId());
-        return invoiceProductMapper.updateById(invoiceProduct) > 0;
+                return invoiceProduct;
+            }
+    
+            @Override
+            public ResultCode verification(InvoiceProduct invoiceProduct) {
+                return ResultCode.SUCCESS;
+            }
+        });
     }
     
     @Override
-    public boolean add(InvoiceProductSelectDTO invoiceProductSelectDTO) {
-        InvoiceProduct invoiceProduct = new InvoiceProduct();
-        BeanUtils.copyProperties(invoiceProductSelectDTO,invoiceProduct);
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//
-//        SysUser sysUser = sysUserMapper.getByUserName(authentication.getName());
-        invoiceProduct
-                .setCreateTime(new Date())
-                .setUpdateTime(new Date());
+    public JsonResult<?> add(InvoiceProductSelectDTO invoiceProductSelectDTO) {
+        return add(invoiceProductSelectDTO, new MyEntity<InvoiceProduct>(new InvoiceProduct()) {
+            @Override
+            public InvoiceProduct set(InvoiceProduct invoiceProduct) {
+                invoiceProduct
+                        .setCreateTime(new Date())
+                        .setUpdateTime(new Date());
 //                .setUpdateMember(sysUser.getUserId());
-        return invoiceProductMapper.updateById(invoiceProduct) > 0;
+                return invoiceProduct;
+            }
+    
+            @Override
+            public ResultCode verification(InvoiceProduct invoiceProduct) {
+                return null;
+            }
+        });
     }
     
-    private List<InvoiceProductSelectDTO> getInvoiceDTOList(List<InvoiceProduct> invoiceProductList) {
+    @Override
+    public List<?> getDTOList(List<InvoiceProduct> invoiceProductList) {
         if (MyCollections.isEmpty(invoiceProductList)) {
             return new ArrayList<>();
         }
@@ -100,17 +89,17 @@ public class InvoiceProductServiceImpl extends ServiceImpl<InvoiceProductMapper,
         List<Long> createIds = MyCollections.objects2List(invoiceProductList, InvoiceProduct::getCreater);
         List<Long> updateMemberIds = MyCollections.objects2List(invoiceProductList, InvoiceProduct::getUpdater);
         List<Long> userIdList = MyCollections.addList(true, createIds, updateMemberIds);
-        
+    
         List<SysUser> sysUserList = sysUserMapper.selectBatchIds(userIdList);
         Map<Long, String> userMap = MyCollections.list2MapL(sysUserList, SysUser::getUserId, SysUser::getRealName);
-        
+    
         //产品
         List<Long> ProductIdList = MyCollections.objects2List(invoiceProductList, InvoiceProduct::getProductId);
-        
+    
         List<Product> productList = productMapper.selectBatchIds(ProductIdList);
         Map<Long, String> productMap = MyCollections.list2MapL(productList, Product::getId, Product::getName);
-        
-        
+    
+    
         List<InvoiceProductSelectDTO> invoiceProductSelectDTOList = MyCollections.copyListProperties(invoiceProductList, InvoiceProductSelectDTO::new);
         invoiceProductSelectDTOList.forEach(dto -> {
             Long createId = dto.getCreater();
@@ -121,8 +110,13 @@ public class InvoiceProductServiceImpl extends ServiceImpl<InvoiceProductMapper,
             dto.setUpdaterR(new IdToName(updateMemberId,userMap.get(updateMemberId),"sysUser"));
             dto.setInvoiceIdR(new IdToName(invoiceId, invoiceId.toString(),"invoice"));
             dto.setProductR(new IdToName(productId,productMap.get(productId),"product"));
-            
+        
         });
         return invoiceProductSelectDTOList;
+    }
+    
+    @Override
+    public BaseMapper<InvoiceProduct> mapper() {
+        return invoiceProductMapper;
     }
 }

@@ -1,14 +1,11 @@
 package com.fate1412.crmSystem.mainTable.service;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.fate1412.crmSystem.base.MyBaseService;
 import com.fate1412.crmSystem.mainTable.dto.InvoiceProductSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.InvoiceProductUpdateDTO;
-import com.fate1412.crmSystem.mainTable.dto.InvoiceSelectDTO;
-import com.fate1412.crmSystem.mainTable.dto.InvoiceUpdateDTO;
 import com.fate1412.crmSystem.mainTable.pojo.InvoiceProduct;
 import com.baomidou.mybatisplus.extension.service.IService;
-
-import java.util.List;
+import com.fate1412.crmSystem.utils.JsonResult;
 
 /**
  * <p>
@@ -18,12 +15,9 @@ import java.util.List;
  * @author fate1412
  * @since 2023-02-23
  */
-public interface IInvoiceProductService extends IService<InvoiceProduct> {
-    IPage<InvoiceProductSelectDTO> listByPage(long thisPage, long pageSize);
+public interface IInvoiceProductService extends IService<InvoiceProduct>, MyBaseService<InvoiceProduct> {
     
-    List<InvoiceProductSelectDTO> getDTOListById(List<Long> ids);
+    JsonResult<?> updateById(InvoiceProductUpdateDTO invoiceProductUpdateDTO);
     
-    boolean updateById(InvoiceProductUpdateDTO invoiceProductUpdateDTO);
-    
-    boolean add(InvoiceProductSelectDTO invoiceProductSelectDTO);
+    JsonResult<?> add(InvoiceProductSelectDTO invoiceProductSelectDTO);
 }
