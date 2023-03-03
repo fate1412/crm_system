@@ -32,8 +32,9 @@ public class CustomerController {
     @PreAuthorize("permitAll()")
     @GetMapping("/getColumns")
     public JsonResult<Object> getColumns() {
-        List<TableColumn> tableColumns = TableResultData.tableColumnList(CustomerSelectDTO.class);
-        return ResultTool.success(tableColumns);
+        CustomerSelectDTO customerSelectDTO = new CustomerSelectDTO();
+        TableResultData tableResultData = TableResultData.createTableResultData(MyCollections.toList(customerSelectDTO), CustomerSelectDTO.class);
+        return ResultTool.success(tableResultData);
     }
     
     @PreAuthorize("permitAll()")

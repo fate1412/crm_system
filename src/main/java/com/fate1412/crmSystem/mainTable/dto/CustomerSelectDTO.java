@@ -71,7 +71,7 @@ public class CustomerSelectDTO implements Serializable {
     private Long creater;
     
     @TableTitle(value = "创建人",link = true,disabled = true)
-    private IdToName createrR;
+    private IdToName createrR = new IdToName();
 
     /**
      * 更新者
@@ -80,7 +80,7 @@ public class CustomerSelectDTO implements Serializable {
     private Long updateMember;
     
     @TableTitle(value = "更新者",link = true,disabled = true)
-    private IdToName updateMemberR;
+    private IdToName updateMemberR = new IdToName();
 
     /**
      * 负责人
@@ -89,7 +89,7 @@ public class CustomerSelectDTO implements Serializable {
     private Long owner;
     
     @TableTitle(value = "负责人",link = true)
-    private IdToName ownerR;
+    private IdToName ownerR = new IdToName();
 
 
 }
