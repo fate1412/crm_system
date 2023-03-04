@@ -23,6 +23,7 @@ public interface MyBaseService<T> {
         MyPage myPage = new MyPage(thisPage, pageSize);
         myPage.setRecords(dtoList);
         myPage.setCurrent(page.getCurrent());
+        myPage.setTotal(page.getTotal());
         return myPage;
     }
     

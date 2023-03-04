@@ -18,6 +18,8 @@ import com.fate1412.crmSystem.utils.MyCollections;
 import com.fate1412.crmSystem.utils.ResultCode;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -75,18 +77,18 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     @Override
     public JsonResult<?> updateById(CustomerUpdateDTO customerUpdateDTO) {
         return updateByDTO(customerUpdateDTO, new MyEntity<Customer>(new Customer()) {
-
+            
             @Override
             public Customer set(Customer customer) {
                 customer
                         .setUpdateTime(new Date());
 //                .setUpdateMember(sysUser.getUserId());
-                return new Customer();
+                return customer;
             }
-    
+            
             @Override
             public ResultCode verification(Customer customer) {
-                return ResultCode.UPDATE_ERROR;
+                return ResultCode.SUCCESS;
             }
         });
     }
@@ -94,21 +96,24 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     @Override
     public JsonResult<?> add(CustomerSelectDTO customerSelectDTO) {
         return add(customerSelectDTO, new MyEntity<Customer>(new Customer()) {
-
+            
             @Override
             public Customer set(Customer customer) {
+                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                String userName = authentication.getName();
+                SysUser sysUser = sysUserMapper.getByUserName(userName);
                 customer
                         .setCreateTime(new Date())
-//                .setCreater(sysUser.getUserId())
-//                .setOwner(null)
-                        .setUpdateTime(new Date());
-//                .setUpdateMember(sysUser.getUserId());
+                        .setCreater(sysUser.getUserId())
+                        .setOwner(null)
+                        .setUpdateTime(new Date())
+                        .setUpdateMember(sysUser.getUserId());
                 return customer;
             }
-    
+            
             @Override
             public ResultCode verification(Customer customer) {
-                return ResultCode.INSERT_ERROR;
+                return ResultCode.SUCCESS;
             }
         });
     }

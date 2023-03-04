@@ -1,12 +1,16 @@
-package com.fate1412.crmSystem.customTable.pojo;
+package com.fate1412.crmSystem.customTable.dto;
 
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
-import java.io.Serializable;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.fate1412.crmSystem.customTable.pojo.Option;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>
@@ -18,10 +22,7 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@TableName("table_column_dict")
-public class TableColumnDict implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class TableColumn {
 
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
@@ -36,7 +37,7 @@ public class TableColumnDict implements Serializable {
     private String realColumnName;
 
     @TableField("column_type")
-    private Integer columnType;
+    private List<Option> columnType = new ArrayList<>();
 
     @TableField("fixed")
     private Boolean fixed;

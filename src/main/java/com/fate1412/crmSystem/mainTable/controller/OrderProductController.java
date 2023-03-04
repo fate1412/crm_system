@@ -43,7 +43,7 @@ public class OrderProductController {
         thisPage = thisPage == null ? 1 : thisPage;
         pageSize = pageSize == null ? 20 : pageSize;
         MyPage page = orderProductService.listByPage(thisPage, pageSize);
-        TableResultData tableResultData = TableResultData.createTableResultData(page.getRecords(), OrderProductSelectDTO.class);
+        TableResultData tableResultData = TableResultData.createTableResultData(page.getRecords(), OrderProductSelectDTO.class,thisPage,page.getTotal());
         return ResultTool.success(tableResultData);
     }
     

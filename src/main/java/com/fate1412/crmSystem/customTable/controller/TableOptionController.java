@@ -1,4 +1,4 @@
-package com.fate1412.generator.mybatis.controller;
+package com.fate1412.crmSystem.customTable.controller;
 
 
 import org.springframework.web.bind.annotation.RequestMapping;

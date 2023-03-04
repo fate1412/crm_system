@@ -44,7 +44,7 @@ public class SalesOrderController {
         thisPage = thisPage == null ? 1 : thisPage;
         pageSize = pageSize == null ? 20 : pageSize;
         MyPage page = salesOrderService.listByPage(thisPage, pageSize);
-        TableResultData tableResultData = TableResultData.createTableResultData(page.getRecords(), SalesOrderSelectDTO.class);
+        TableResultData tableResultData = TableResultData.createTableResultData(page.getRecords(), SalesOrderSelectDTO.class,thisPage,page.getTotal());
         return ResultTool.success(tableResultData);
     }
     

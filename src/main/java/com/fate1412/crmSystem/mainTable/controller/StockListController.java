@@ -41,7 +41,7 @@ public class StockListController {
         thisPage = thisPage == null ? 1 : thisPage;
         pageSize = pageSize == null ? 20 : pageSize;
         MyPage page = stockListService.listByPage(thisPage, pageSize);
-        TableResultData tableResultData = TableResultData.createTableResultData(page.getRecords(), StockListSelectDTO.class);
+        TableResultData tableResultData = TableResultData.createTableResultData(page.getRecords(), StockListSelectDTO.class,thisPage,page.getTotal());
         return ResultTool.success(tableResultData);
     }
     

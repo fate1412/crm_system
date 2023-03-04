@@ -50,7 +50,7 @@ public class TableResultData {
         
     }
     
-    public static <T> TableResultData createTableResultData(List<T> entities, Class<T> entityClass, long thisPage, long total) {
+    public static <T> TableResultData createTableResultData(List<?> entities, Class<T> entityClass, long thisPage, long total) {
         TableResultData tableResultData = createTableResultData(entities, entityClass);
         tableResultData.setThisPage(thisPage);
         tableResultData.setTotal(total);

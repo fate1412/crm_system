@@ -1,10 +1,16 @@
 package com.fate1412.crmSystem.customTable.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.fate1412.crmSystem.customTable.pojo.Option;
 import com.fate1412.crmSystem.customTable.pojo.TableOption;
 import com.fate1412.crmSystem.customTable.mapper.TableOptionMapper;
 import com.fate1412.crmSystem.customTable.service.ITableOptionService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fate1412.crmSystem.utils.MyCollections;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * <p>
@@ -16,5 +22,16 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class TableOptionServiceImpl extends ServiceImpl<TableOptionMapper, TableOption> implements ITableOptionService {
-
+    @Autowired
+    private TableOptionMapper mapper;
+    
+    @Override
+    public List<Option> getOptions(String tableName, String columnName) {
+        QueryWrapper<TableOption> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda()
+                .eq(TableOption::getTableName,tableName)
+                .eq(TableOption::getColumnName,columnName);
+        List<TableOption> tableOptions = mapper.selectList(queryWrapper);
+        return MyCollections.copyListProperties(tableOptions,Option::new);
+    }
 }

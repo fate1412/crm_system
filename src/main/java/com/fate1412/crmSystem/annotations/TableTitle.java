@@ -13,14 +13,16 @@ public @interface TableTitle {
     FormType formType() default FormType.Input;
     
     enum FormType {
-        Input("input"),
-        Select("select"),
-        Date("date"),
-        DateTime("dateTime");
+        Input("Input",0),
+        Select("Select",1),
+        Date("Date",2),
+        DateTime("DateTime",3);
         private String type;
+        private Integer index;
     
-        FormType(String type) {
+        FormType(String type,Integer index) {
             this.type = type;
+            this.index = index;
         }
     
         public String getType() {
@@ -29,6 +31,14 @@ public @interface TableTitle {
     
         public void setType(String type) {
             this.type = type;
+        }
+    
+        public Integer getIndex() {
+            return index;
+        }
+    
+        public void setIndex(Integer index) {
+            this.index = index;
         }
     }
     

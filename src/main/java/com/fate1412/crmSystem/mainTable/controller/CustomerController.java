@@ -37,7 +37,7 @@ public class CustomerController {
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/page/select")
     public JsonResult<Object> selectByPage(@Param("thisPage") Long thisPage, @Param("pageSize") Long pageSize) {
         thisPage = thisPage == null ? 1 : thisPage;
@@ -45,7 +45,7 @@ public class CustomerController {
 //        IPage<CustomerSelectDTO> page = customerService.listByPage(thisPage, pageSize);
         MyPage page = customerService.listByPage(thisPage, pageSize);
         List<?> records = page.getRecords();
-        TableResultData tableResultData = TableResultData.createTableResultData(records, CustomerSelectDTO.class);
+        TableResultData tableResultData = TableResultData.createTableResultData(records, CustomerSelectDTO.class,thisPage,page.getTotal());
         return ResultTool.success(tableResultData);
     }
     

@@ -44,7 +44,7 @@ public class ProductController {
         thisPage = thisPage == null ? 1 : thisPage;
         pageSize = pageSize == null ? 20 : pageSize;
         MyPage page = productService.listByPage(thisPage, pageSize);
-        TableResultData tableResultData = TableResultData.createTableResultData(page.getRecords(), ProductSelectDTO.class);
+        TableResultData tableResultData = TableResultData.createTableResultData(page.getRecords(), ProductSelectDTO.class,thisPage,page.getTotal());
         return ResultTool.success(tableResultData);
     }
     

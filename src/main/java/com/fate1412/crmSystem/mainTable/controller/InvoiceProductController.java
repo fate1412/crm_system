@@ -40,7 +40,7 @@ public class InvoiceProductController {
         thisPage = thisPage == null ? 1 : thisPage;
         pageSize = pageSize == null ? 20 : pageSize;
         MyPage page = invoiceProductService.listByPage(thisPage, pageSize);
-        TableResultData tableResultData = TableResultData.createTableResultData(page.getRecords(), InvoiceProductSelectDTO.class);
+        TableResultData tableResultData = TableResultData.createTableResultData(page.getRecords(), InvoiceProductSelectDTO.class,thisPage,page.getTotal());
         return ResultTool.success(tableResultData);
     }
     
