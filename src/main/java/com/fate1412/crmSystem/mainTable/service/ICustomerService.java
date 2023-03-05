@@ -9,6 +9,7 @@ import com.fate1412.crmSystem.mainTable.pojo.Customer;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fate1412.crmSystem.utils.JsonResult;
 import com.fate1412.crmSystem.utils.ResultCode;
+import com.fate1412.crmSystem.utils.TableResultData;
 
 import java.util.List;
 
@@ -25,5 +26,7 @@ public interface ICustomerService extends IService<Customer>, MyBaseService<Cust
     JsonResult<?> updateById(CustomerUpdateDTO customerUpdateDTO);
     
     JsonResult<?> add(CustomerSelectDTO customerSelectDTO);
+    
+    TableResultData getColumns();
     
 }

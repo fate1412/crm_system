@@ -35,7 +35,7 @@ public class TableOption implements Serializable {
     @TableField("option_key")
     private Integer optionKey;
 
-    @TableField("option")
+    @TableField("option_")
     private String option;
 
 

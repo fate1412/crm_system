@@ -2,13 +2,16 @@ package com.fate1412.crmSystem.utils;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.fate1412.crmSystem.annotations.TableTitle;
+import com.fate1412.crmSystem.annotations.TableTitle.FormType;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@NoArgsConstructor
 public class TableResultData {
     private List<TableColumn> tableColumns;
     private List<?> tableDataList;

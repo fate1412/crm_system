@@ -1,9 +1,9 @@
 package com.fate1412.crmSystem.mainTable.service.impl;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.fate1412.crmSystem.base.MyBaseService;
+import com.fate1412.crmSystem.annotations.TableTitle.FormType;
+import com.fate1412.crmSystem.customTable.dto.OptionDTO;
+import com.fate1412.crmSystem.customTable.service.ITableOptionService;
 import com.fate1412.crmSystem.mainTable.dto.CustomerSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.CustomerUpdateDTO;
 import com.fate1412.crmSystem.mainTable.pojo.Customer;
@@ -12,11 +12,7 @@ import com.fate1412.crmSystem.security.mapper.SysUserMapper;
 import com.fate1412.crmSystem.security.pojo.SysUser;
 import com.fate1412.crmSystem.mainTable.service.ICustomerService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.fate1412.crmSystem.utils.IdToName;
-import com.fate1412.crmSystem.utils.JsonResult;
-import com.fate1412.crmSystem.utils.MyCollections;
-import com.fate1412.crmSystem.utils.ResultCode;
-import org.springframework.beans.BeanUtils;
+import com.fate1412.crmSystem.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -42,6 +38,9 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     
     @Autowired
     private SysUserMapper sysUserMapper;
+    
+    @Autowired
+    private ITableOptionService tableOptionService;
     
     @Override
     public List<?> getDTOList(List<Customer> customerList) {
@@ -116,5 +115,20 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                 return ResultCode.SUCCESS;
             }
         });
+    }
+    
+    @Override
+    public TableResultData getColumns() {
+        List<TableColumn> tableColumnList = TableResultData.tableColumnList(CustomerSelectDTO.class);
+        tableColumnList.forEach(tableColumn -> {
+            if (FormType.Select.equals(tableColumn.getFormType())) {
+                List<OptionDTO> optionDTOS = tableOptionService.getOptions("customer", tableColumn.getProp());
+                tableColumn.setOptions(optionDTOS);
+            }
+        });
+        TableResultData tableResultData = new TableResultData();
+        tableResultData.setTableColumns(tableColumnList);
+        tableResultData.setTableDataList(MyCollections.toList(new CustomerSelectDTO()));
+        return tableResultData;
     }
 }

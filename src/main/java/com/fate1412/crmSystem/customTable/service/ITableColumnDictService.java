@@ -1,6 +1,6 @@
 package com.fate1412.crmSystem.customTable.service;
 
-import com.fate1412.crmSystem.customTable.dto.TableColumn;
+import com.fate1412.crmSystem.customTable.dto.TableColumnDTO;
 import com.fate1412.crmSystem.customTable.pojo.TableColumnDict;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -18,5 +18,5 @@ public interface ITableColumnDictService extends IService<TableColumnDict> {
     
     List<TableColumnDict> listByTableName(String tableName);
 
-    List<TableColumn> DTOListByTableName(String tableName);
+    List<TableColumnDTO> DTOListByTableName(String tableName);
 }

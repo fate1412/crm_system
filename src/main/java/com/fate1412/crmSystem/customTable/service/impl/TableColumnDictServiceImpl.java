@@ -1,7 +1,7 @@
 package com.fate1412.crmSystem.customTable.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.fate1412.crmSystem.customTable.dto.TableColumn;
+import com.fate1412.crmSystem.customTable.dto.TableColumnDTO;
 import com.fate1412.crmSystem.customTable.mapper.TableDictMapper;
 import com.fate1412.crmSystem.customTable.pojo.TableColumnDict;
 import com.fate1412.crmSystem.customTable.mapper.TableColumnDictMapper;
@@ -35,9 +35,9 @@ public class TableColumnDictServiceImpl extends ServiceImpl<TableColumnDictMappe
     }
     
     @Override
-    public List<TableColumn> DTOListByTableName(String tableName) {
+    public List<TableColumnDTO> DTOListByTableName(String tableName) {
         QueryWrapper<TableColumnDict> queryWrapper = new QueryWrapper<>();
         List<TableColumnDict> tableColumnDictList = tableColumnDictMapper.selectList(queryWrapper);
-        return MyCollections.copyListProperties(tableColumnDictList, TableColumn::new);
+        return MyCollections.copyListProperties(tableColumnDictList, TableColumnDTO::new);
     }
 }

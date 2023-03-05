@@ -1,4 +1,4 @@
-package com.fate1412.crmSystem.customTable.pojo;
+package com.fate1412.crmSystem.customTable.dto;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -19,7 +19,7 @@ import java.io.Serializable;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class Option implements Serializable {
+public class OptionDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

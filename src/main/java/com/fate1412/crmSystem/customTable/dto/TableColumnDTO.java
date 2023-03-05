@@ -3,12 +3,9 @@ package com.fate1412.crmSystem.customTable.dto;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.fate1412.crmSystem.customTable.pojo.Option;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +19,7 @@ import java.util.List;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class TableColumn {
+public class TableColumnDTO {
 
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
@@ -37,7 +34,7 @@ public class TableColumn {
     private String realColumnName;
 
     @TableField("column_type")
-    private List<Option> columnType = new ArrayList<>();
+    private List<OptionDTO> options = new ArrayList<>();
 
     @TableField("fixed")
     private Boolean fixed;

@@ -1,7 +1,7 @@
 package com.fate1412.crmSystem.customTable.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.fate1412.crmSystem.customTable.pojo.Option;
+import com.fate1412.crmSystem.customTable.dto.OptionDTO;
 import com.fate1412.crmSystem.customTable.pojo.TableOption;
 import com.fate1412.crmSystem.customTable.mapper.TableOptionMapper;
 import com.fate1412.crmSystem.customTable.service.ITableOptionService;
@@ -26,12 +26,12 @@ public class TableOptionServiceImpl extends ServiceImpl<TableOptionMapper, Table
     private TableOptionMapper mapper;
     
     @Override
-    public List<Option> getOptions(String tableName, String columnName) {
+    public List<OptionDTO> getOptions(String tableName, String columnName) {
         QueryWrapper<TableOption> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda()
                 .eq(TableOption::getTableName,tableName)
                 .eq(TableOption::getColumnName,columnName);
         List<TableOption> tableOptions = mapper.selectList(queryWrapper);
-        return MyCollections.copyListProperties(tableOptions,Option::new);
+        return MyCollections.copyListProperties(tableOptions, OptionDTO::new);
     }
 }

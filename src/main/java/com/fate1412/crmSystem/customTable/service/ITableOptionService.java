@@ -1,6 +1,6 @@
 package com.fate1412.crmSystem.customTable.service;
 
-import com.fate1412.crmSystem.customTable.pojo.Option;
+import com.fate1412.crmSystem.customTable.dto.OptionDTO;
 import com.fate1412.crmSystem.customTable.pojo.TableOption;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -16,5 +16,5 @@ import java.util.List;
  */
 public interface ITableOptionService extends IService<TableOption> {
 
-    List<Option> getOptions(String tableName,String columnName);
+    List<OptionDTO> getOptions(String tableName, String columnName);
 }

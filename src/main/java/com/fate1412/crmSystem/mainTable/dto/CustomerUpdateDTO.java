@@ -41,7 +41,7 @@ public class CustomerUpdateDTO implements Serializable {
      */
     @TableField("customer_type")
     @TableTitle(value = "客户类型",formType = FormType.Select)
-    private String customerType;
+    private Integer customerType;
 
     /**
      * 手机号

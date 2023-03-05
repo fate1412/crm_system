@@ -38,7 +38,7 @@ public class Customer implements Serializable {
      * 客户类型
      */
     @TableField("customer_type")
-    private String customerType;
+    private Integer customerType;
 
     /**
      * 手机号

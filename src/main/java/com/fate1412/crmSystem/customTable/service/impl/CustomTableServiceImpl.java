@@ -1,9 +1,9 @@
 package com.fate1412.crmSystem.customTable.service.impl;
 
 import com.fate1412.crmSystem.annotations.TableTitle.FormType;
-import com.fate1412.crmSystem.customTable.dto.TableColumn;
+import com.fate1412.crmSystem.customTable.dto.TableColumnDTO;
 import com.fate1412.crmSystem.customTable.dto.TableDictDTO;
-import com.fate1412.crmSystem.customTable.pojo.Option;
+import com.fate1412.crmSystem.customTable.dto.OptionDTO;
 import com.fate1412.crmSystem.customTable.pojo.TableColumnDict;
 import com.fate1412.crmSystem.customTable.pojo.TableDict;
 import com.fate1412.crmSystem.customTable.service.ICustomTableService;
@@ -36,17 +36,17 @@ public class CustomTableServiceImpl implements ICustomTableService {
     }
     
     @Override
-    public List<TableColumn> getTableColumns(String tableName) {
+    public List<TableColumnDTO> getTableColumns(String tableName) {
         List<TableColumnDict> tableColumnDictList = tableColumnDictService.listByTableName(tableName);
         log.info("-----------------------");
-        List<TableColumn> dtoList = new ArrayList<>();
+        List<TableColumnDTO> dtoList = new ArrayList<>();
         tableColumnDictList.forEach(tableColumnDict -> {
-            TableColumn dto = new TableColumn();
+            TableColumnDTO dto = new TableColumnDTO();
             BeanUtils.copyProperties(tableColumnDict,dto);
             //Select类型
             if (tableColumnDict.getColumnType().equals(FormType.Select.getIndex())) {
-                List<Option> options = tableOptionService.getOptions(tableName, tableColumnDict.getColumnName());
-                dto.setColumnType(options);
+                List<OptionDTO> optionDTOS = tableOptionService.getOptions(tableName, tableColumnDict.getColumnName());
+                dto.setOptions(optionDTOS);
             }
             dtoList.add(dto);
         });
