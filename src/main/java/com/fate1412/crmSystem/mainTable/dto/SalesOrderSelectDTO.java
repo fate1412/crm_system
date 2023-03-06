@@ -72,17 +72,17 @@ public class SalesOrderSelectDTO implements Serializable {
     /**
      * 创建人
      */
-    @TableTitle(value = "创建人",link = true,disabled = true)
     private IdToName createrR;
     
+    @TableTitle(value = "创建人",link = true,disabled = true)
     private Long creater;
 
     /**
      * 修改人
      */
-    @TableTitle(value = "修改人",link = true,disabled = true)
     private IdToName updaterR;
     
+    @TableTitle(value = "修改人",link = true,disabled = true)
     private Long updater;
 
 

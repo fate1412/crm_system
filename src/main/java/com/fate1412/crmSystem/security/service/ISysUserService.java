@@ -52,5 +52,7 @@ public interface ISysUserService extends IService<SysUser>, MyBaseService<SysUse
     JsonResult<?> add(SysUserUpdateDTO sysUserUpdateDTO);
     
     TableResultData getColumns();
+    
+    SysUser thisUser();
 
 }

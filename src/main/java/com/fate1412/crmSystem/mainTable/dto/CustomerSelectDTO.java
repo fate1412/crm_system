@@ -79,7 +79,7 @@ public class CustomerSelectDTO implements Serializable {
      * 更新者
      */
     @TableField("update_member")
-    @TableTitle(value = "更新者", link = true, disabled = true, formType = FormType.Select)
+    @TableTitle(value = "修改人", link = true, disabled = true, formType = FormType.Select)
     private Long updateMember;
     
     private IdToName updateMemberR = new IdToName();

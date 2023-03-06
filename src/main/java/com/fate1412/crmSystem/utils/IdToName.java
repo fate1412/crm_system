@@ -10,13 +10,13 @@ import java.util.function.Function;
 @AllArgsConstructor
 @NoArgsConstructor
 public class IdToName {
-    private Long value;
-    private String title;
+    private Long id;
+    private String name;
     private String tableName;
     
-    public IdToName(Long value, String title) {
-        this.value = value;
-        this.title = title;
+    public IdToName(Long id, String name) {
+        this.id = id;
+        this.name = name;
     }
     
     public static <T> IdToName create(T t, Function<? super T, ? extends Long> idMapper, Function<? super T, ? extends String> nameMapper) {

@@ -1,6 +1,8 @@
 package com.fate1412.crmSystem.mainTable.service.impl;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.fate1412.crmSystem.customTable.service.ITableOptionService;
+import com.fate1412.crmSystem.mainTable.constant.TableNames;
 import com.fate1412.crmSystem.mainTable.dto.InvoiceSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.InvoiceUpdateDTO;
 import com.fate1412.crmSystem.mainTable.mapper.CustomerMapper;
@@ -12,10 +14,8 @@ import com.fate1412.crmSystem.mainTable.service.IInvoiceService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fate1412.crmSystem.security.mapper.SysUserMapper;
 import com.fate1412.crmSystem.security.pojo.SysUser;
-import com.fate1412.crmSystem.utils.IdToName;
-import com.fate1412.crmSystem.utils.JsonResult;
-import com.fate1412.crmSystem.utils.MyCollections;
-import com.fate1412.crmSystem.utils.ResultCode;
+import com.fate1412.crmSystem.security.service.ISysUserService;
+import com.fate1412.crmSystem.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,23 +37,27 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
     @Autowired
     private InvoiceMapper invoiceMapper;
     @Autowired
-    private SysUserMapper sysUserMapper;
+    private ISysUserService sysUserService;
     @Autowired
     private SalesOrderMapper salesOrderMapper;
     @Autowired
     private CustomerMapper customerMapper;
+    
+    @Autowired
+    private ITableOptionService tableOptionService;
     
     @Override
     public JsonResult<?> updateById(InvoiceUpdateDTO invoiceUpdateDTO) {
         return updateByDTO(invoiceUpdateDTO, new MyEntity<Invoice>(new Invoice()) {
             @Override
             public Invoice set(Invoice invoice) {
+                SysUser sysUser = sysUserService.thisUser();
                 invoice
-                        .setUpdateTime(new Date());
-//                .setUpdateMember(sysUser.getUserId());
+                        .setUpdateTime(new Date())
+                        .setUpdater(sysUser.getUserId());
                 return invoice;
             }
-    
+            
             @Override
             public ResultCode verification(Invoice invoice) {
                 return ResultCode.SUCCESS;
@@ -66,15 +70,15 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
         return add(invoiceSelectDTO, new MyEntity<Invoice>(new Invoice()) {
             @Override
             public Invoice set(Invoice invoice) {
+                SysUser sysUser = sysUserService.thisUser();
                 invoice
                         .setCreateTime(new Date())
-//                .setCreater(sysUser.getUserId())
-//                .setOwner(null)
-                        .setUpdateTime(new Date());
-//                .setUpdateMember(sysUser.getUserId());
+                        .setCreater(sysUser.getUserId())
+                        .setUpdateTime(new Date())
+                        .setUpdater(sysUser.getUserId());
                 return invoice;
             }
-    
+            
             @Override
             public ResultCode verification(Invoice invoice) {
                 return ResultCode.SUCCESS;
@@ -91,28 +95,28 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
         List<Long> createIds = MyCollections.objects2List(invoiceList, Invoice::getCreater);
         List<Long> updateMemberIds = MyCollections.objects2List(invoiceList, Invoice::getUpdater);
         List<Long> userIdList = MyCollections.addList(true, createIds, updateMemberIds);
-    
-        List<SysUser> sysUserList = sysUserMapper.selectBatchIds(userIdList);
+        
+        List<SysUser> sysUserList = sysUserService.listByIds(userIdList);
         Map<Long, String> userMap = MyCollections.list2MapL(sysUserList, SysUser::getUserId, SysUser::getRealName);
-    
+        
         //客户
         List<Long> salesOrderIdList = MyCollections.objects2List(invoiceList, Invoice::getCustomerId);
-    
+        
         List<Customer> customerList = customerMapper.selectBatchIds(salesOrderIdList);
         Map<Long, String> customerMap = MyCollections.list2MapL(customerList, Customer::getId, Customer::getName);
-    
-    
+        
+        
         List<InvoiceSelectDTO> invoiceSelectDTOList = MyCollections.copyListProperties(invoiceList, InvoiceSelectDTO::new);
         invoiceSelectDTOList.forEach(dto -> {
             Long createId = dto.getCreater();
             Long updateMemberId = dto.getUpdater();
             Long salesOrderId = dto.getSalesOrderId();
             Long customerId = dto.getCustomerId();
-            dto.setCreaterR(new IdToName(createId,userMap.get(createId),"sysUser"));
-            dto.setUpdaterR(new IdToName(updateMemberId,userMap.get(updateMemberId),"sysUser"));
-            dto.setSalesOrderIdR(new IdToName(salesOrderId, salesOrderId.toString(),"salesOrder"));
-            dto.setCustomerR(new IdToName(customerId,customerMap.get(customerId),"customer"));
-        
+            dto.setCreaterR(new IdToName(createId, userMap.get(createId), TableNames.sysUser));
+            dto.setUpdaterR(new IdToName(updateMemberId, userMap.get(updateMemberId), TableNames.sysUser));
+            dto.setSalesOrderIdR(new IdToName(salesOrderId, salesOrderId.toString(), TableNames.salesOrder));
+            dto.setCustomerR(new IdToName(customerId, customerMap.get(customerId), TableNames.customer));
+            
         });
         return invoiceSelectDTOList;
     }
@@ -120,5 +124,10 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
     @Override
     public BaseMapper<Invoice> mapper() {
         return invoiceMapper;
+    }
+    
+    @Override
+    public TableResultData getColumns() {
+        return getColumns(TableNames.invoice, InvoiceSelectDTO.class, tableOptionService);
     }
 }

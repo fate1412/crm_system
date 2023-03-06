@@ -30,17 +30,20 @@ public class InvoiceProductController {
     @PreAuthorize("permitAll()")
     @GetMapping("/getColumns")
     public JsonResult<Object> getColumns() {
-        List<TableColumn> tableColumns = TableResultData.tableColumnList(InvoiceProductSelectDTO.class);
-        return ResultTool.success(tableColumns);
+        TableResultData tableResultData = invoiceProductService.getColumns();
+        return ResultTool.success(tableResultData);
     }
     
     @PreAuthorize("permitAll()")
     @GetMapping("/page/select")
     public JsonResult<Object> selectByPage(@Param("thisPage") Long thisPage, @Param("pageSize") Long pageSize) {
         thisPage = thisPage == null ? 1 : thisPage;
-        pageSize = pageSize == null ? 20 : pageSize;
+        pageSize = pageSize == null ? 10 : pageSize;
         MyPage page = invoiceProductService.listByPage(thisPage, pageSize);
-        TableResultData tableResultData = TableResultData.createTableResultData(page.getRecords(), InvoiceProductSelectDTO.class,thisPage,page.getTotal());
+        TableResultData tableResultData = invoiceProductService.getColumns();
+        tableResultData.setTableDataList(page.getRecords());
+        tableResultData.setThisPage(thisPage);
+        tableResultData.setTotal(page.getTotal());
         return ResultTool.success(tableResultData);
     }
     

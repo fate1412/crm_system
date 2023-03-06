@@ -93,18 +93,18 @@ public class StockListSelectDTO implements Serializable {
      * 创建人
      */
     @TableField("creater")
+    @TableTitle(value = "创建人",link = true,disabled = true)
     private Long creater;
     
-    @TableTitle(value = "创建人",link = true,disabled = true)
     private IdToName createrR;
 
     /**
      * 修改人
      */
     @TableField("updater")
+    @TableTitle(value = "修改人",link = true,disabled = true)
     private Long updater;
     
-    @TableTitle(value = "修改人",link = true,disabled = true)
     private IdToName updaterR;
 
 

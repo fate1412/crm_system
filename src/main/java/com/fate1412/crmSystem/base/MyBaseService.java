@@ -71,6 +71,8 @@ public interface MyBaseService<T> {
         return tableResultData;
     }
     
+    TableResultData getColumns();
+    
     List<?> getDTOList(List<T> tList);
     
     BaseMapper<T> mapper();

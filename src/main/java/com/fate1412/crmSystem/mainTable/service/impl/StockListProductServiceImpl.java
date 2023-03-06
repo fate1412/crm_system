@@ -1,6 +1,8 @@
 package com.fate1412.crmSystem.mainTable.service.impl;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.fate1412.crmSystem.customTable.service.ITableOptionService;
+import com.fate1412.crmSystem.mainTable.constant.TableNames;
 import com.fate1412.crmSystem.mainTable.dto.*;
 import com.fate1412.crmSystem.mainTable.mapper.InvoiceMapper;
 import com.fate1412.crmSystem.mainTable.mapper.ProductMapper;
@@ -14,6 +16,8 @@ import com.fate1412.crmSystem.security.pojo.SysUser;
 import com.fate1412.crmSystem.utils.IdToName;
 import com.fate1412.crmSystem.utils.JsonResult;
 import com.fate1412.crmSystem.utils.MyCollections;
+import com.fate1412.crmSystem.utils.TableResultData;
+import javafx.scene.control.Tab;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,6 +44,8 @@ public class StockListProductServiceImpl extends ServiceImpl<StockListProductMap
     private StockListMapper stockListMapper;
     @Autowired
     private ProductMapper productMapper;
+    @Autowired
+    private ITableOptionService tableOptionService;
     
     @Override
     public List<?> getDTOList(List<StockListProduct> stockListProductList) {
@@ -66,10 +72,10 @@ public class StockListProductServiceImpl extends ServiceImpl<StockListProductMap
             Long updater = dto.getUpdater();
             Long stockListId = dto.getStockListId();
             Long productId = dto.getProductId();
-            dto.setCreaterR(new IdToName(createId,userMap.get(createId),"sysUser"));
-            dto.setUpdaterR(new IdToName(updater,userMap.get(updater),"sysUser"));
-            dto.setStockListR(new IdToName(stockListId,stockListId.toString(),"stockList"));
-            dto.setProductR(new IdToName(productId,productMap.get(productId),"product"));
+            dto.setCreaterR(new IdToName(createId,userMap.get(createId), TableNames.sysUser));
+            dto.setUpdaterR(new IdToName(updater,userMap.get(updater),TableNames.sysUser));
+            dto.setStockListR(new IdToName(stockListId,stockListId.toString(),TableNames.stockList));
+            dto.setProductR(new IdToName(productId,productMap.get(productId),TableNames.product));
         });
         return stockListProductSelectDTOList;
     }
@@ -101,5 +107,10 @@ public class StockListProductServiceImpl extends ServiceImpl<StockListProductMap
                 return stockListProduct;
             }
         });
+    }
+    
+    @Override
+    public TableResultData getColumns() {
+        return getColumns(TableNames.stockListProduct,StockListProductSelectDTO.class,tableOptionService);
     }
 }

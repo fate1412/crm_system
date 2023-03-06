@@ -34,8 +34,8 @@ public class ProductController {
     @PreAuthorize("permitAll()")
     @GetMapping("/getColumns")
     public JsonResult<Object> getColumns() {
-        List<TableColumn> tableColumns = TableResultData.tableColumnList(ProductSelectDTO.class);
-        return ResultTool.success(tableColumns);
+        TableResultData tableResultData = productService.getColumns();
+        return ResultTool.success(tableResultData);
     }
     
     @PreAuthorize("permitAll()")
@@ -44,7 +44,10 @@ public class ProductController {
         thisPage = thisPage == null ? 1 : thisPage;
         pageSize = pageSize == null ? 20 : pageSize;
         MyPage page = productService.listByPage(thisPage, pageSize);
-        TableResultData tableResultData = TableResultData.createTableResultData(page.getRecords(), ProductSelectDTO.class,thisPage,page.getTotal());
+        TableResultData tableResultData = productService.getColumns();
+        tableResultData.setTableDataList(page.getRecords());
+        tableResultData.setThisPage(thisPage);
+        tableResultData.setTotal(page.getTotal());
         return ResultTool.success(tableResultData);
     }
     

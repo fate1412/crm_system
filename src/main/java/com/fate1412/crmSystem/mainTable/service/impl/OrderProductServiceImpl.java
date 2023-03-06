@@ -1,6 +1,8 @@
 package com.fate1412.crmSystem.mainTable.service.impl;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.fate1412.crmSystem.customTable.service.ITableOptionService;
+import com.fate1412.crmSystem.mainTable.constant.TableNames;
 import com.fate1412.crmSystem.mainTable.dto.OrderProductSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.OrderProductUpdateDTO;
 import com.fate1412.crmSystem.mainTable.mapper.*;
@@ -13,6 +15,7 @@ import com.fate1412.crmSystem.security.pojo.SysUser;
 import com.fate1412.crmSystem.utils.IdToName;
 import com.fate1412.crmSystem.utils.JsonResult;
 import com.fate1412.crmSystem.utils.MyCollections;
+import com.fate1412.crmSystem.utils.TableResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,6 +42,8 @@ public class OrderProductServiceImpl extends ServiceImpl<OrderProductMapper, Ord
     private SalesOrderMapper salesOrderMapper;
     @Autowired
     private OrderProductMapper orderProductMapper;
+    @Autowired
+    private ITableOptionService tableOptionService;
     
     @Override
     public JsonResult<?> updateById(OrderProductUpdateDTO orderProductUpdateDTO) {
@@ -93,8 +98,8 @@ public class OrderProductServiceImpl extends ServiceImpl<OrderProductMapper, Ord
             Long updateMemberId = dto.getUpdater();
             Long productId = dto.getProductId();
             Long salesOrderId = dto.getSalesOrderId();
-            dto.setCreaterR(new IdToName(createId,userMap.get(createId),"sysUser"));
-            dto.setUpdaterR(new IdToName(updateMemberId,userMap.get(updateMemberId),"sysUser"));
+            dto.setCreaterR(new IdToName(createId,userMap.get(createId), TableNames.sysUser));
+            dto.setUpdaterR(new IdToName(updateMemberId,userMap.get(updateMemberId),TableNames.sysUser));
             dto.setSalesOrderR(new IdToName(salesOrderId, salesOrderId.toString(),"salesOrder"));
             dto.setProductR(new IdToName(productId,productMap.get(productId),"product"));
         
@@ -105,5 +110,10 @@ public class OrderProductServiceImpl extends ServiceImpl<OrderProductMapper, Ord
     @Override
     public BaseMapper<OrderProduct> mapper() {
         return orderProductMapper;
+    }
+    
+    @Override
+    public TableResultData getColumns() {
+        return getColumns(TableNames.orderProduct,OrderProductSelectDTO.class,tableOptionService);
     }
 }

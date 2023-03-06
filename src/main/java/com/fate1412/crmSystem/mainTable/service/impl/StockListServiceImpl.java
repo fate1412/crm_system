@@ -1,6 +1,8 @@
 package com.fate1412.crmSystem.mainTable.service.impl;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.fate1412.crmSystem.customTable.service.ITableOptionService;
+import com.fate1412.crmSystem.mainTable.constant.TableNames;
 import com.fate1412.crmSystem.mainTable.dto.ProductSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.SalesOrderSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.StockListSelectDTO;
@@ -16,6 +18,7 @@ import com.fate1412.crmSystem.security.pojo.SysUser;
 import com.fate1412.crmSystem.utils.IdToName;
 import com.fate1412.crmSystem.utils.JsonResult;
 import com.fate1412.crmSystem.utils.MyCollections;
+import com.fate1412.crmSystem.utils.TableResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +41,8 @@ public class StockListServiceImpl extends ServiceImpl<StockListMapper, StockList
     private StockListMapper stockListMapper;
     @Autowired
     private SysUserMapper sysUserMapper;
+    @Autowired
+    private ITableOptionService tableOptionService;
     
     
     @Override
@@ -60,9 +65,9 @@ public class StockListServiceImpl extends ServiceImpl<StockListMapper, StockList
             Long createId = dto.getCreater();
             Long updater = dto.getUpdater();
             Long owner = dto.getOwner();
-            dto.setCreaterR(new IdToName(createId,userMap.get(createId),"sysUser"));
-            dto.setUpdaterR(new IdToName(updater,userMap.get(updater),"sysUser"));
-            dto.setOwnerR(new IdToName(owner,userMap.get(owner),"sysUser"));
+            dto.setCreaterR(new IdToName(createId,userMap.get(createId), TableNames.sysUser));
+            dto.setUpdaterR(new IdToName(updater,userMap.get(updater),TableNames.sysUser));
+            dto.setOwnerR(new IdToName(owner,userMap.get(owner),TableNames.sysUser));
         });
         return stockListSelectDTOList;
     }
@@ -94,5 +99,10 @@ public class StockListServiceImpl extends ServiceImpl<StockListMapper, StockList
                 return stockList;
             }
         });
+    }
+    
+    @Override
+    public TableResultData getColumns() {
+        return getColumns(TableNames.stockList,StockListSelectDTO.class,tableOptionService);
     }
 }

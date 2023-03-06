@@ -27,6 +27,4 @@ public interface ICustomerService extends IService<Customer>, MyBaseService<Cust
     
     JsonResult<?> add(CustomerUpdateDTO customerUpdateDTO);
     
-    TableResultData getColumns();
-    
 }

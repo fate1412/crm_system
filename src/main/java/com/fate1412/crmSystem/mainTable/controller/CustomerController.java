@@ -40,7 +40,7 @@ public class CustomerController {
     @GetMapping("/page/select")
     public JsonResult<Object> selectByPage(@Param("thisPage") Long thisPage, @Param("pageSize") Long pageSize) {
         thisPage = thisPage == null ? 1 : thisPage;
-        pageSize = pageSize == null ? 20 : pageSize;
+        pageSize = pageSize == null ? 10 : pageSize;
 //        IPage<CustomerSelectDTO> page = customerService.listByPage(thisPage, pageSize);
         MyPage page = customerService.listByPage(thisPage, pageSize);
         List<?> records = page.getRecords();

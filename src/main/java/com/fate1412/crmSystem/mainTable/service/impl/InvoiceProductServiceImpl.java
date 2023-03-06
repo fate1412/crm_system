@@ -1,6 +1,8 @@
 package com.fate1412.crmSystem.mainTable.service.impl;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.fate1412.crmSystem.customTable.service.ITableOptionService;
+import com.fate1412.crmSystem.mainTable.constant.TableNames;
 import com.fate1412.crmSystem.mainTable.dto.InvoiceProductSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.InvoiceProductUpdateDTO;
 import com.fate1412.crmSystem.mainTable.mapper.InvoiceMapper;
@@ -12,10 +14,7 @@ import com.fate1412.crmSystem.mainTable.service.IInvoiceProductService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fate1412.crmSystem.security.mapper.SysUserMapper;
 import com.fate1412.crmSystem.security.pojo.SysUser;
-import com.fate1412.crmSystem.utils.IdToName;
-import com.fate1412.crmSystem.utils.JsonResult;
-import com.fate1412.crmSystem.utils.MyCollections;
-import com.fate1412.crmSystem.utils.ResultCode;
+import com.fate1412.crmSystem.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +41,8 @@ public class InvoiceProductServiceImpl extends ServiceImpl<InvoiceProductMapper,
     private InvoiceProductMapper invoiceProductMapper;
     @Autowired
     private ProductMapper productMapper;
+    @Autowired
+    private ITableOptionService tableOptionService;
     
     @Override
     public JsonResult<?> updateById(InvoiceProductUpdateDTO invoiceProductUpdateDTO) {
@@ -106,10 +107,10 @@ public class InvoiceProductServiceImpl extends ServiceImpl<InvoiceProductMapper,
             Long updateMemberId = dto.getUpdater();
             Long productId = dto.getProductId();
             Long invoiceId = dto.getInvoiceId();
-            dto.setCreaterR(new IdToName(createId,userMap.get(createId),"sysUser"));
-            dto.setUpdaterR(new IdToName(updateMemberId,userMap.get(updateMemberId),"sysUser"));
-            dto.setInvoiceIdR(new IdToName(invoiceId, invoiceId.toString(),"invoice"));
-            dto.setProductR(new IdToName(productId,productMap.get(productId),"product"));
+            dto.setCreaterR(new IdToName(createId,userMap.get(createId), TableNames.sysUser));
+            dto.setUpdaterR(new IdToName(updateMemberId,userMap.get(updateMemberId),TableNames.sysUser));
+            dto.setInvoiceIdR(new IdToName(invoiceId, invoiceId.toString(),TableNames.invoice));
+            dto.setProductR(new IdToName(productId,productMap.get(productId),TableNames.product));
         
         });
         return invoiceProductSelectDTOList;
@@ -118,5 +119,10 @@ public class InvoiceProductServiceImpl extends ServiceImpl<InvoiceProductMapper,
     @Override
     public BaseMapper<InvoiceProduct> mapper() {
         return invoiceProductMapper;
+    }
+    
+    @Override
+    public TableResultData getColumns() {
+        return getColumns(TableNames.invoiceProduct,InvoiceProductSelectDTO.class,tableOptionService);
     }
 }

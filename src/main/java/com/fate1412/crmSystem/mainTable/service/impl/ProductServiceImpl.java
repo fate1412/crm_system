@@ -1,6 +1,8 @@
 package com.fate1412.crmSystem.mainTable.service.impl;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.fate1412.crmSystem.customTable.service.ITableOptionService;
+import com.fate1412.crmSystem.mainTable.constant.TableNames;
 import com.fate1412.crmSystem.mainTable.dto.OrderProductSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.ProductSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.ProductUpdateDTO;
@@ -11,9 +13,8 @@ import com.fate1412.crmSystem.mainTable.service.IProductService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fate1412.crmSystem.security.mapper.SysUserMapper;
 import com.fate1412.crmSystem.security.pojo.SysUser;
-import com.fate1412.crmSystem.utils.IdToName;
-import com.fate1412.crmSystem.utils.JsonResult;
-import com.fate1412.crmSystem.utils.MyCollections;
+import com.fate1412.crmSystem.security.service.ISysUserService;
+import com.fate1412.crmSystem.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,7 +36,9 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     @Autowired
     private ProductMapper productMapper;
     @Autowired
-    private SysUserMapper sysUserMapper;
+    private ISysUserService sysUserService;
+    @Autowired
+    private ITableOptionService tableOptionService;
     
     @Override
     public List<?> getDTOList(List<Product> productList) {
@@ -47,15 +50,15 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         List<Long> updateMemberIds = MyCollections.objects2List(productList, Product::getUpdater);
         List<Long> userIdList = MyCollections.addList(true, createIds, updateMemberIds);
     
-        List<SysUser> sysUserList = sysUserMapper.selectBatchIds(userIdList);
+        List<SysUser> sysUserList = sysUserService.listByIds(userIdList);
         Map<Long, String> userMap = MyCollections.list2MapL(sysUserList, SysUser::getUserId, SysUser::getRealName);
     
         List<ProductSelectDTO> productSelectDTOList = MyCollections.copyListProperties(productList, ProductSelectDTO::new);
         productSelectDTOList.forEach(dto -> {
             Long createId = dto.getCreater();
             Long updater = dto.getUpdater();
-            dto.setCreaterR(new IdToName(createId,userMap.get(createId),"sysUser"));
-            dto.setUpdaterR(new IdToName(updater,userMap.get(updater),"sysUser"));
+            dto.setCreaterR(new IdToName(createId,userMap.get(createId), TableNames.sysUser));
+            dto.setUpdaterR(new IdToName(updater,userMap.get(updater),TableNames.sysUser));
         });
         return productSelectDTOList;
     }
@@ -70,8 +73,10 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         return updateByDTO(productUpdateDTO, new MyEntity<Product>(new Product()) {
             @Override
             public Product set(Product product) {
+                SysUser sysUser = sysUserService.thisUser();
                 product
-                        .setUpdateTime(new Date());
+                        .setUpdateTime(new Date())
+                        .setUpdater(sysUser.getUserId());
                 return product;
             }
         });
@@ -82,10 +87,19 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         return add(productUpdateDTO, new MyEntity<Product>(new Product()) {
             @Override
             public Product set(Product product) {
+                SysUser sysUser = sysUserService.thisUser();
                 product
-                        .setCreateTime(new Date());
+                        .setCreateTime(new Date())
+                        .setUpdateTime(new Date())
+                        .setUpdater(sysUser.getUserId())
+                        .setCreater(sysUser.getUserId());
                 return product;
             }
         });
+    }
+    
+    @Override
+    public TableResultData getColumns() {
+        return getColumns(TableNames.product,ProductSelectDTO.class,tableOptionService);
     }
 }

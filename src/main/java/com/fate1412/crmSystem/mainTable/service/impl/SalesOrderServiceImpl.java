@@ -1,6 +1,8 @@
 package com.fate1412.crmSystem.mainTable.service.impl;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.fate1412.crmSystem.customTable.service.ITableOptionService;
+import com.fate1412.crmSystem.mainTable.constant.TableNames;
 import com.fate1412.crmSystem.mainTable.dto.ProductSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.SalesOrderSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.SalesOrderUpdateDTO;
@@ -17,6 +19,7 @@ import com.fate1412.crmSystem.security.pojo.SysUser;
 import com.fate1412.crmSystem.utils.IdToName;
 import com.fate1412.crmSystem.utils.JsonResult;
 import com.fate1412.crmSystem.utils.MyCollections;
+import com.fate1412.crmSystem.utils.TableResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +44,8 @@ public class SalesOrderServiceImpl extends ServiceImpl<SalesOrderMapper, SalesOr
     private SysUserMapper sysUserMapper;
     @Autowired
     private CustomerMapper customerMapper;
+    @Autowired
+    private ITableOptionService tableOptionService;
     
     @Override
     public List<?> getDTOList(List<SalesOrder> salesOrderList) {
@@ -67,8 +72,8 @@ public class SalesOrderServiceImpl extends ServiceImpl<SalesOrderMapper, SalesOr
             Long createId = dto.getCreater();
             Long updater = dto.getUpdater();
             Long customerId = dto.getCustomerId();
-            dto.setCreaterR(new IdToName(createId,userMap.get(createId),"sysUser"));
-            dto.setUpdaterR(new IdToName(updater,userMap.get(updater),"sysUser"));
+            dto.setCreaterR(new IdToName(createId,userMap.get(createId), TableNames.sysUser));
+            dto.setUpdaterR(new IdToName(updater,userMap.get(updater),TableNames.sysUser));
             dto.setCustomerR(new IdToName(customerId,customerMap.get(customerId),"customer"));
         });
         return salesOrderSelectDTOList;
@@ -101,5 +106,10 @@ public class SalesOrderServiceImpl extends ServiceImpl<SalesOrderMapper, SalesOr
                 return salesOrder;
             }
         });
+    }
+    
+    @Override
+    public TableResultData getColumns() {
+        return getColumns(TableNames.salesOrder,SalesOrderSelectDTO.class,tableOptionService);
     }
 }

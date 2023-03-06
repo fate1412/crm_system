@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.fate1412.crmSystem.annotations.TableTitle.FormType;
 import com.fate1412.crmSystem.customTable.dto.OptionDTO;
 import com.fate1412.crmSystem.customTable.service.ITableOptionService;
+import com.fate1412.crmSystem.mainTable.constant.TableNames;
 import com.fate1412.crmSystem.mainTable.dto.CustomerSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.CustomerUpdateDTO;
 import com.fate1412.crmSystem.mainTable.pojo.Customer;
@@ -12,6 +13,7 @@ import com.fate1412.crmSystem.security.mapper.SysUserMapper;
 import com.fate1412.crmSystem.security.pojo.SysUser;
 import com.fate1412.crmSystem.mainTable.service.ICustomerService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fate1412.crmSystem.security.service.ISysUserService;
 import com.fate1412.crmSystem.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -22,6 +24,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import static com.fate1412.crmSystem.mainTable.constant.TableNames.sysUser;
 
 /**
  * <p>
@@ -37,7 +41,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     private CustomerMapper customerMapper;
     
     @Autowired
-    private SysUserMapper sysUserMapper;
+    private ISysUserService sysUserService;
     
     @Autowired
     private ITableOptionService tableOptionService;
@@ -47,15 +51,15 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         if (MyCollections.isEmpty(customerList)) {
             return new ArrayList<>();
         }
-        List<OptionDTO> options = tableOptionService.getOptions("customer", "customerType");
+        List<OptionDTO> options = tableOptionService.getOptions(TableNames.customer, "customerType");
         Map<Integer, String> optionsMap = MyCollections.list2MapL(options, OptionDTO::getOptionKey, OptionDTO::getOption);
-    
+        
         List<Long> createIds = MyCollections.objects2List(customerList, Customer::getCreater);
         List<Long> updateMemberIds = MyCollections.objects2List(customerList, Customer::getUpdateMember);
         List<Long> ownerIds = MyCollections.objects2List(customerList, Customer::getOwner);
         List<Long> userIdList = MyCollections.addList(true, createIds, updateMemberIds, ownerIds);
         
-        List<SysUser> sysUserList = sysUserMapper.selectBatchIds(userIdList);
+        List<SysUser> sysUserList = sysUserService.listByIds(userIdList);
         
         Map<Long, String> userMap = MyCollections.list2MapL(sysUserList, SysUser::getUserId, SysUser::getRealName);
         
@@ -64,9 +68,9 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             Long createId = customerDTO.getCreater();
             Long updateMemberId = customerDTO.getUpdateMember();
             Long ownerId = customerDTO.getOwner();
-            customerDTO.setCreaterR(new IdToName(createId, userMap.get(createId), "sysUser"));
-            customerDTO.setUpdateMemberR(new IdToName(updateMemberId, userMap.get(updateMemberId), "sysUser"));
-            customerDTO.setOwnerR(new IdToName(ownerId, userMap.get(ownerId), "sysUser"));
+            customerDTO.setCreaterR(new IdToName(createId, userMap.get(createId), sysUser));
+            customerDTO.setUpdateMemberR(new IdToName(updateMemberId, userMap.get(updateMemberId), sysUser));
+            customerDTO.setOwnerR(new IdToName(ownerId, userMap.get(ownerId), sysUser));
             customerDTO.setCustomerTypeR(optionsMap.get(customerDTO.getCustomerType()));
         });
         return customerSelectDTOList;
@@ -83,9 +87,10 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             
             @Override
             public Customer set(Customer customer) {
+                SysUser sysUser = sysUserService.thisUser();
                 customer
-                        .setUpdateTime(new Date());
-//                .setUpdateMember(sysUser.getUserId());
+                        .setUpdateTime(new Date())
+                        .setUpdateMember(sysUser.getUserId());
                 return customer;
             }
             
@@ -102,9 +107,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             
             @Override
             public Customer set(Customer customer) {
-                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-                String userName = authentication.getName();
-                SysUser sysUser = sysUserMapper.getByUserName(userName);
+                SysUser sysUser = sysUserService.thisUser();
                 customer
                         .setCreateTime(new Date())
                         .setCreater(sysUser.getUserId())
@@ -123,6 +126,6 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     
     @Override
     public TableResultData getColumns() {
-        return getColumns("customer",CustomerSelectDTO.class,tableOptionService);
+        return getColumns(TableNames.customer, CustomerSelectDTO.class, tableOptionService);
     }
 }

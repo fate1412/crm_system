@@ -33,17 +33,20 @@ public class OrderProductController {
     @PreAuthorize("permitAll()")
     @GetMapping("/getColumns")
     public JsonResult<Object> getColumns() {
-        List<TableColumn> tableColumns = TableResultData.tableColumnList(OrderProductSelectDTO.class);
-        return ResultTool.success(tableColumns);
+        TableResultData tableResultData = orderProductService.getColumns();
+        return ResultTool.success(tableResultData);
     }
     
     @PreAuthorize("permitAll()")
     @GetMapping("/page/select")
     public JsonResult<Object> selectByPage(@Param("thisPage") Long thisPage, @Param("pageSize") Long pageSize) {
         thisPage = thisPage == null ? 1 : thisPage;
-        pageSize = pageSize == null ? 20 : pageSize;
+        pageSize = pageSize == null ? 10 : pageSize;
         MyPage page = orderProductService.listByPage(thisPage, pageSize);
-        TableResultData tableResultData = TableResultData.createTableResultData(page.getRecords(), OrderProductSelectDTO.class,thisPage,page.getTotal());
+        TableResultData tableResultData = orderProductService.getColumns();
+        tableResultData.setTableDataList(page.getRecords());
+        tableResultData.setThisPage(thisPage);
+        tableResultData.setTotal(page.getTotal());
         return ResultTool.success(tableResultData);
     }
     
