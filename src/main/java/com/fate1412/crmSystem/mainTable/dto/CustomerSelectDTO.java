@@ -43,6 +43,8 @@ public class CustomerSelectDTO implements Serializable {
     @TableTitle(value = "客户类型", formType = FormType.Select)
     private Integer customerType;
     
+    private String customerTypeR;
+    
     /**
      * 手机号
      */
@@ -68,27 +70,27 @@ public class CustomerSelectDTO implements Serializable {
      * 创建人
      */
     @TableField("creater")
+    @TableTitle(value = "创建人", link = true, disabled = true, formType = FormType.Select)
     private Long creater;
     
-    @TableTitle(value = "创建人", link = true, disabled = true, formType = FormType.Select)
     private IdToName createrR = new IdToName();
     
     /**
      * 更新者
      */
     @TableField("update_member")
+    @TableTitle(value = "更新者", link = true, disabled = true, formType = FormType.Select)
     private Long updateMember;
     
-    @TableTitle(value = "更新者", link = true, disabled = true, formType = FormType.Select)
     private IdToName updateMemberR = new IdToName();
     
     /**
      * 负责人
      */
     @TableField("owner")
+    @TableTitle(value = "负责人", link = true, formType = FormType.Select)
     private Long owner;
     
-    @TableTitle(value = "负责人", link = true, formType = FormType.Select)
     private IdToName ownerR = new IdToName();
     
     

@@ -1,16 +1,21 @@
 package com.fate1412.crmSystem.security.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.fate1412.crmSystem.security.dto.SysUserDTO;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.fate1412.crmSystem.customTable.service.ITableOptionService;
+import com.fate1412.crmSystem.security.dto.SysUserSelectDTO;
+import com.fate1412.crmSystem.security.dto.SysUserUpdateDTO;
 import com.fate1412.crmSystem.security.mapper.*;
 import com.fate1412.crmSystem.security.pojo.*;
 import com.fate1412.crmSystem.security.service.ISysUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fate1412.crmSystem.utils.JsonResult;
 import com.fate1412.crmSystem.utils.MyCollections;
-import org.springframework.beans.BeanUtils;
+import com.fate1412.crmSystem.utils.TableResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -38,6 +43,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     
     @Autowired
     private SysRoleMapper sysRoleMapper;
+    
+    @Autowired
+    private ITableOptionService tableOptionService;
     
     @Override
     public SysUser getByUserName(String username) {
@@ -95,8 +103,41 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
     
     @Override
-    public List<SysUserDTO> getDTOListById(List<Long> ids) {
-        List<SysUser> sysUserList = sysUserMapper.selectBatchIds(ids);
-        return MyCollections.copyListProperties(sysUserList,SysUserDTO::new);
+    public List<?> getDTOList(List<SysUser> sysUserList) {
+        return MyCollections.copyListProperties(sysUserList, SysUserSelectDTO::new);
+    }
+    
+    @Override
+    public BaseMapper<SysUser> mapper() {
+        return sysUserMapper;
+    }
+    
+    @Override
+    public JsonResult<?> updateById(SysUserUpdateDTO sysUserUpdateDTO) {
+        return updateByDTO(sysUserUpdateDTO, new MyEntity<SysUser>(new SysUser()) {
+            @Override
+            public SysUser set(SysUser sysUser) {
+                sysUser.setUpdateTime(new Date());
+                return sysUser;
+            }
+        });
+    }
+    
+    @Override
+    public JsonResult<?> add(SysUserUpdateDTO sysUserUpdateDTO) {
+        return add(sysUserUpdateDTO, new MyEntity<SysUser>(new SysUser()) {
+            @Override
+            public SysUser set(SysUser sysUser) {
+                sysUser
+                        .setCreateTime(new Date())
+                        .setUpdateTime(new Date());
+                return sysUser;
+            }
+        });
+    }
+    
+    @Override
+    public TableResultData getColumns() {
+        return getColumns("sysUser",SysUserSelectDTO.class,tableOptionService);
     }
 }

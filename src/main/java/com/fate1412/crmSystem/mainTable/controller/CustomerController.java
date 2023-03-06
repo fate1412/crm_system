@@ -44,14 +44,17 @@ public class CustomerController {
 //        IPage<CustomerSelectDTO> page = customerService.listByPage(thisPage, pageSize);
         MyPage page = customerService.listByPage(thisPage, pageSize);
         List<?> records = page.getRecords();
-        TableResultData tableResultData = TableResultData.createTableResultData(records, CustomerSelectDTO.class,thisPage,page.getTotal());
+        TableResultData tableResultData = customerService.getColumns();
+        tableResultData.setTableDataList(records);
+        tableResultData.setThisPage(thisPage);
+        tableResultData.setTotal(page.getTotal());
         return ResultTool.success(tableResultData);
     }
     
     @PreAuthorize("permitAll()")
     @PutMapping("/add")
-    public JsonResult<?> add(@RequestBody CustomerSelectDTO customerSelectDTO) {
-        return customerService.add(customerSelectDTO);
+    public JsonResult<?> add(@RequestBody CustomerUpdateDTO customerUpdateDTO) {
+        return customerService.add(customerUpdateDTO);
     }
     
     @PreAuthorize("permitAll()")

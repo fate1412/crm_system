@@ -47,6 +47,9 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         if (MyCollections.isEmpty(customerList)) {
             return new ArrayList<>();
         }
+        List<OptionDTO> options = tableOptionService.getOptions("customer", "customerType");
+        Map<Integer, String> optionsMap = MyCollections.list2MapL(options, OptionDTO::getOptionKey, OptionDTO::getOption);
+    
         List<Long> createIds = MyCollections.objects2List(customerList, Customer::getCreater);
         List<Long> updateMemberIds = MyCollections.objects2List(customerList, Customer::getUpdateMember);
         List<Long> ownerIds = MyCollections.objects2List(customerList, Customer::getOwner);
@@ -64,6 +67,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             customerDTO.setCreaterR(new IdToName(createId, userMap.get(createId), "sysUser"));
             customerDTO.setUpdateMemberR(new IdToName(updateMemberId, userMap.get(updateMemberId), "sysUser"));
             customerDTO.setOwnerR(new IdToName(ownerId, userMap.get(ownerId), "sysUser"));
+            customerDTO.setCustomerTypeR(optionsMap.get(customerDTO.getCustomerType()));
         });
         return customerSelectDTOList;
     }
@@ -93,8 +97,8 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     }
     
     @Override
-    public JsonResult<?> add(CustomerSelectDTO customerSelectDTO) {
-        return add(customerSelectDTO, new MyEntity<Customer>(new Customer()) {
+    public JsonResult<?> add(CustomerUpdateDTO customerUpdateDTO) {
+        return add(customerUpdateDTO, new MyEntity<Customer>(new Customer()) {
             
             @Override
             public Customer set(Customer customer) {
@@ -119,16 +123,6 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     
     @Override
     public TableResultData getColumns() {
-        List<TableColumn> tableColumnList = TableResultData.tableColumnList(CustomerSelectDTO.class);
-        tableColumnList.forEach(tableColumn -> {
-            if (FormType.Select.equals(tableColumn.getFormType())) {
-                List<OptionDTO> optionDTOS = tableOptionService.getOptions("customer", tableColumn.getProp());
-                tableColumn.setOptions(optionDTOS);
-            }
-        });
-        TableResultData tableResultData = new TableResultData();
-        tableResultData.setTableColumns(tableColumnList);
-        tableResultData.setTableDataList(MyCollections.toList(new CustomerSelectDTO()));
-        return tableResultData;
+        return getColumns("customer",CustomerSelectDTO.class,tableOptionService);
     }
 }

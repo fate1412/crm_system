@@ -3,9 +3,11 @@ package com.fate1412.crmSystem.base;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.fate1412.crmSystem.utils.JsonResult;
-import com.fate1412.crmSystem.utils.ResultCode;
-import com.fate1412.crmSystem.utils.ResultTool;
+import com.fate1412.crmSystem.annotations.TableTitle.FormType;
+import com.fate1412.crmSystem.customTable.dto.OptionDTO;
+import com.fate1412.crmSystem.customTable.service.ITableOptionService;
+import com.fate1412.crmSystem.mainTable.dto.CustomerSelectDTO;
+import com.fate1412.crmSystem.utils.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.beans.BeanUtils;
@@ -53,6 +55,20 @@ public interface MyBaseService<T> {
         } else {
             return ResultTool.fail(entity.verification(t));
         }
+    }
+    
+    default TableResultData getColumns(String tableName, Class<?> clazz, ITableOptionService tableOptionService) {
+        List<TableColumn> tableColumnList = TableResultData.tableColumnList(clazz);
+        tableColumnList.forEach(tableColumn -> {
+            if (FormType.Select.equals(tableColumn.getFormType())) {
+                List<OptionDTO> optionDTOS = tableOptionService.getOptions(tableName, tableColumn.getProp());
+                tableColumn.setOptions(optionDTOS);
+            }
+        });
+        TableResultData tableResultData = new TableResultData();
+        tableResultData.setTableColumns(tableColumnList);
+        tableResultData.setTableDataList(MyCollections.toList(new CustomerSelectDTO()));
+        return tableResultData;
     }
     
     List<?> getDTOList(List<T> tList);

@@ -1,8 +1,14 @@
 package com.fate1412.crmSystem.security.service;
 
-import com.fate1412.crmSystem.security.dto.SysUserDTO;
+import com.fate1412.crmSystem.base.MyBaseService;
+import com.fate1412.crmSystem.mainTable.dto.CustomerSelectDTO;
+import com.fate1412.crmSystem.mainTable.dto.CustomerUpdateDTO;
+import com.fate1412.crmSystem.security.dto.SysUserSelectDTO;
+import com.fate1412.crmSystem.security.dto.SysUserUpdateDTO;
 import com.fate1412.crmSystem.security.pojo.*;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.fate1412.crmSystem.utils.JsonResult;
+import com.fate1412.crmSystem.utils.TableResultData;
 
 import java.util.List;
 
@@ -14,7 +20,7 @@ import java.util.List;
  * @author fate1412
  * @since 2023-02-21
  */
-public interface ISysUserService extends IService<SysUser> {
+public interface ISysUserService extends IService<SysUser>, MyBaseService<SysUser> {
     
     /**
      * 通过用户名查询
@@ -41,9 +47,10 @@ public interface ISysUserService extends IService<SysUser> {
      */
     List<SysPermission> getPermissionByUserName(String username);
     
-    /**
-     * 通过id查询
-     */
-    List<SysUserDTO> getDTOListById(List<Long> ids);
+    JsonResult<?> updateById(SysUserUpdateDTO sysUserUpdateDTO);
+    
+    JsonResult<?> add(SysUserUpdateDTO sysUserUpdateDTO);
+    
+    TableResultData getColumns();
 
 }

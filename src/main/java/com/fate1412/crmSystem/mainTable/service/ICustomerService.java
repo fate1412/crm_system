@@ -25,7 +25,7 @@ public interface ICustomerService extends IService<Customer>, MyBaseService<Cust
     
     JsonResult<?> updateById(CustomerUpdateDTO customerUpdateDTO);
     
-    JsonResult<?> add(CustomerSelectDTO customerSelectDTO);
+    JsonResult<?> add(CustomerUpdateDTO customerUpdateDTO);
     
     TableResultData getColumns();
     
