@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fate1412.crmSystem.customTable.dto.OptionDTO;
 import com.fate1412.crmSystem.customTable.service.ITableOptionService;
 import com.fate1412.crmSystem.mainTable.constant.TableNames;
 import com.fate1412.crmSystem.mainTable.dto.select.SalesOrderSelectDTO;
@@ -51,6 +52,10 @@ public class SalesOrderServiceImpl extends ServiceImpl<SalesOrderMapper, SalesOr
         if (MyCollections.isEmpty(salesOrderList)) {
             return new ArrayList<>();
         }
+    
+        List<OptionDTO> options = tableOptionService.getOptions(TableNames.salesOrder, "invoiceStatus");
+        Map<Integer, String> optionsMap = MyCollections.list2MapL(options, OptionDTO::getOptionKey, OptionDTO::getOption);
+        
         //员工
         List<Long> createIds = MyCollections.objects2List(salesOrderList, SalesOrder::getCreater);
         List<Long> updateMemberIds = MyCollections.objects2List(salesOrderList, SalesOrder::getUpdater);
@@ -74,6 +79,7 @@ public class SalesOrderServiceImpl extends ServiceImpl<SalesOrderMapper, SalesOr
             dto.setCreaterR(new IdToName(createId,userMap.get(createId), TableNames.sysUser));
             dto.setUpdaterR(new IdToName(updater,userMap.get(updater),TableNames.sysUser));
             dto.setCustomerIdR(new IdToName(customerId,customerMap.get(customerId),"customer"));
+            dto.setInvoiceStatusR(optionsMap.get(dto.getInvoiceStatus()));
         });
         return salesOrderSelectDTOList;
     }

@@ -59,6 +59,8 @@ public class SalesOrderSelectDTO implements Serializable {
     @TableTitle(value = "发货状态",inserted = true, formType = FormType.Select)
     private Integer invoiceStatus;
     
+    private String invoiceStatusR;
+    
     /**
      * 创建时间
      */
