@@ -2,7 +2,6 @@ package com.fate1412.crmSystem.utils;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.fate1412.crmSystem.annotations.TableTitle;
-import com.fate1412.crmSystem.annotations.TableTitle.FormType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -40,6 +39,7 @@ public class TableResultData {
                     .setFixed(tableTitle.fixed())
                     .setLink(tableTitle.link())
                     .setDisabled(tableTitle.disabled())
+                    .setInserted(tableTitle.inserted())
                     .setFormType(tableTitle.formType());
             
             tableColumnList.add(tableColumn);

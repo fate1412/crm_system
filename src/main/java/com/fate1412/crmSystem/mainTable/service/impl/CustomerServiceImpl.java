@@ -1,23 +1,22 @@
 package com.fate1412.crmSystem.mainTable.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.fate1412.crmSystem.annotations.TableTitle.FormType;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fate1412.crmSystem.customTable.dto.OptionDTO;
 import com.fate1412.crmSystem.customTable.service.ITableOptionService;
 import com.fate1412.crmSystem.mainTable.constant.TableNames;
-import com.fate1412.crmSystem.mainTable.dto.CustomerSelectDTO;
-import com.fate1412.crmSystem.mainTable.dto.CustomerUpdateDTO;
+import com.fate1412.crmSystem.mainTable.dto.select.CustomerSelectDTO;
+import com.fate1412.crmSystem.mainTable.dto.update.CustomerUpdateDTO;
 import com.fate1412.crmSystem.mainTable.pojo.Customer;
 import com.fate1412.crmSystem.mainTable.mapper.CustomerMapper;
-import com.fate1412.crmSystem.security.mapper.SysUserMapper;
 import com.fate1412.crmSystem.security.pojo.SysUser;
 import com.fate1412.crmSystem.mainTable.service.ICustomerService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fate1412.crmSystem.security.service.ISysUserService;
 import com.fate1412.crmSystem.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -111,7 +110,6 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                 customer
                         .setCreateTime(new Date())
                         .setCreater(sysUser.getUserId())
-                        .setOwner(null)
                         .setUpdateTime(new Date())
                         .setUpdateMember(sysUser.getUserId());
                 return customer;
@@ -126,6 +124,17 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     
     @Override
     public TableResultData getColumns() {
-        return getColumns(TableNames.customer, CustomerSelectDTO.class, tableOptionService);
+        return getColumns(TableNames.customer, new CustomerSelectDTO(), tableOptionService);
+    }
+    
+    @Override
+    public List<IdToName> getOptions(String nameLike, Integer page) {
+        QueryWrapper<Customer> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda()
+                .select(Customer::getId, Customer::getName)
+                .like(Customer::getName,nameLike);
+        IPage<Customer> iPage = new Page<>(page,10);
+        customerMapper.selectPage(iPage,queryWrapper);
+        return IdToName.createList(iPage.getRecords(), Customer::getId, Customer::getName);
     }
 }

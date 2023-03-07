@@ -1,12 +1,9 @@
 package com.fate1412.crmSystem.mainTable.controller;
 
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.fate1412.crmSystem.base.MyPage;
-import com.fate1412.crmSystem.mainTable.dto.InvoiceProductSelectDTO;
-import com.fate1412.crmSystem.mainTable.dto.InvoiceProductUpdateDTO;
-import com.fate1412.crmSystem.mainTable.dto.OrderProductSelectDTO;
-import com.fate1412.crmSystem.mainTable.dto.OrderProductUpdateDTO;
+import com.fate1412.crmSystem.mainTable.dto.select.OrderProductSelectDTO;
+import com.fate1412.crmSystem.mainTable.dto.update.OrderProductUpdateDTO;
 import com.fate1412.crmSystem.mainTable.service.IOrderProductService;
 import com.fate1412.crmSystem.utils.*;
 import org.apache.ibatis.annotations.Param;
@@ -30,19 +27,19 @@ public class OrderProductController {
     @Autowired
     private IOrderProductService orderProductService;
     
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/getColumns")
     public JsonResult<Object> getColumns() {
         TableResultData tableResultData = orderProductService.getColumns();
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/page/select")
     public JsonResult<Object> selectByPage(@Param("thisPage") Long thisPage, @Param("pageSize") Long pageSize) {
         thisPage = thisPage == null ? 1 : thisPage;
         pageSize = pageSize == null ? 10 : pageSize;
-        MyPage page = orderProductService.listByPage(thisPage, pageSize);
+        MyPage page = orderProductService.listByPage(thisPage, pageSize,null);
         TableResultData tableResultData = orderProductService.getColumns();
         tableResultData.setTableDataList(page.getRecords());
         tableResultData.setThisPage(thisPage);
@@ -50,31 +47,39 @@ public class OrderProductController {
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     @PutMapping("/add")
     public JsonResult<?> add(@RequestBody OrderProductSelectDTO orderProductSelectDTO) {
         return orderProductService.add(orderProductSelectDTO);
     }
     
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/select")
     public JsonResult<Object> select(@Param("id") Long id) {
         List<?> orderProductSelectDTOList = orderProductService.getDTOListById(MyCollections.toList(id));
-        TableResultData tableResultData = TableResultData.createTableResultData(orderProductSelectDTOList, OrderProductSelectDTO.class);
+        TableResultData tableResultData = orderProductService.getColumns();
+        tableResultData.setTableDataList(orderProductSelectDTOList);
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/update")
     public JsonResult<?> update(@RequestBody OrderProductUpdateDTO orderProductUpdateDTO) {
         return orderProductService.updateById(orderProductUpdateDTO);
     }
     
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/delete")
     public JsonResult<?> delete(@RequestBody OrderProductSelectDTO orderProductSelectDTO) {
         boolean b = orderProductService.removeById(orderProductSelectDTO.getId());
         return ResultTool.create(b);
+    }
+    
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/getOptions")
+    public JsonResult<?> getOptions(@Param("nameLike") String nameLike, @Param("page") Integer page) {
+        List<IdToName> options = orderProductService.getOptions(nameLike, page);
+        return ResultTool.success(options);
     }
 }
 

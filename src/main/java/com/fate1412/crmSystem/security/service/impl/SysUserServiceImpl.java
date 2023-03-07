@@ -2,13 +2,18 @@ package com.fate1412.crmSystem.security.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fate1412.crmSystem.customTable.service.ITableOptionService;
+import com.fate1412.crmSystem.mainTable.constant.TableNames;
+import com.fate1412.crmSystem.mainTable.pojo.Customer;
 import com.fate1412.crmSystem.security.dto.SysUserSelectDTO;
 import com.fate1412.crmSystem.security.dto.SysUserUpdateDTO;
 import com.fate1412.crmSystem.security.mapper.*;
 import com.fate1412.crmSystem.security.pojo.*;
 import com.fate1412.crmSystem.security.service.ISysUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fate1412.crmSystem.utils.IdToName;
 import com.fate1412.crmSystem.utils.JsonResult;
 import com.fate1412.crmSystem.utils.MyCollections;
 import com.fate1412.crmSystem.utils.TableResultData;
@@ -140,7 +145,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     
     @Override
     public TableResultData getColumns() {
-        return getColumns("sysUser",SysUserSelectDTO.class,tableOptionService);
+        return getColumns(TableNames.sysUser, new SysUserSelectDTO(),tableOptionService);
     }
     
     @Override
@@ -148,5 +153,16 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userName = authentication.getName();
         return getByUserName(userName);
+    }
+    
+    @Override
+    public List<IdToName> getOptions(String nameLike, Integer page) {
+        QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda()
+                .select(SysUser::getUserId, SysUser::getRealName)
+                .like(SysUser::getRealName,nameLike);
+        IPage<SysUser> iPage = new Page<>(page,10);
+        sysUserMapper.selectPage(iPage,queryWrapper);
+        return IdToName.createList(iPage.getRecords(), SysUser::getUserId, SysUser::getRealName);
     }
 }

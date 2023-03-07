@@ -1,10 +1,13 @@
 package com.fate1412.crmSystem.mainTable.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fate1412.crmSystem.customTable.service.ITableOptionService;
 import com.fate1412.crmSystem.mainTable.constant.TableNames;
-import com.fate1412.crmSystem.mainTable.dto.InvoiceSelectDTO;
-import com.fate1412.crmSystem.mainTable.dto.InvoiceUpdateDTO;
+import com.fate1412.crmSystem.mainTable.dto.select.InvoiceSelectDTO;
+import com.fate1412.crmSystem.mainTable.dto.update.InvoiceUpdateDTO;
 import com.fate1412.crmSystem.mainTable.mapper.CustomerMapper;
 import com.fate1412.crmSystem.mainTable.mapper.SalesOrderMapper;
 import com.fate1412.crmSystem.mainTable.pojo.Customer;
@@ -12,7 +15,6 @@ import com.fate1412.crmSystem.mainTable.pojo.Invoice;
 import com.fate1412.crmSystem.mainTable.mapper.InvoiceMapper;
 import com.fate1412.crmSystem.mainTable.service.IInvoiceService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.fate1412.crmSystem.security.mapper.SysUserMapper;
 import com.fate1412.crmSystem.security.pojo.SysUser;
 import com.fate1412.crmSystem.security.service.ISysUserService;
 import com.fate1412.crmSystem.utils.*;
@@ -115,7 +117,7 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
             dto.setCreaterR(new IdToName(createId, userMap.get(createId), TableNames.sysUser));
             dto.setUpdaterR(new IdToName(updateMemberId, userMap.get(updateMemberId), TableNames.sysUser));
             dto.setSalesOrderIdR(new IdToName(salesOrderId, salesOrderId.toString(), TableNames.salesOrder));
-            dto.setCustomerR(new IdToName(customerId, customerMap.get(customerId), TableNames.customer));
+            dto.setCustomerIdR(new IdToName(customerId, customerMap.get(customerId), TableNames.customer));
             
         });
         return invoiceSelectDTOList;
@@ -128,6 +130,17 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
     
     @Override
     public TableResultData getColumns() {
-        return getColumns(TableNames.invoice, InvoiceSelectDTO.class, tableOptionService);
+        return getColumns(TableNames.invoice, new InvoiceSelectDTO(), tableOptionService);
+    }
+    
+    @Override
+    public List<IdToName> getOptions(String nameLike, Integer page) {
+        QueryWrapper<Invoice> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda()
+                .select(Invoice::getId)
+                .like(Invoice::getId,nameLike);
+        IPage<Invoice> iPage = new Page<>(page,10);
+        invoiceMapper.selectPage(iPage,queryWrapper);
+        return IdToName.createList2(iPage.getRecords(), Invoice::getId, Invoice::getId);
     }
 }

@@ -1,17 +1,10 @@
 package com.fate1412.crmSystem.mainTable.service;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.fate1412.crmSystem.base.MyBaseService;
-import com.fate1412.crmSystem.mainTable.dto.CustomerSelectDTO;
-import com.fate1412.crmSystem.mainTable.dto.CustomerUpdateDTO;
+import com.fate1412.crmSystem.mainTable.dto.update.CustomerUpdateDTO;
 import com.fate1412.crmSystem.mainTable.pojo.Customer;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fate1412.crmSystem.utils.JsonResult;
-import com.fate1412.crmSystem.utils.ResultCode;
-import com.fate1412.crmSystem.utils.TableResultData;
-
-import java.util.List;
 
 /**
  * <p>

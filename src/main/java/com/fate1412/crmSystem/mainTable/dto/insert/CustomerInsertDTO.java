@@ -1,9 +1,10 @@
-package com.fate1412.crmSystem.mainTable.dto;
+package com.fate1412.crmSystem.mainTable.dto.insert;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fate1412.crmSystem.annotations.TableTitle;
 import com.fate1412.crmSystem.annotations.TableTitle.FormType;
+import com.fate1412.crmSystem.mainTable.constant.TableNames;
 import com.fate1412.crmSystem.utils.IdToName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -21,7 +22,7 @@ import java.util.Date;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class CustomerSelectDTO implements Serializable {
+public class CustomerInsertDTO implements Serializable {
     
     private static final long serialVersionUID = 1L;
     
@@ -73,7 +74,7 @@ public class CustomerSelectDTO implements Serializable {
     @TableTitle(value = "创建人", link = true, disabled = true, formType = FormType.Select)
     private Long creater;
     
-    private IdToName createrR = new IdToName();
+    private IdToName createrR = new IdToName(TableNames.sysUser);
     
     /**
      * 更新者
@@ -82,7 +83,7 @@ public class CustomerSelectDTO implements Serializable {
     @TableTitle(value = "修改人", link = true, disabled = true, formType = FormType.Select)
     private Long updateMember;
     
-    private IdToName updateMemberR = new IdToName();
+    private IdToName updateMemberR = new IdToName(TableNames.sysUser);
     
     /**
      * 负责人
@@ -91,7 +92,7 @@ public class CustomerSelectDTO implements Serializable {
     @TableTitle(value = "负责人", link = true, formType = FormType.Select)
     private Long owner;
     
-    private IdToName ownerR = new IdToName();
+    private IdToName ownerR = new IdToName(TableNames.sysUser);
     
     
 }

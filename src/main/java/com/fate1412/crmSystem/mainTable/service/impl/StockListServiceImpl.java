@@ -1,20 +1,19 @@
 package com.fate1412.crmSystem.mainTable.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fate1412.crmSystem.customTable.service.ITableOptionService;
 import com.fate1412.crmSystem.mainTable.constant.TableNames;
-import com.fate1412.crmSystem.mainTable.dto.ProductSelectDTO;
-import com.fate1412.crmSystem.mainTable.dto.SalesOrderSelectDTO;
-import com.fate1412.crmSystem.mainTable.dto.StockListSelectDTO;
-import com.fate1412.crmSystem.mainTable.dto.StockListUpdateDTO;
-import com.fate1412.crmSystem.mainTable.pojo.Customer;
-import com.fate1412.crmSystem.mainTable.pojo.SalesOrder;
+import com.fate1412.crmSystem.mainTable.dto.select.StockListSelectDTO;
+import com.fate1412.crmSystem.mainTable.dto.update.StockListUpdateDTO;
 import com.fate1412.crmSystem.mainTable.pojo.StockList;
 import com.fate1412.crmSystem.mainTable.mapper.StockListMapper;
 import com.fate1412.crmSystem.mainTable.service.IStockListService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.fate1412.crmSystem.security.mapper.SysUserMapper;
 import com.fate1412.crmSystem.security.pojo.SysUser;
+import com.fate1412.crmSystem.security.service.ISysUserService;
 import com.fate1412.crmSystem.utils.IdToName;
 import com.fate1412.crmSystem.utils.JsonResult;
 import com.fate1412.crmSystem.utils.MyCollections;
@@ -40,7 +39,7 @@ public class StockListServiceImpl extends ServiceImpl<StockListMapper, StockList
     @Autowired
     private StockListMapper stockListMapper;
     @Autowired
-    private SysUserMapper sysUserMapper;
+    private ISysUserService sysUserService;
     @Autowired
     private ITableOptionService tableOptionService;
     
@@ -56,7 +55,7 @@ public class StockListServiceImpl extends ServiceImpl<StockListMapper, StockList
         List<Long> ownerList = MyCollections.objects2List(stockLists, StockList::getOwner);
         List<Long> userIdList = MyCollections.addList(true, createIds, updateMemberIds, ownerList);
     
-        List<SysUser> sysUserList = sysUserMapper.selectBatchIds(userIdList);
+        List<SysUser> sysUserList = sysUserService.listByIds(userIdList);
         Map<Long, String> userMap = MyCollections.list2MapL(sysUserList, SysUser::getUserId, SysUser::getRealName);
         
     
@@ -82,8 +81,10 @@ public class StockListServiceImpl extends ServiceImpl<StockListMapper, StockList
         return updateByDTO(stockListUpdateDTO, new MyEntity<StockList>(new StockList()) {
             @Override
             public StockList set(StockList stockList) {
+                SysUser sysUser = sysUserService.thisUser();
                 stockList
-                        .setUpdateTime(new Date());
+                        .setUpdateTime(new Date())
+                        .setUpdater(sysUser.getUserId());
                 return stockList;
             }
         });
@@ -94,8 +95,12 @@ public class StockListServiceImpl extends ServiceImpl<StockListMapper, StockList
         return add(stockListUpdateDTO, new MyEntity<StockList>(new StockList()) {
             @Override
             public StockList set(StockList stockList) {
+                SysUser sysUser = sysUserService.thisUser();
                 stockList
-                        .setCreateTime(new Date());
+                        .setCreateTime(new Date())
+                        .setUpdateTime(new Date())
+                        .setCreater(sysUser.getUserId())
+                        .setUpdater(sysUser.getUserId());
                 return stockList;
             }
         });
@@ -103,6 +108,17 @@ public class StockListServiceImpl extends ServiceImpl<StockListMapper, StockList
     
     @Override
     public TableResultData getColumns() {
-        return getColumns(TableNames.stockList,StockListSelectDTO.class,tableOptionService);
+        return getColumns(TableNames.stockList, new StockListSelectDTO(),tableOptionService);
+    }
+    
+    @Override
+    public List<IdToName> getOptions(String nameLike, Integer page) {
+        QueryWrapper<StockList> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda()
+                .select(StockList::getId)
+                .like(StockList::getId,nameLike);
+        IPage<StockList> iPage = new Page<>(page,10);
+        stockListMapper.selectPage(iPage,queryWrapper);
+        return IdToName.createList2(iPage.getRecords(), StockList::getId, StockList::getId);
     }
 }

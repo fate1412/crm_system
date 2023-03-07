@@ -1,7 +1,7 @@
-package com.fate1412.crmSystem.mainTable.dto;
+package com.fate1412.crmSystem.mainTable.dto.update;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.fate1412.crmSystem.annotations.TableTitle;
-import com.fate1412.crmSystem.utils.IdToName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -18,7 +18,7 @@ import java.util.Date;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class SalesOrderSelectDTO implements Serializable {
+public class SalesOrderUpdateDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -46,9 +46,7 @@ public class SalesOrderSelectDTO implements Serializable {
     /**
      * 客户id
      */
-    @TableTitle(value = "客户id",link = true,disabled = true)
-    private IdToName customerR;
-    
+    @TableTitle("客户id")
     private Long customerId;
 
     /**
@@ -57,33 +55,6 @@ public class SalesOrderSelectDTO implements Serializable {
     @TableTitle("发货状态")
     private Integer invoiceStatus;
 
-    /**
-     * 创建时间
-     */
-    @TableTitle(value = "创建时间",disabled = true,fixed = true)
-    private Date createTime;
-
-    /**
-     * 更新时间
-     */
-    @TableTitle(value = "更新时间",disabled = true,fixed = true)
-    private Date updateTime;
-
-    /**
-     * 创建人
-     */
-    private IdToName createrR;
-    
-    @TableTitle(value = "创建人",link = true,disabled = true)
-    private Long creater;
-
-    /**
-     * 修改人
-     */
-    private IdToName updaterR;
-    
-    @TableTitle(value = "修改人",link = true,disabled = true)
-    private Long updater;
 
 
 }

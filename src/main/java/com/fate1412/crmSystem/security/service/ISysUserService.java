@@ -1,9 +1,6 @@
 package com.fate1412.crmSystem.security.service;
 
 import com.fate1412.crmSystem.base.MyBaseService;
-import com.fate1412.crmSystem.mainTable.dto.CustomerSelectDTO;
-import com.fate1412.crmSystem.mainTable.dto.CustomerUpdateDTO;
-import com.fate1412.crmSystem.security.dto.SysUserSelectDTO;
 import com.fate1412.crmSystem.security.dto.SysUserUpdateDTO;
 import com.fate1412.crmSystem.security.pojo.*;
 import com.baomidou.mybatisplus.extension.service.IService;

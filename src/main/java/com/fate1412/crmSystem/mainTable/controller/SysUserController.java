@@ -1,15 +1,10 @@
 package com.fate1412.crmSystem.mainTable.controller;
 
 import com.fate1412.crmSystem.base.MyPage;
-import com.fate1412.crmSystem.mainTable.dto.CustomerSelectDTO;
-import com.fate1412.crmSystem.mainTable.dto.CustomerUpdateDTO;
 import com.fate1412.crmSystem.security.dto.SysUserSelectDTO;
 import com.fate1412.crmSystem.security.dto.SysUserUpdateDTO;
 import com.fate1412.crmSystem.security.service.ISysUserService;
-import com.fate1412.crmSystem.utils.JsonResult;
-import com.fate1412.crmSystem.utils.MyCollections;
-import com.fate1412.crmSystem.utils.ResultTool;
-import com.fate1412.crmSystem.utils.TableResultData;
+import com.fate1412.crmSystem.utils.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,15 +20,16 @@ public class SysUserController {
     @Autowired
     private ISysUserService sysUserService;
     
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/select")
     public JsonResult<Object> select(@Param("id") Long id) {
-        List<?> sysUserSelectDTOList = sysUserService.getDTOListById(MyCollections.toList(id));
-        TableResultData tableResultData = TableResultData.createTableResultData(sysUserSelectDTOList, SysUserSelectDTO.class);
+        List<?> dtoListById = sysUserService.getDTOListById(MyCollections.toList(id));
+        TableResultData tableResultData = sysUserService.getColumns();
+        tableResultData.setTableDataList(dtoListById);
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/getColumns")
     public JsonResult<Object> getColumns() {
         TableResultData tableResultData = sysUserService.getColumns();
@@ -46,7 +42,7 @@ public class SysUserController {
         thisPage = thisPage == null ? 1 : thisPage;
         pageSize = pageSize == null ? 10 : pageSize;
 //        IPage<CustomerSelectDTO> page = customerService.listByPage(thisPage, pageSize);
-        MyPage page = sysUserService.listByPage(thisPage, pageSize);
+        MyPage page = sysUserService.listByPage(thisPage, pageSize,null);
         List<?> records = page.getRecords();
         TableResultData tableResultData = sysUserService.getColumns();
         tableResultData.setTableDataList(records);
@@ -55,22 +51,29 @@ public class SysUserController {
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     @PutMapping("/add")
     public JsonResult<?> add(@RequestBody SysUserUpdateDTO sysUserUpdateDTO) {
         return sysUserService.add(sysUserUpdateDTO);
     }
     
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/update")
     public JsonResult<?> update(@RequestBody SysUserUpdateDTO sysUserUpdateDTO) {
         return sysUserService.updateById(sysUserUpdateDTO);
     }
     
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/delete")
     public JsonResult<?> delete(@RequestBody SysUserSelectDTO sysUserSelectDTO) {
         boolean b = sysUserService.removeById(sysUserSelectDTO.getUserId());
         return ResultTool.create(b);
+    }
+    
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/getOptions")
+    public JsonResult<?> getOptions(@Param("nameLike") String nameLike, @Param("page") Integer page) {
+        List<IdToName> options = sysUserService.getOptions(nameLike, page);
+        return ResultTool.success(options);
     }
 }

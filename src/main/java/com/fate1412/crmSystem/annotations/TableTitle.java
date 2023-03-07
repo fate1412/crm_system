@@ -10,6 +10,7 @@ public @interface TableTitle {
     boolean fixed() default false;
     boolean link() default false;
     boolean disabled() default false;
+    boolean inserted() default false;
     FormType formType() default FormType.Input;
     
     enum FormType {

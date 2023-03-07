@@ -1,17 +1,20 @@
 package com.fate1412.crmSystem.mainTable.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fate1412.crmSystem.customTable.service.ITableOptionService;
 import com.fate1412.crmSystem.mainTable.constant.TableNames;
-import com.fate1412.crmSystem.mainTable.dto.OrderProductSelectDTO;
-import com.fate1412.crmSystem.mainTable.dto.OrderProductUpdateDTO;
+import com.fate1412.crmSystem.mainTable.dto.select.OrderProductSelectDTO;
+import com.fate1412.crmSystem.mainTable.dto.update.OrderProductUpdateDTO;
 import com.fate1412.crmSystem.mainTable.mapper.*;
 import com.fate1412.crmSystem.mainTable.pojo.OrderProduct;
 import com.fate1412.crmSystem.mainTable.pojo.Product;
 import com.fate1412.crmSystem.mainTable.service.IOrderProductService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.fate1412.crmSystem.security.mapper.SysUserMapper;
 import com.fate1412.crmSystem.security.pojo.SysUser;
+import com.fate1412.crmSystem.security.service.ISysUserService;
 import com.fate1412.crmSystem.utils.IdToName;
 import com.fate1412.crmSystem.utils.JsonResult;
 import com.fate1412.crmSystem.utils.MyCollections;
@@ -35,7 +38,7 @@ import java.util.Map;
 @Service
 public class OrderProductServiceImpl extends ServiceImpl<OrderProductMapper, OrderProduct> implements IOrderProductService {
     @Autowired
-    private SysUserMapper sysUserMapper;
+    private ISysUserService sysUserService;
     @Autowired
     private ProductMapper productMapper;
     @Autowired
@@ -50,9 +53,10 @@ public class OrderProductServiceImpl extends ServiceImpl<OrderProductMapper, Ord
         return updateByDTO(orderProductUpdateDTO, new MyEntity<OrderProduct>(new OrderProduct()) {
             @Override
             public OrderProduct set(OrderProduct orderProduct) {
+                SysUser sysUser = sysUserService.thisUser();
                 orderProduct
-                        .setUpdateTime(new Date());
-//                .setUpdateMember(sysUser.getUserId());
+                        .setUpdateTime(new Date())
+                .setUpdater(sysUser.getUserId());
                 return orderProduct;
             }
         });
@@ -63,10 +67,12 @@ public class OrderProductServiceImpl extends ServiceImpl<OrderProductMapper, Ord
         return add(orderProductSelectDTO, new MyEntity<OrderProduct>(new OrderProduct()) {
             @Override
             public OrderProduct set(OrderProduct orderProduct) {
+                SysUser sysUser = sysUserService.thisUser();
                 orderProduct
                         .setCreateTime(new Date())
-                        .setUpdateTime(new Date());
-//                .setUpdateMember(sysUser.getUserId());
+                        .setUpdateTime(new Date())
+                        .setCreater(sysUser.getUserId())
+                .setUpdater(sysUser.getUserId());
                 return orderProduct;
             }
         });
@@ -82,7 +88,7 @@ public class OrderProductServiceImpl extends ServiceImpl<OrderProductMapper, Ord
         List<Long> updateMemberIds = MyCollections.objects2List(orderProductList, OrderProduct::getUpdater);
         List<Long> userIdList = MyCollections.addList(true, createIds, updateMemberIds);
     
-        List<SysUser> sysUserList = sysUserMapper.selectBatchIds(userIdList);
+        List<SysUser> sysUserList = sysUserService.listByIds(userIdList);
         Map<Long, String> userMap = MyCollections.list2MapL(sysUserList, SysUser::getUserId, SysUser::getRealName);
     
         //产品
@@ -100,8 +106,8 @@ public class OrderProductServiceImpl extends ServiceImpl<OrderProductMapper, Ord
             Long salesOrderId = dto.getSalesOrderId();
             dto.setCreaterR(new IdToName(createId,userMap.get(createId), TableNames.sysUser));
             dto.setUpdaterR(new IdToName(updateMemberId,userMap.get(updateMemberId),TableNames.sysUser));
-            dto.setSalesOrderR(new IdToName(salesOrderId, salesOrderId.toString(),"salesOrder"));
-            dto.setProductR(new IdToName(productId,productMap.get(productId),"product"));
+            dto.setSalesOrderIdR(new IdToName(salesOrderId, salesOrderId.toString(),"salesOrder"));
+            dto.setProductIdR(new IdToName(productId,productMap.get(productId),"product"));
         
         });
         return orderProductSelectDTOList;
@@ -114,6 +120,17 @@ public class OrderProductServiceImpl extends ServiceImpl<OrderProductMapper, Ord
     
     @Override
     public TableResultData getColumns() {
-        return getColumns(TableNames.orderProduct,OrderProductSelectDTO.class,tableOptionService);
+        return getColumns(TableNames.orderProduct, new OrderProductSelectDTO(),tableOptionService);
+    }
+    
+    @Override
+    public List<IdToName> getOptions(String nameLike, Integer page) {
+        QueryWrapper<OrderProduct> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda()
+                .select(OrderProduct::getId)
+                .like(OrderProduct::getId,nameLike);
+        IPage<OrderProduct> iPage = new Page<>(page,10);
+        orderProductMapper.selectPage(iPage,queryWrapper);
+        return IdToName.createList2(iPage.getRecords(), OrderProduct::getId, OrderProduct::getId);
     }
 }

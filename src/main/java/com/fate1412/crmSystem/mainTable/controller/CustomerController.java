@@ -1,10 +1,9 @@
 package com.fate1412.crmSystem.mainTable.controller;
 
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.fate1412.crmSystem.base.MyPage;
-import com.fate1412.crmSystem.mainTable.dto.CustomerSelectDTO;
-import com.fate1412.crmSystem.mainTable.dto.CustomerUpdateDTO;
+import com.fate1412.crmSystem.mainTable.dto.select.CustomerSelectDTO;
+import com.fate1412.crmSystem.mainTable.dto.update.CustomerUpdateDTO;
 import com.fate1412.crmSystem.mainTable.service.ICustomerService;
 import com.fate1412.crmSystem.utils.*;
 import org.apache.ibatis.annotations.Param;
@@ -29,7 +28,7 @@ public class CustomerController {
     private ICustomerService customerService;
     
     
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/getColumns")
     public JsonResult<Object> getColumns() {
         TableResultData tableResultData = customerService.getColumns();
@@ -42,7 +41,7 @@ public class CustomerController {
         thisPage = thisPage == null ? 1 : thisPage;
         pageSize = pageSize == null ? 10 : pageSize;
 //        IPage<CustomerSelectDTO> page = customerService.listByPage(thisPage, pageSize);
-        MyPage page = customerService.listByPage(thisPage, pageSize);
+        MyPage page = customerService.listByPage(thisPage, pageSize,null);
         List<?> records = page.getRecords();
         TableResultData tableResultData = customerService.getColumns();
         tableResultData.setTableDataList(records);
@@ -51,31 +50,39 @@ public class CustomerController {
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     @PutMapping("/add")
     public JsonResult<?> add(@RequestBody CustomerUpdateDTO customerUpdateDTO) {
         return customerService.add(customerUpdateDTO);
     }
     
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/select")
     public JsonResult<Object> select(@Param("id") Long id) {
         List<?> customerSelectDTOList = customerService.getDTOListById(MyCollections.toList(id));
-        TableResultData tableResultData = TableResultData.createTableResultData(customerSelectDTOList, CustomerSelectDTO.class);
+        TableResultData tableResultData = customerService.getColumns();
+        tableResultData.setTableDataList(customerSelectDTOList);
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/update")
     public JsonResult<?> update(@RequestBody CustomerUpdateDTO customerUpdateDTO) {
         return customerService.updateById(customerUpdateDTO);
     }
     
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/delete")
     public JsonResult<?> delete(@RequestBody CustomerSelectDTO customerSelectDTO) {
         boolean b = customerService.removeById(customerSelectDTO.getId());
         return ResultTool.create(b);
+    }
+    
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/getOptions")
+    public JsonResult<?> getOptions(@Param("nameLike") String nameLike, @Param("page") Integer page) {
+        List<IdToName> options = customerService.getOptions(nameLike, page);
+        return ResultTool.success(options);
     }
 }
 

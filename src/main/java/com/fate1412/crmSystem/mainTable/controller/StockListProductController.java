@@ -2,15 +2,14 @@ package com.fate1412.crmSystem.mainTable.controller;
 
 
 import com.fate1412.crmSystem.base.MyPage;
-import com.fate1412.crmSystem.mainTable.dto.*;
+import com.fate1412.crmSystem.mainTable.dto.select.StockListProductSelectDTO;
+import com.fate1412.crmSystem.mainTable.dto.update.StockListProductUpdateDTO;
 import com.fate1412.crmSystem.mainTable.service.IStockListProductService;
 import com.fate1412.crmSystem.utils.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import org.springframework.stereotype.Controller;
 
 import java.util.List;
 
@@ -28,19 +27,19 @@ public class StockListProductController {
     @Autowired
     private IStockListProductService stockListProductService;
     
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/getColumns")
     public JsonResult<Object> getColumns() {
         TableResultData tableResultData = stockListProductService.getColumns();
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/page/select")
     public JsonResult<Object> selectByPage(@Param("thisPage") Long thisPage, @Param("pageSize") Long pageSize) {
         thisPage = thisPage == null ? 1 : thisPage;
         pageSize = pageSize == null ? 10 : pageSize;
-        MyPage page = stockListProductService.listByPage(thisPage, pageSize);
+        MyPage page = stockListProductService.listByPage(thisPage, pageSize,null);
         TableResultData tableResultData = stockListProductService.getColumns();
         tableResultData.setTableDataList(page.getRecords());
         tableResultData.setThisPage(thisPage);
@@ -48,31 +47,39 @@ public class StockListProductController {
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     @PutMapping("/add")
     public JsonResult<?> add(@RequestBody StockListProductUpdateDTO stockListProductUpdateDTO) {
         return stockListProductService.add(stockListProductUpdateDTO);
     }
     
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/select")
     public JsonResult<Object> select(@Param("id") Long id) {
         List<?> dtoListById = stockListProductService.getDTOListById(MyCollections.toList(id));
-        TableResultData tableResultData = TableResultData.createTableResultData(dtoListById, StockListProductSelectDTO.class);
+        TableResultData tableResultData = stockListProductService.getColumns();
+        tableResultData.setTableDataList(dtoListById);
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/update")
     public JsonResult<?> update(@RequestBody StockListProductUpdateDTO stockListProductUpdateDTO) {
         return stockListProductService.updateById(stockListProductUpdateDTO);
     }
     
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/delete")
     public JsonResult<?> delete(@RequestBody StockListProductSelectDTO stockListProductSelectDTO) {
         boolean b = stockListProductService.removeById(stockListProductSelectDTO.getId());
         return ResultTool.create(b);
+    }
+    
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/getOptions")
+    public JsonResult<?> getOptions(@Param("nameLike") String nameLike, @Param("page") Integer page) {
+        List<IdToName> options = stockListProductService.getOptions(nameLike, page);
+        return ResultTool.success(options);
     }
 }
 

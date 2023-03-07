@@ -1,4 +1,4 @@
-package com.fate1412.crmSystem.mainTable.dto;
+package com.fate1412.crmSystem.mainTable.dto.update;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;

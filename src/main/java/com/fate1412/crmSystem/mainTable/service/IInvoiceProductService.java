@@ -1,8 +1,8 @@
 package com.fate1412.crmSystem.mainTable.service;
 
 import com.fate1412.crmSystem.base.MyBaseService;
-import com.fate1412.crmSystem.mainTable.dto.InvoiceProductSelectDTO;
-import com.fate1412.crmSystem.mainTable.dto.InvoiceProductUpdateDTO;
+import com.fate1412.crmSystem.mainTable.dto.select.InvoiceProductSelectDTO;
+import com.fate1412.crmSystem.mainTable.dto.update.InvoiceProductUpdateDTO;
 import com.fate1412.crmSystem.mainTable.pojo.InvoiceProduct;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fate1412.crmSystem.utils.JsonResult;
