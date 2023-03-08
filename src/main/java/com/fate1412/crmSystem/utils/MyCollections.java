@@ -227,6 +227,9 @@ public class MyCollections {
         return o;
     }
     
+    /**
+     * List对象拷贝
+     */
     public static <S,T> List<T> copyListProperties(List<S> sources, Supplier<T> target) {
         List<T> list = new ArrayList<>(sources.size());
         for (S source : sources) {
