@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fate1412.crmSystem.customTable.service.ITableOptionService;
 import com.fate1412.crmSystem.mainTable.constant.TableNames;
+import com.fate1412.crmSystem.mainTable.dto.insert.ProductInsertDTO;
 import com.fate1412.crmSystem.mainTable.dto.select.ProductSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.update.ProductUpdateDTO;
 import com.fate1412.crmSystem.mainTable.pojo.Product;
@@ -17,6 +18,7 @@ import com.fate1412.crmSystem.security.service.ISysUserService;
 import com.fate1412.crmSystem.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -69,31 +71,48 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     }
     
     @Override
+    @Transactional
     public JsonResult<?> updateById(ProductUpdateDTO productUpdateDTO) {
         return updateByDTO(productUpdateDTO, new MyEntity<Product>(new Product()) {
             @Override
             public Product set(Product product) {
                 SysUser sysUser = sysUserService.thisUser();
+                Product product2 = getById(productUpdateDTO.getId());
                 product
+                        .setIsShelf()
+                        .setRealStock(product2.getRealStock())//设置此值用于校验
                         .setUpdateTime(new Date())
                         .setUpdater(sysUser.getUserId());
                 return product;
+            }
+    
+            @Override
+            public ResultCode verification(Product product) {
+                return isRight(product);
             }
         });
     }
     
     @Override
-    public JsonResult<?> add(ProductUpdateDTO productUpdateDTO) {
-        return add(productUpdateDTO, new MyEntity<Product>(new Product()) {
+    @Transactional
+    public JsonResult<?> add(ProductInsertDTO productInsertDTO) {
+        return add(productInsertDTO, new MyEntity<Product>(new Product()) {
             @Override
             public Product set(Product product) {
                 SysUser sysUser = sysUserService.thisUser();
                 product
+                        .setIsShelf()
+                        .setRealStock(product.getStock())
                         .setCreateTime(new Date())
                         .setUpdateTime(new Date())
                         .setUpdater(sysUser.getUserId())
                         .setCreater(sysUser.getUserId());
                 return product;
+            }
+    
+            @Override
+            public ResultCode verification(Product product) {
+                return isRight(product);
             }
         });
     }
@@ -112,5 +131,29 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         IPage<Product> iPage = new Page<>(page,10);
         productMapper.selectPage(iPage,queryWrapper);
         return IdToName.createList(iPage.getRecords(), Product::getId, Product::getName);
+    }
+    
+    private ResultCode isRight(Product product) {
+        //产品名称
+        if (product.getName().isEmpty()) {
+            return ResultCode.PARAM_IS_BLANK;
+        }
+        //单价
+        if (product.getPrice() <= 0) {
+            return ResultCode.PARAM_NOT_VALID;
+        }
+        //库存
+        if (product.getStock() < 0 || product.getStock() > product.getRealStock()){
+            return ResultCode.PARAM_NOT_VALID;
+        }
+        //折扣
+        if (product.getDiscount() < 0 || product.getDiscount() > 100) {
+            return ResultCode.PARAM_NOT_VALID;
+        }
+        //上下架时间
+        if (product.getOnShelfTime().after(product.getOffShelfTime())) {
+            return ResultCode.PARAM_NOT_VALID;
+        }
+        return ResultCode.SUCCESS;
     }
 }

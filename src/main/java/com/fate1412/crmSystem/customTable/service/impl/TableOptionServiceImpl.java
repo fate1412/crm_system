@@ -34,4 +34,15 @@ public class TableOptionServiceImpl extends ServiceImpl<TableOptionMapper, Table
         List<TableOption> tableOptions = mapper.selectList(queryWrapper);
         return MyCollections.copyListProperties(tableOptions, OptionDTO::new);
     }
+    
+    @Override
+    public boolean selectOptions(String tableName, String columnName, Integer key) {
+        QueryWrapper<TableOption> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda()
+                .eq(TableOption::getTableName,tableName)
+                .eq(TableOption::getColumnName,columnName)
+                .eq(TableOption::getOptionKey,key);
+        List<TableOption> tableOptions = mapper.selectList(queryWrapper);
+        return !MyCollections.isEmpty(tableOptions);
+    }
 }

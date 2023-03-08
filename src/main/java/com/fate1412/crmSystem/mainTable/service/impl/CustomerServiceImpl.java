@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fate1412.crmSystem.customTable.dto.OptionDTO;
 import com.fate1412.crmSystem.customTable.service.ITableOptionService;
 import com.fate1412.crmSystem.mainTable.constant.TableNames;
+import com.fate1412.crmSystem.mainTable.dto.insert.CustomerInsertDTO;
 import com.fate1412.crmSystem.mainTable.dto.select.CustomerSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.update.CustomerUpdateDTO;
 import com.fate1412.crmSystem.mainTable.pojo.Customer;
@@ -18,11 +19,13 @@ import com.fate1412.crmSystem.security.service.ISysUserService;
 import com.fate1412.crmSystem.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import static com.fate1412.crmSystem.mainTable.constant.TableNames.sysUser;
 
@@ -81,6 +84,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     }
     
     @Override
+    @Transactional
     public JsonResult<?> updateById(CustomerUpdateDTO customerUpdateDTO) {
         return updateByDTO(customerUpdateDTO, new MyEntity<Customer>(new Customer()) {
             
@@ -95,18 +99,19 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             
             @Override
             public ResultCode verification(Customer customer) {
-                return ResultCode.SUCCESS;
+                return isRight(customer);
             }
         });
     }
     
     @Override
-    public JsonResult<?> add(CustomerUpdateDTO customerUpdateDTO) {
-        return add(customerUpdateDTO, new MyEntity<Customer>(new Customer()) {
+    @Transactional
+    public JsonResult<?> add(CustomerInsertDTO customerInsertDTO) {
+        SysUser sysUser = sysUserService.thisUser();
+        return add(customerInsertDTO, new MyEntity<Customer>(new Customer()) {
             
             @Override
             public Customer set(Customer customer) {
-                SysUser sysUser = sysUserService.thisUser();
                 customer
                         .setCreateTime(new Date())
                         .setCreater(sysUser.getUserId())
@@ -117,7 +122,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             
             @Override
             public ResultCode verification(Customer customer) {
-                return ResultCode.SUCCESS;
+                return isRight(customer);
             }
         });
     }
@@ -136,5 +141,28 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         IPage<Customer> iPage = new Page<>(page,10);
         customerMapper.selectPage(iPage,queryWrapper);
         return IdToName.createList(iPage.getRecords(), Customer::getId, Customer::getName);
+    }
+    
+    private ResultCode isRight(Customer customer) {
+        //客户名称
+        if (customer.getName().trim().isEmpty()) {
+            return ResultCode.PARAM_IS_BLANK;//参数为空
+        }
+        //客户类型
+        if (!tableOptionService.selectOptions(TableNames.customer,"customerType",customer.getCustomerType())) {
+            return ResultCode.PARAM_NOT_VALID;//参数无效
+        }
+        //手机号(简单校验11位数字)
+        if (!Pattern.matches("\\d{11}",customer.getMobile())) {
+            return ResultCode.PARAM_NOT_VALID;//参数无效
+        }
+        //负责人
+        if (customer.getOwner()!=null) {
+            SysUser sysUser = sysUserService.getById(customer.getOwner());
+            if (sysUser == null) {
+                return ResultCode.PARAM_NOT_VALID;//参数无效
+            }
+        }
+        return ResultCode.SUCCESS;
     }
 }

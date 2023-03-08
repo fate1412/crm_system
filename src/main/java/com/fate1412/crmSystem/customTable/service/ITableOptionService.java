@@ -17,4 +17,6 @@ import java.util.List;
 public interface ITableOptionService extends IService<TableOption> {
 
     List<OptionDTO> getOptions(String tableName, String columnName);
+    
+    boolean selectOptions(String tableName, String columnName, Integer key);
 }

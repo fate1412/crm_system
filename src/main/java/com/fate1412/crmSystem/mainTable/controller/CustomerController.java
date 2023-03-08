@@ -2,6 +2,7 @@ package com.fate1412.crmSystem.mainTable.controller;
 
 
 import com.fate1412.crmSystem.base.MyPage;
+import com.fate1412.crmSystem.mainTable.dto.insert.CustomerInsertDTO;
 import com.fate1412.crmSystem.mainTable.dto.select.CustomerSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.update.CustomerUpdateDTO;
 import com.fate1412.crmSystem.mainTable.service.ICustomerService;
@@ -52,8 +53,8 @@ public class CustomerController {
     
     @PreAuthorize("isAuthenticated()")
     @PutMapping("/add")
-    public JsonResult<?> add(@RequestBody CustomerUpdateDTO customerUpdateDTO) {
-        return customerService.add(customerUpdateDTO);
+    public JsonResult<?> add(@RequestBody CustomerInsertDTO customerInsertDTO) {
+        return customerService.add(customerInsertDTO);
     }
     
     @PreAuthorize("isAuthenticated()")

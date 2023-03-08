@@ -28,10 +28,6 @@ public class ProductInsertDTO implements Serializable {
     
     private static final long serialVersionUID = 1L;
     
-    @TableId("id")
-    @TableTitle(value = "产品Id", fixed = true, disabled = true)
-    private Long id;
-    
     /**
      * 产品名称
      */
@@ -54,38 +50,15 @@ public class ProductInsertDTO implements Serializable {
     private Integer stock;
     
     /**
-     * 真实库存
-     */
-    @TableField("real_stock")
-    @TableTitle("真实库存/件")
-    private Integer realStock;
-    
-    /**
-     * 销售量
-     */
-    @TableField("sales_volume")
-    @TableTitle("销售量/件")
-    private Integer salesVolume;
-    
-    /**
-     * 是否上架
-     */
-    @TableField("is_shelf")
-    @TableTitle("是否上架")
-    private Boolean isShelf;
-    
-    /**
      * 上架时间
      */
     @TableField("on_shelf_time")
-    @TableTitle(value = "上架时间", disabled = true, formType = FormType.DateTime)
     private Date onShelfTime;
     
     /**
      * 下架时间
      */
     @TableField("off_shelf_time")
-    @TableTitle(value = "下架时间", disabled = true, formType = FormType.DateTime)
     private Date offShelfTime;
     
     /**
@@ -96,37 +69,9 @@ public class ProductInsertDTO implements Serializable {
     private Integer discount;
     
     
-    /**
-     * 创建人
-     */
-    @TableField("creater")
-    @TableTitle(value = "创建人", link = true, disabled = true, formType = FormType.Select)
-    private Long creater;
-    
-    private IdToName createrR = new IdToName(TableNames.sysUser);
-    
-    /**
-     * 修改人
-     */
-    @TableField("updater")
-    @TableTitle(value = "修改人", link = true, disabled = true, formType = FormType.Select)
-    private Long updater;
-    
-    private IdToName updaterR = new IdToName(TableNames.sysUser);
-    
-    
-    /**
-     * 创建时间
-     */
-    @TableField("create_time")
-    @TableTitle(value = "创建时间", disabled = true, formType = FormType.DateTime)
-    private Date createTime;
-    
-    /**
-     * 更新时间
-     */
-    @TableField("update_time")
-    @TableTitle(value = "更新时间", disabled = true, formType = FormType.DateTime)
-    private Date updateTime;
+    public boolean isShelf() {
+        Date date = new Date();
+        return date.after(onShelfTime) && date.before(offShelfTime);
+    }
     
 }

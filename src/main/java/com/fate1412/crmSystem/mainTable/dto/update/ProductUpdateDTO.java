@@ -47,23 +47,6 @@ public class ProductUpdateDTO implements Serializable {
     private Integer stock;
 
     /**
-     * 真实库存
-     */
-    @TableField("real_stock")
-    private Integer realStock;
-
-    /**
-     * 销售量
-     */
-    @TableField("sales_volume")
-    private Integer salesVolume;
-    /**
-     * 是否上架
-     */
-    @TableField("is_shelf")
-    private Boolean isShelf;
-
-    /**
      * 上架时间
      */
     @TableField("on_shelf_time")
@@ -80,6 +63,9 @@ public class ProductUpdateDTO implements Serializable {
      */
     @TableField("discount")
     private Integer discount;
-
-
+    
+    public boolean isShelf() {
+        Date date = new Date();
+        return date.after(onShelfTime) && date.before(offShelfTime);
+    }
 }

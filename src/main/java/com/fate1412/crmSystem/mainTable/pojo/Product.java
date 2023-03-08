@@ -113,5 +113,15 @@ public class Product implements Serializable {
     @TableLogic
     private Boolean delFlag;
 
-
+    public boolean isShelf() {
+        Date date = new Date();
+        boolean after = date.after(onShelfTime);
+        boolean before = date.before(offShelfTime);
+        return date.after(onShelfTime) && date.before(offShelfTime);
+    }
+    
+    public Product setIsShelf() {
+        isShelf = isShelf();
+        return this;
+    }
 }

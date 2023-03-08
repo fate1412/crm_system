@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fate1412.crmSystem.annotations.TableTitle.FormType;
 import com.fate1412.crmSystem.customTable.dto.OptionDTO;
 import com.fate1412.crmSystem.customTable.service.ITableOptionService;
-import com.fate1412.crmSystem.mainTable.dto.select.CustomerSelectDTO;
 import com.fate1412.crmSystem.utils.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -53,7 +52,7 @@ public interface MyBaseService<T> {
         BeanUtils.copyProperties(dto, t);
         t = entity.set(t);
         if (entity.verification(t).equals(ResultCode.SUCCESS) && (mapper().insert(t) > 0)) {
-            return entity.afterAdd()? ResultTool.success() : ResultTool.fail(ResultCode.INSERT_ERROR);
+            return entity.afterInsert()? ResultTool.success() : ResultTool.fail(ResultCode.INSERT_ERROR);
         } else {
             return ResultTool.fail(entity.verification(t));
         }
@@ -87,12 +86,18 @@ public interface MyBaseService<T> {
         private T t;
         
         public abstract T set(T t);
-        
+    
+        /**
+         * 数据校验
+         */
         public ResultCode verification(T t) {
             return ResultCode.SUCCESS;
         }
-        
-        public boolean afterAdd() {
+    
+        /**
+         * 插入成功后操作
+         */
+        public boolean afterInsert() {
             return true;
         }
     }

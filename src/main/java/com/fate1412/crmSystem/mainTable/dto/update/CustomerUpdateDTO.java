@@ -55,9 +55,7 @@ public class CustomerUpdateDTO implements Serializable {
      */
     @TableField("owner")
     private Long owner;
-    
-    @TableTitle(value = "负责人",link = true)
-    private IdToName ownerR;
+
 
 
 }

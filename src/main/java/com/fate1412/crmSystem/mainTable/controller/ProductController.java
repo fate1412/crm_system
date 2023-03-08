@@ -2,6 +2,7 @@ package com.fate1412.crmSystem.mainTable.controller;
 
 
 import com.fate1412.crmSystem.base.MyPage;
+import com.fate1412.crmSystem.mainTable.dto.insert.ProductInsertDTO;
 import com.fate1412.crmSystem.mainTable.dto.select.ProductSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.update.ProductUpdateDTO;
 import com.fate1412.crmSystem.mainTable.service.IProductService;
@@ -49,8 +50,8 @@ public class ProductController {
     
     @PreAuthorize("isAuthenticated()")
     @PutMapping("/add")
-    public JsonResult<?> add(@RequestBody ProductUpdateDTO productUpdateDTO) {
-        return productService.add(productUpdateDTO);
+    public JsonResult<?> add(@RequestBody ProductInsertDTO productInsertDTO) {
+        return productService.add(productInsertDTO);
     }
     
     @PreAuthorize("isAuthenticated()")

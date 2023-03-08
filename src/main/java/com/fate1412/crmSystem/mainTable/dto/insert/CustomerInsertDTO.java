@@ -26,10 +26,6 @@ public class CustomerInsertDTO implements Serializable {
     
     private static final long serialVersionUID = 1L;
     
-    @TableId("id")
-    @TableTitle(value = "客户ID", fixed = true, disabled = true)
-    private Long id;
-    
     /**
      * 客户名称
      */
@@ -44,8 +40,6 @@ public class CustomerInsertDTO implements Serializable {
     @TableTitle(value = "客户类型", formType = FormType.Select)
     private Integer customerType;
     
-    private String customerTypeR;
-    
     /**
      * 手机号
      */
@@ -54,45 +48,11 @@ public class CustomerInsertDTO implements Serializable {
     private String mobile;
     
     /**
-     * 创建时间
-     */
-    @TableField("create_time")
-    @TableTitle(value = "创建时间", disabled = true, formType = FormType.DateTime)
-    private Date createTime;
-    
-    /**
-     * 更新时间
-     */
-    @TableField("update_time")
-    @TableTitle(value = "更新时间", disabled = true, formType = FormType.DateTime)
-    private Date updateTime;
-    
-    /**
-     * 创建人
-     */
-    @TableField("creater")
-    @TableTitle(value = "创建人", link = true, disabled = true, formType = FormType.Select)
-    private Long creater;
-    
-    private IdToName createrR = new IdToName(TableNames.sysUser);
-    
-    /**
-     * 更新者
-     */
-    @TableField("update_member")
-    @TableTitle(value = "修改人", link = true, disabled = true, formType = FormType.Select)
-    private Long updateMember;
-    
-    private IdToName updateMemberR = new IdToName(TableNames.sysUser);
-    
-    /**
      * 负责人
      */
     @TableField("owner")
     @TableTitle(value = "负责人", link = true, formType = FormType.Select)
     private Long owner;
-    
-    private IdToName ownerR = new IdToName(TableNames.sysUser);
     
     
 }

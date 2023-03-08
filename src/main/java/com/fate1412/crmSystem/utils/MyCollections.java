@@ -206,28 +206,6 @@ public class MyCollections {
     }
     
     /**
-     * 为'空'的对象返回null
-     */
-    public static <T> T getData(T o) {
-        if (o == null) {
-            return null;
-        }
-        if (o instanceof String) {
-            String s = o.toString();
-            return s.equals("") ? null : o;
-        }
-        if (o instanceof List) {
-            List<?> list = (List<?>) o;
-            return isEmpty(list) ? null : o;
-        }
-        if (o instanceof Map) {
-            Map<?, ?> map = (Map<?, ?>) o;
-            return isEmpty(map) ? null : o;
-        }
-        return o;
-    }
-    
-    /**
      * List对象拷贝
      */
     public static <S,T> List<T> copyListProperties(List<S> sources, Supplier<T> target) {
