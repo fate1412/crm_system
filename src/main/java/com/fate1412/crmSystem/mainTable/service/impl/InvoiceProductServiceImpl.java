@@ -19,6 +19,7 @@ import com.fate1412.crmSystem.security.mapper.SysUserMapper;
 import com.fate1412.crmSystem.security.pojo.SysUser;
 import com.fate1412.crmSystem.security.service.ISysUserService;
 import com.fate1412.crmSystem.utils.*;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,8 +52,15 @@ public class InvoiceProductServiceImpl extends ServiceImpl<InvoiceProductMapper,
     private ISysUserService sysUserService;
     
     @Override
-    public JsonResult<?> updateById(InvoiceProductUpdateDTO invoiceProductUpdateDTO) {
-        return updateByDTO(invoiceProductUpdateDTO, new MyEntity<InvoiceProduct>(new InvoiceProduct()) {
+    public JsonResult<?> updateByDTO(InvoiceProductUpdateDTO invoiceProductUpdateDTO) {
+        InvoiceProduct invoiceProduct = new InvoiceProduct();
+        BeanUtils.copyProperties(invoiceProductUpdateDTO,invoiceProduct);
+        return updateByEntity(invoiceProduct);
+    }
+    
+    @Override
+    public JsonResult<?> updateByEntity(InvoiceProduct invoiceProduct) {
+        return update(new MyEntity<InvoiceProduct>(invoiceProduct) {
             @Override
             public InvoiceProduct set(InvoiceProduct invoiceProduct) {
                 SysUser sysUser = sysUserService.thisUser();
@@ -61,7 +69,7 @@ public class InvoiceProductServiceImpl extends ServiceImpl<InvoiceProductMapper,
                         .setUpdater(sysUser.getUserId());
                 return invoiceProduct;
             }
-            
+        
             @Override
             public ResultCode verification(InvoiceProduct invoiceProduct) {
                 return ResultCode.SUCCESS;
@@ -70,8 +78,15 @@ public class InvoiceProductServiceImpl extends ServiceImpl<InvoiceProductMapper,
     }
     
     @Override
-    public JsonResult<?> add(InvoiceProductSelectDTO invoiceProductSelectDTO) {
-        return add(invoiceProductSelectDTO, new MyEntity<InvoiceProduct>(new InvoiceProduct()) {
+    public JsonResult<?> addDTO(InvoiceProductSelectDTO invoiceProductSelectDTO) {
+        InvoiceProduct invoiceProduct = new InvoiceProduct();
+        BeanUtils.copyProperties(invoiceProductSelectDTO,invoiceProduct);
+        return addEntity(invoiceProduct);
+    }
+    
+    @Override
+    public JsonResult<?> addEntity(InvoiceProduct invoiceProduct) {
+        return add(new MyEntity<InvoiceProduct>(invoiceProduct) {
             @Override
             public InvoiceProduct set(InvoiceProduct invoiceProduct) {
                 SysUser sysUser = sysUserService.thisUser();
@@ -82,7 +97,7 @@ public class InvoiceProductServiceImpl extends ServiceImpl<InvoiceProductMapper,
                         .setUpdater(sysUser.getUserId());
                 return invoiceProduct;
             }
-            
+        
             @Override
             public ResultCode verification(InvoiceProduct invoiceProduct) {
                 return null;

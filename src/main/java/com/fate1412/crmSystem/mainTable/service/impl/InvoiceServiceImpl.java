@@ -18,8 +18,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fate1412.crmSystem.security.pojo.SysUser;
 import com.fate1412.crmSystem.security.service.ISysUserService;
 import com.fate1412.crmSystem.utils.*;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -49,8 +52,17 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
     private ITableOptionService tableOptionService;
     
     @Override
-    public JsonResult<?> updateById(InvoiceUpdateDTO invoiceUpdateDTO) {
-        return updateByDTO(invoiceUpdateDTO, new MyEntity<Invoice>(new Invoice()) {
+    @Transactional
+    public JsonResult<?> updateByDTO(InvoiceUpdateDTO invoiceUpdateDTO) {
+        Invoice invoice = new Invoice();
+        BeanUtils.copyProperties(invoiceUpdateDTO,invoice);
+        return updateEntity(invoice);
+    }
+    
+    @Override
+    @Transactional
+    public JsonResult<?> updateEntity(Invoice invoice) {
+        return update(new MyEntity<Invoice>(invoice) {
             @Override
             public Invoice set(Invoice invoice) {
                 SysUser sysUser = sysUserService.thisUser();
@@ -59,7 +71,7 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
                         .setUpdater(sysUser.getUserId());
                 return invoice;
             }
-            
+        
             @Override
             public ResultCode verification(Invoice invoice) {
                 return ResultCode.SUCCESS;
@@ -68,8 +80,17 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
     }
     
     @Override
-    public JsonResult<?> add(InvoiceSelectDTO invoiceSelectDTO) {
-        return add(invoiceSelectDTO, new MyEntity<Invoice>(new Invoice()) {
+    @Transactional
+    public JsonResult<?> addDTO(InvoiceSelectDTO invoiceSelectDTO) {
+        Invoice invoice = new Invoice();
+        BeanUtils.copyProperties(invoiceSelectDTO,invoice);
+        return addEntity(invoice);
+    }
+    
+    @Override
+    @Transactional
+    public JsonResult<?> addEntity(Invoice invoice) {
+        return add(new MyEntity<Invoice>(invoice) {
             @Override
             public Invoice set(Invoice invoice) {
                 SysUser sysUser = sysUserService.thisUser();
@@ -80,7 +101,7 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
                         .setUpdater(sysUser.getUserId());
                 return invoice;
             }
-            
+        
             @Override
             public ResultCode verification(Invoice invoice) {
                 return ResultCode.SUCCESS;

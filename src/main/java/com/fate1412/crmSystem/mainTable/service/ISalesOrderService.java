@@ -1,6 +1,7 @@
 package com.fate1412.crmSystem.mainTable.service;
 
 import com.fate1412.crmSystem.base.MyBaseService;
+import com.fate1412.crmSystem.mainTable.dto.insert.SalesOrderInsertDTO;
 import com.fate1412.crmSystem.mainTable.dto.update.SalesOrderUpdateDTO;
 import com.fate1412.crmSystem.mainTable.pojo.SalesOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -15,7 +16,7 @@ import com.fate1412.crmSystem.utils.JsonResult;
  * @since 2023-02-23
  */
 public interface ISalesOrderService extends IService<SalesOrder>, MyBaseService<SalesOrder> {
-    JsonResult<?> updateById(SalesOrderUpdateDTO salesOrderUpdateDTO);
+    JsonResult<?> updateByDTO(SalesOrderUpdateDTO salesOrderUpdateDTO);
     
-    JsonResult<?> add(SalesOrderUpdateDTO salesOrderUpdateDTO);
+    JsonResult<?> addDTO(SalesOrderInsertDTO salesOrderInsertDTO);
 }

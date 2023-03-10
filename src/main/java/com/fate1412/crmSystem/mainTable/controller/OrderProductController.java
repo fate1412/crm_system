@@ -2,6 +2,7 @@ package com.fate1412.crmSystem.mainTable.controller;
 
 
 import com.fate1412.crmSystem.base.MyPage;
+import com.fate1412.crmSystem.mainTable.dto.insert.OrderProductInsertDTO;
 import com.fate1412.crmSystem.mainTable.dto.select.OrderProductSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.update.OrderProductUpdateDTO;
 import com.fate1412.crmSystem.mainTable.service.IOrderProductService;
@@ -49,8 +50,8 @@ public class OrderProductController {
     
     @PreAuthorize("isAuthenticated()")
     @PutMapping("/add")
-    public JsonResult<?> add(@RequestBody OrderProductSelectDTO orderProductSelectDTO) {
-        return orderProductService.add(orderProductSelectDTO);
+    public JsonResult<?> add(@RequestBody OrderProductInsertDTO orderProductInsertDTO) {
+        return orderProductService.addDTO(orderProductInsertDTO);
     }
     
     @PreAuthorize("isAuthenticated()")
@@ -65,7 +66,7 @@ public class OrderProductController {
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/update")
     public JsonResult<?> update(@RequestBody OrderProductUpdateDTO orderProductUpdateDTO) {
-        return orderProductService.updateById(orderProductUpdateDTO);
+        return orderProductService.updateByDTO(orderProductUpdateDTO);
     }
     
     @PreAuthorize("isAuthenticated()")

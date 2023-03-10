@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fate1412.crmSystem.customTable.service.ITableOptionService;
 import com.fate1412.crmSystem.mainTable.constant.TableNames;
+import com.fate1412.crmSystem.mainTable.dto.insert.StockListProductInsertDTO;
 import com.fate1412.crmSystem.mainTable.dto.select.StockListProductSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.update.StockListProductUpdateDTO;
 import com.fate1412.crmSystem.mainTable.mapper.ProductMapper;
@@ -20,6 +21,7 @@ import com.fate1412.crmSystem.utils.IdToName;
 import com.fate1412.crmSystem.utils.JsonResult;
 import com.fate1412.crmSystem.utils.MyCollections;
 import com.fate1412.crmSystem.utils.TableResultData;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -88,8 +90,10 @@ public class StockListProductServiceImpl extends ServiceImpl<StockListProductMap
     }
     
     @Override
-    public JsonResult<?> updateById(StockListProductUpdateDTO stockListProductUpdateDTO) {
-        return updateByDTO(stockListProductUpdateDTO, new MyEntity<StockListProduct>(new StockListProduct()) {
+    public JsonResult<?> updateByDTO(StockListProductUpdateDTO stockListProductUpdateDTO) {
+        StockListProduct stockListProduct = new StockListProduct();
+        BeanUtils.copyProperties(stockListProductUpdateDTO,stockListProduct);
+        return update(new MyEntity<StockListProduct>(stockListProduct) {
             @Override
             public StockListProduct set(StockListProduct stockListProduct) {
                 SysUser sysUser = sysUserService.thisUser();
@@ -102,8 +106,10 @@ public class StockListProductServiceImpl extends ServiceImpl<StockListProductMap
     }
     
     @Override
-    public JsonResult<?> add(StockListProductUpdateDTO stockListProductUpdateDTO) {
-        return add(stockListProductUpdateDTO, new MyEntity<StockListProduct>(new StockListProduct()) {
+    public JsonResult<?> addDTO(StockListProductInsertDTO stockListProductInsertDTO) {
+        StockListProduct stockListProduct = new StockListProduct();
+        BeanUtils.copyProperties(stockListProductInsertDTO,stockListProduct);
+        return add(new MyEntity<StockListProduct>(stockListProduct) {
             @Override
             public StockListProduct set(StockListProduct stockListProduct) {
                 SysUser sysUser = sysUserService.thisUser();

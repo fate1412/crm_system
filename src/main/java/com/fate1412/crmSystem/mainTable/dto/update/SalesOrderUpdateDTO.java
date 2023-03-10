@@ -2,11 +2,13 @@ package com.fate1412.crmSystem.mainTable.dto.update;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.fate1412.crmSystem.annotations.TableTitle;
+import com.fate1412.crmSystem.mainTable.dto.child.SalesOrderChild;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * <p>
@@ -54,7 +56,7 @@ public class SalesOrderUpdateDTO implements Serializable {
      */
     @TableTitle("发货状态")
     private Integer invoiceStatus;
-
-
+    
+    private List<SalesOrderChild> childList;
 
 }

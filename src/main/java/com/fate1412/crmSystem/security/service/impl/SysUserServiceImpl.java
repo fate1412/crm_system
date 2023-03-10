@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fate1412.crmSystem.customTable.service.ITableOptionService;
 import com.fate1412.crmSystem.mainTable.constant.TableNames;
-import com.fate1412.crmSystem.mainTable.pojo.Customer;
 import com.fate1412.crmSystem.security.dto.SysUserSelectDTO;
 import com.fate1412.crmSystem.security.dto.SysUserUpdateDTO;
 import com.fate1412.crmSystem.security.mapper.*;
@@ -17,10 +16,12 @@ import com.fate1412.crmSystem.utils.IdToName;
 import com.fate1412.crmSystem.utils.JsonResult;
 import com.fate1412.crmSystem.utils.MyCollections;
 import com.fate1412.crmSystem.utils.TableResultData;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -120,8 +121,17 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
     
     @Override
-    public JsonResult<?> updateById(SysUserUpdateDTO sysUserUpdateDTO) {
-        return updateByDTO(sysUserUpdateDTO, new MyEntity<SysUser>(new SysUser()) {
+    @Transactional
+    public JsonResult<?> updateByDTO(SysUserUpdateDTO sysUserUpdateDTO) {
+        SysUser sysUser = new SysUser();
+        BeanUtils.copyProperties(sysUserUpdateDTO,sysUser);
+        return updateByEntity(sysUser);
+    }
+    
+    @Override
+    @Transactional
+    public JsonResult<?> updateByEntity(SysUser sysUser) {
+        return update(new MyEntity<SysUser>(sysUser) {
             @Override
             public SysUser set(SysUser sysUser) {
                 sysUser.setUpdateTime(new Date());
@@ -131,8 +141,17 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
     
     @Override
-    public JsonResult<?> add(SysUserUpdateDTO sysUserUpdateDTO) {
-        return add(sysUserUpdateDTO, new MyEntity<SysUser>(new SysUser()) {
+    @Transactional
+    public JsonResult<?> addEntity(SysUserUpdateDTO sysUserUpdateDTO) {
+        SysUser sysUser = new SysUser();
+        BeanUtils.copyProperties(sysUserUpdateDTO,sysUser);
+        return addEntity(sysUser);
+    }
+    
+    @Override
+    @Transactional
+    public JsonResult<?> addEntity(SysUser sysUser) {
+        return add(new MyEntity<SysUser>(sysUser) {
             @Override
             public SysUser set(SysUser sysUser) {
                 sysUser

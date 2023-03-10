@@ -2,8 +2,12 @@ package com.fate1412.crmSystem.mainTable.controller;
 
 
 import com.fate1412.crmSystem.base.MyPage;
+import com.fate1412.crmSystem.mainTable.dto.child.SalesOrderChild;
+import com.fate1412.crmSystem.mainTable.dto.insert.SalesOrderInsertDTO;
+import com.fate1412.crmSystem.mainTable.dto.select.OrderProductSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.select.SalesOrderSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.update.SalesOrderUpdateDTO;
+import com.fate1412.crmSystem.mainTable.service.IOrderProductService;
 import com.fate1412.crmSystem.mainTable.service.ISalesOrderService;
 import com.fate1412.crmSystem.utils.*;
 import org.apache.ibatis.annotations.Param;
@@ -26,11 +30,14 @@ import java.util.List;
 public class SalesOrderController {
     @Autowired
     private ISalesOrderService salesOrderService;
+    @Autowired
+    private IOrderProductService orderProductService;
     
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/getColumns")
     public JsonResult<Object> getColumns() {
         TableResultData tableResultData = salesOrderService.getColumns();
+        tableResultData.setChild(orderProductService.getColumns(new SalesOrderChild()));
         return ResultTool.success(tableResultData);
     }
     
@@ -49,22 +56,33 @@ public class SalesOrderController {
     
     @PreAuthorize("isAuthenticated()")
     @PutMapping("/add")
-    public JsonResult<?> add(@RequestBody SalesOrderUpdateDTO salesOrderUpdateDTO) {
-        return salesOrderService.add(salesOrderUpdateDTO);
+    public JsonResult<?> add(@RequestBody SalesOrderInsertDTO salesOrderInsertDTO) {
+        return salesOrderService.addDTO(salesOrderInsertDTO);
     }
     
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/select")
     public JsonResult<Object> select(@Param("id") Long id) {
-        List<?> dtoListById = salesOrderService.getDTOListById(MyCollections.toList(id));
-        TableResultData tableResultData = TableResultData.createTableResultData(dtoListById, SalesOrderSelectDTO.class);
+        List<?> dtoList = salesOrderService.getDTOListById(MyCollections.toList(id));
+        TableResultData tableResultData = salesOrderService.getColumns();
+        tableResultData.setTableDataList(dtoList);
+        if (MyCollections.isEmpty(dtoList)) {
+            tableResultData.setChild(new TableResultData());
+        } else {
+            SalesOrderSelectDTO dto = (SalesOrderSelectDTO) dtoList.get(0);
+            List<OrderProductSelectDTO> orderProductSelectDTOS = orderProductService.getBySalesOrder(dto.getId());
+            List<SalesOrderChild> childList = MyCollections.copyListProperties(orderProductSelectDTOS, SalesOrderChild::new);
+            TableResultData child = orderProductService.getColumns(new SalesOrderChild());
+            child.setTableDataList(childList);
+            tableResultData.setChild(child);
+        }
         return ResultTool.success(tableResultData);
     }
     
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/update")
     public JsonResult<?> update(@RequestBody SalesOrderUpdateDTO salesOrderUpdateDTO) {
-        return salesOrderService.updateById(salesOrderUpdateDTO);
+        return salesOrderService.updateByDTO(salesOrderUpdateDTO);
     }
     
     @PreAuthorize("isAuthenticated()")

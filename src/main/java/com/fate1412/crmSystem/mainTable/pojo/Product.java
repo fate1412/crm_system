@@ -103,20 +103,12 @@ public class Product implements Serializable {
     @TableField("off_shelf_time")
     private Date offShelfTime;
 
-    /**
-     * 折扣(0-100)
-     */
-    @TableField("discount")
-    private Integer discount;
-
     @TableField("del_flag")
     @TableLogic
     private Boolean delFlag;
 
     public boolean isShelf() {
         Date date = new Date();
-        boolean after = date.after(onShelfTime);
-        boolean before = date.before(offShelfTime);
         return date.after(onShelfTime) && date.before(offShelfTime);
     }
     

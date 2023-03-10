@@ -71,6 +71,13 @@ public class OrderProductSelectDTO implements Serializable {
     @TableField("original_prices")
     @TableTitle(value = "原总价",inserted = true)
     private Double originalPrices;
+    
+    /**
+     * 折扣(0-100)
+     */
+    @TableField("discount")
+    @TableTitle(value = "折扣/%",inserted = true)
+    private Integer discount;
 
     /**
      * 折后总价

@@ -44,9 +44,13 @@ public interface ISysUserService extends IService<SysUser>, MyBaseService<SysUse
      */
     List<SysPermission> getPermissionByUserName(String username);
     
-    JsonResult<?> updateById(SysUserUpdateDTO sysUserUpdateDTO);
+    JsonResult<?> updateByDTO(SysUserUpdateDTO sysUserUpdateDTO);
     
-    JsonResult<?> add(SysUserUpdateDTO sysUserUpdateDTO);
+    JsonResult<?> updateByEntity(SysUser sysUser);
+    
+    JsonResult<?> addEntity(SysUserUpdateDTO sysUserUpdateDTO);
+    
+    JsonResult<?> addEntity(SysUser sysUser);
     
     TableResultData getColumns();
     

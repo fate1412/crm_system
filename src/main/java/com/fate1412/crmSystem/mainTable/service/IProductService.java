@@ -17,7 +17,7 @@ import com.fate1412.crmSystem.utils.JsonResult;
  */
 public interface IProductService extends IService<Product>, MyBaseService<Product> {
     
-    JsonResult<?> updateById(ProductUpdateDTO productUpdateDTO);
+    JsonResult<?> updateByDTO(ProductUpdateDTO productUpdateDTO);
     
-    JsonResult<?> add(ProductInsertDTO productInsertDTO);
+    JsonResult<?> addDTO(ProductInsertDTO productInsertDTO);
 }

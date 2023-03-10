@@ -50,7 +50,7 @@ public class InvoiceProductController {
     @PreAuthorize("isAuthenticated()")
     @PutMapping("/add")
     public JsonResult<?> add(@RequestBody InvoiceProductSelectDTO invoiceProductSelectDTO) {
-        return invoiceProductService.add(invoiceProductSelectDTO);
+        return invoiceProductService.addDTO(invoiceProductSelectDTO);
     }
     
     @PreAuthorize("isAuthenticated()")
@@ -65,7 +65,7 @@ public class InvoiceProductController {
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/update")
     public JsonResult<?> update(@RequestBody InvoiceProductUpdateDTO invoiceProductUpdateDTO) {
-        return invoiceProductService.updateById(invoiceProductUpdateDTO);
+        return invoiceProductService.updateByDTO(invoiceProductUpdateDTO);
     }
     
     @PreAuthorize("isAuthenticated()")

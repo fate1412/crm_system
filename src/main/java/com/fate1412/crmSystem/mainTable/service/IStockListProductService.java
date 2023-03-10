@@ -1,6 +1,7 @@
 package com.fate1412.crmSystem.mainTable.service;
 
 import com.fate1412.crmSystem.base.MyBaseService;
+import com.fate1412.crmSystem.mainTable.dto.insert.StockListProductInsertDTO;
 import com.fate1412.crmSystem.mainTable.dto.update.StockListProductUpdateDTO;
 import com.fate1412.crmSystem.mainTable.pojo.StockListProduct;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -15,7 +16,7 @@ import com.fate1412.crmSystem.utils.JsonResult;
  * @since 2023-02-23
  */
 public interface IStockListProductService extends IService<StockListProduct>, MyBaseService<StockListProduct> {
-    JsonResult<?> updateById(StockListProductUpdateDTO stockListProductUpdateDTO);
+    JsonResult<?> updateByDTO(StockListProductUpdateDTO stockListProductUpdateDTO);
     
-    JsonResult<?> add(StockListProductUpdateDTO stockListProductUpdateDTO);
+    JsonResult<?> addDTO(StockListProductInsertDTO stockListProductInsertDTO);
 }

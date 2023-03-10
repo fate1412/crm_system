@@ -57,12 +57,6 @@ public class ProductUpdateDTO implements Serializable {
      */
     @TableField("off_shelf_time")
     private Date offShelfTime;
-
-    /**
-     * 折扣(0-100)
-     */
-    @TableField("discount")
-    private Integer discount;
     
     public boolean isShelf() {
         Date date = new Date();

@@ -54,13 +54,13 @@ public class SysUserController {
     @PreAuthorize("isAuthenticated()")
     @PutMapping("/add")
     public JsonResult<?> add(@RequestBody SysUserUpdateDTO sysUserUpdateDTO) {
-        return sysUserService.add(sysUserUpdateDTO);
+        return sysUserService.addEntity(sysUserUpdateDTO);
     }
     
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/update")
     public JsonResult<?> update(@RequestBody SysUserUpdateDTO sysUserUpdateDTO) {
-        return sysUserService.updateById(sysUserUpdateDTO);
+        return sysUserService.updateByDTO(sysUserUpdateDTO);
     }
     
     @PreAuthorize("isAuthenticated()")

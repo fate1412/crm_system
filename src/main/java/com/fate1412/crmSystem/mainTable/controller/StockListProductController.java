@@ -2,6 +2,7 @@ package com.fate1412.crmSystem.mainTable.controller;
 
 
 import com.fate1412.crmSystem.base.MyPage;
+import com.fate1412.crmSystem.mainTable.dto.insert.StockListProductInsertDTO;
 import com.fate1412.crmSystem.mainTable.dto.select.StockListProductSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.update.StockListProductUpdateDTO;
 import com.fate1412.crmSystem.mainTable.service.IStockListProductService;
@@ -49,8 +50,8 @@ public class StockListProductController {
     
     @PreAuthorize("isAuthenticated()")
     @PutMapping("/add")
-    public JsonResult<?> add(@RequestBody StockListProductUpdateDTO stockListProductUpdateDTO) {
-        return stockListProductService.add(stockListProductUpdateDTO);
+    public JsonResult<?> add(@RequestBody StockListProductInsertDTO stockListProductInsertDTO) {
+        return stockListProductService.addDTO(stockListProductInsertDTO);
     }
     
     @PreAuthorize("isAuthenticated()")
@@ -65,7 +66,7 @@ public class StockListProductController {
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/update")
     public JsonResult<?> update(@RequestBody StockListProductUpdateDTO stockListProductUpdateDTO) {
-        return stockListProductService.updateById(stockListProductUpdateDTO);
+        return stockListProductService.updateByDTO(stockListProductUpdateDTO);
     }
     
     @PreAuthorize("isAuthenticated()")

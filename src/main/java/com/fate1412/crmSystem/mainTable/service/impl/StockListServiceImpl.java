@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fate1412.crmSystem.customTable.service.ITableOptionService;
 import com.fate1412.crmSystem.mainTable.constant.TableNames;
+import com.fate1412.crmSystem.mainTable.dto.insert.StockListInsertDTO;
 import com.fate1412.crmSystem.mainTable.dto.select.StockListSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.update.StockListUpdateDTO;
 import com.fate1412.crmSystem.mainTable.pojo.StockList;
@@ -18,6 +19,7 @@ import com.fate1412.crmSystem.utils.IdToName;
 import com.fate1412.crmSystem.utils.JsonResult;
 import com.fate1412.crmSystem.utils.MyCollections;
 import com.fate1412.crmSystem.utils.TableResultData;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -77,8 +79,10 @@ public class StockListServiceImpl extends ServiceImpl<StockListMapper, StockList
     }
     
     @Override
-    public JsonResult<?> updateById(StockListUpdateDTO stockListUpdateDTO) {
-        return updateByDTO(stockListUpdateDTO, new MyEntity<StockList>(new StockList()) {
+    public JsonResult<?> updateByDTO(StockListUpdateDTO stockListUpdateDTO) {
+        StockList stockList = new StockList();
+        BeanUtils.copyProperties(stockListUpdateDTO,stockList);
+        return update(new MyEntity<StockList>(stockList) {
             @Override
             public StockList set(StockList stockList) {
                 SysUser sysUser = sysUserService.thisUser();
@@ -91,8 +95,10 @@ public class StockListServiceImpl extends ServiceImpl<StockListMapper, StockList
     }
     
     @Override
-    public JsonResult<?> add(StockListUpdateDTO stockListUpdateDTO) {
-        return add(stockListUpdateDTO, new MyEntity<StockList>(new StockList()) {
+    public JsonResult<?> addDTO(StockListInsertDTO stockListInsertDTO) {
+        StockList stockList = new StockList();
+        BeanUtils.copyProperties(stockListInsertDTO,stockList);
+        return add(new MyEntity<StockList>(stockList) {
             @Override
             public StockList set(StockList stockList) {
                 SysUser sysUser = sysUserService.thisUser();

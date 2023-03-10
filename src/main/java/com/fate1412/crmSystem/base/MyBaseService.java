@@ -35,24 +35,23 @@ public interface MyBaseService<T> {
         return getDTOList(tList);
     }
     
-    default <D> JsonResult<?> updateByDTO(D dto, MyEntity<T> entity) {
+    
+    default JsonResult<?> update(MyEntity<T> entity) {
         T t = entity.getT();
-        BeanUtils.copyProperties(dto, t);
         t = entity.set(t);
-        if (entity.verification(t).equals(ResultCode.SUCCESS)) {
-            return mapper().updateById(t) > 0? ResultTool.success() : ResultTool.fail(ResultCode.UPDATE_ERROR);
+        if (entity.verification(t).equals(ResultCode.SUCCESS) && (mapper().updateById(t) > 0)) {
+            return entity.after(t)? ResultTool.success() : ResultTool.fail(ResultCode.UPDATE_ERROR);
         } else {
             return ResultTool.fail(entity.verification(t));
         }
     }
     
     
-    default <D> JsonResult<?> add(D dto, MyEntity<T> entity) {
+    default JsonResult<?> add(MyEntity<T> entity) {
         T t = entity.getT();
-        BeanUtils.copyProperties(dto, t);
         t = entity.set(t);
         if (entity.verification(t).equals(ResultCode.SUCCESS) && (mapper().insert(t) > 0)) {
-            return entity.afterInsert()? ResultTool.success() : ResultTool.fail(ResultCode.INSERT_ERROR);
+            return entity.after(t)? ResultTool.success() : ResultTool.fail(ResultCode.INSERT_ERROR);
         } else {
             return ResultTool.fail(entity.verification(t));
         }
@@ -97,7 +96,7 @@ public interface MyBaseService<T> {
         /**
          * 插入成功后操作
          */
-        public boolean afterInsert() {
+        public boolean after(T t) {
             return true;
         }
     }

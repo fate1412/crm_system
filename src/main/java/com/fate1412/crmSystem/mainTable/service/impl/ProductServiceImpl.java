@@ -16,6 +16,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fate1412.crmSystem.security.pojo.SysUser;
 import com.fate1412.crmSystem.security.service.ISysUserService;
 import com.fate1412.crmSystem.utils.*;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,8 +73,10 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     
     @Override
     @Transactional
-    public JsonResult<?> updateById(ProductUpdateDTO productUpdateDTO) {
-        return updateByDTO(productUpdateDTO, new MyEntity<Product>(new Product()) {
+    public JsonResult<?> updateByDTO(ProductUpdateDTO productUpdateDTO) {
+        Product product = new Product();
+        BeanUtils.copyProperties(productUpdateDTO,product);
+        return update(new MyEntity<Product>(product) {
             @Override
             public Product set(Product product) {
                 SysUser sysUser = sysUserService.thisUser();
@@ -95,8 +98,10 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     
     @Override
     @Transactional
-    public JsonResult<?> add(ProductInsertDTO productInsertDTO) {
-        return add(productInsertDTO, new MyEntity<Product>(new Product()) {
+    public JsonResult<?> addDTO(ProductInsertDTO productInsertDTO) {
+        Product product = new Product();
+        BeanUtils.copyProperties(productInsertDTO,product);
+        return add(new MyEntity<Product>(product) {
             @Override
             public Product set(Product product) {
                 SysUser sysUser = sysUserService.thisUser();
@@ -144,10 +149,6 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         }
         //库存
         if (product.getStock() < 0 || product.getStock() > product.getRealStock()){
-            return ResultCode.PARAM_NOT_VALID;
-        }
-        //折扣
-        if (product.getDiscount() < 0 || product.getDiscount() > 100) {
             return ResultCode.PARAM_NOT_VALID;
         }
         //上下架时间

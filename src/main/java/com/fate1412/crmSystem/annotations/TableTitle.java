@@ -17,7 +17,8 @@ public @interface TableTitle {
         Input("Input",0),
         Select("Select",1),
         Date("Date",2),
-        DateTime("DateTime",3);
+        DateTime("DateTime",3),
+        Switch("Switch",4);
         private String type;
         private Integer index;
     

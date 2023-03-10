@@ -54,7 +54,7 @@ public class CustomerController {
     @PreAuthorize("isAuthenticated()")
     @PutMapping("/add")
     public JsonResult<?> add(@RequestBody CustomerInsertDTO customerInsertDTO) {
-        return customerService.add(customerInsertDTO);
+        return customerService.addDTO(customerInsertDTO);
     }
     
     @PreAuthorize("isAuthenticated()")
@@ -69,7 +69,7 @@ public class CustomerController {
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/update")
     public JsonResult<?> update(@RequestBody CustomerUpdateDTO customerUpdateDTO) {
-        return customerService.updateById(customerUpdateDTO);
+        return customerService.updateByDTO(customerUpdateDTO);
     }
     
     @PreAuthorize("isAuthenticated()")

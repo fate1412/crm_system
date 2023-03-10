@@ -1,14 +1,18 @@
 package com.fate1412.crmSystem.mainTable.dto.insert;
 
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.fate1412.crmSystem.annotations.TableTitle;
 import com.fate1412.crmSystem.annotations.TableTitle.FormType;
 import com.fate1412.crmSystem.mainTable.constant.TableNames;
+import com.fate1412.crmSystem.mainTable.dto.child.SalesOrderChild;
 import com.fate1412.crmSystem.utils.IdToName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * <p>
@@ -86,6 +90,8 @@ public class SalesOrderInsertDTO implements Serializable {
     
     @TableTitle(value = "修改人", link = true, disabled = true, formType = FormType.Date)
     private Long updater;
+    
+    private List<SalesOrderChild> childList;
     
     
 }

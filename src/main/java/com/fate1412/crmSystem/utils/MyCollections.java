@@ -10,6 +10,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class MyCollections {
     
@@ -127,7 +128,54 @@ public class MyCollections {
      * List对象转Map(全部存入List)
      */
     public static <K, T> Map<K, List<T>> list2MapList(List<T> list, Function<? super T, ? extends K> keyMapper) {
-        return list.stream().collect(Collectors.toMap(keyMapper, MyCollections::toList, MyCollections::addList));
+        return list.stream().collect(Collectors.groupingBy(keyMapper));
+    }
+    
+    /**
+     * 根据指定属性取交集(集合中取list1的数据)
+     */
+    public static <T, R> List<T> intersection(List<T> list1, List<T> list2, Function<T, R> mapper) {
+        return list2.stream()
+                .map(mapper)
+                .filter(Objects::nonNull)
+                .filter(obj -> list1.stream().map(mapper).anyMatch(obj::equals))
+                .map(obj -> list1.stream().filter(t -> mapper.apply(t).equals(obj)).findFirst().orElse(null))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+    
+    /**
+     * 根据指定属性取list1中与list2不同的部分
+     */
+    public static <T, R> List<T> difference(List<T> list1, List<T> list2, Function<T, R> mapper) {
+        Set<R> set = list2.stream().map(mapper).collect(Collectors.toSet());
+        return list1.stream()
+                .filter(Objects::nonNull)
+                .filter(obj -> !set.contains(mapper.apply(obj)))
+                .collect(Collectors.toList());
+    }
+    
+    /**
+     * 并集
+     */
+    public static <T> List<T> unionDistinct(List<T> list1, List<T> list2, Function<? super T, ?> keyExtractor) {
+        return list1.stream()
+                .flatMap(item1 -> Stream.of(item1, list2.stream()
+                        .filter(item2 -> keyExtractor.apply(item1).equals(keyExtractor.apply(item2)))
+                        .findFirst()
+                        .orElse(null)))
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+    
+    /**
+     * 去除集合1中集合2的部分
+     */
+    public static <T> List<T> removeAll(List<T> list1, List<T> list2) {
+        List<T> list = new ArrayList<>(list1);
+        list.removeAll(list2);
+        return list;
     }
     
     /**

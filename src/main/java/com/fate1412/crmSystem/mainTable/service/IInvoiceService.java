@@ -17,7 +17,11 @@ import com.fate1412.crmSystem.utils.JsonResult;
  */
 public interface IInvoiceService extends IService<Invoice>, MyBaseService<Invoice> {
     
-    JsonResult<?> updateById(InvoiceUpdateDTO invoiceUpdateDTO);
+    JsonResult<?> updateByDTO(InvoiceUpdateDTO invoiceUpdateDTO);
     
-    JsonResult<?> add(InvoiceSelectDTO invoiceSelectDTO);
+    JsonResult<?> updateEntity(Invoice invoice);
+    
+    JsonResult<?> addDTO(InvoiceSelectDTO invoiceSelectDTO);
+    
+    JsonResult<?> addEntity(Invoice invoice);
 }

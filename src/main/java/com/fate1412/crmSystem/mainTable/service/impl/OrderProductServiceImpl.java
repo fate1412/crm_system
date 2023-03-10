@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fate1412.crmSystem.customTable.service.ITableOptionService;
 import com.fate1412.crmSystem.mainTable.constant.TableNames;
+import com.fate1412.crmSystem.mainTable.dto.insert.OrderProductInsertDTO;
 import com.fate1412.crmSystem.mainTable.dto.select.OrderProductSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.update.OrderProductUpdateDTO;
 import com.fate1412.crmSystem.mainTable.mapper.*;
@@ -19,13 +20,16 @@ import com.fate1412.crmSystem.utils.IdToName;
 import com.fate1412.crmSystem.utils.JsonResult;
 import com.fate1412.crmSystem.utils.MyCollections;
 import com.fate1412.crmSystem.utils.TableResultData;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -49,22 +53,40 @@ public class OrderProductServiceImpl extends ServiceImpl<OrderProductMapper, Ord
     private ITableOptionService tableOptionService;
     
     @Override
-    public JsonResult<?> updateById(OrderProductUpdateDTO orderProductUpdateDTO) {
-        return updateByDTO(orderProductUpdateDTO, new MyEntity<OrderProduct>(new OrderProduct()) {
+    @Transactional
+    public JsonResult<?> updateByDTO(OrderProductUpdateDTO orderProductUpdateDTO) {
+        OrderProduct orderProduct = new OrderProduct();
+        BeanUtils.copyProperties(orderProductUpdateDTO,orderProduct);
+        return updateByEntity(orderProduct);
+    }
+    
+    @Override
+    @Transactional
+    public JsonResult<?> updateByEntity(OrderProduct orderProduct) {
+        return update(new MyEntity<OrderProduct>(orderProduct) {
             @Override
             public OrderProduct set(OrderProduct orderProduct) {
                 SysUser sysUser = sysUserService.thisUser();
                 orderProduct
                         .setUpdateTime(new Date())
-                .setUpdater(sysUser.getUserId());
+                        .setUpdater(sysUser.getUserId());
                 return orderProduct;
             }
         });
     }
     
     @Override
-    public JsonResult<?> add(OrderProductSelectDTO orderProductSelectDTO) {
-        return add(orderProductSelectDTO, new MyEntity<OrderProduct>(new OrderProduct()) {
+    @Transactional
+    public JsonResult<?> addDTO(OrderProductInsertDTO orderProductInsertDTO) {
+        OrderProduct orderProduct = new OrderProduct();
+        BeanUtils.copyProperties(orderProductInsertDTO,orderProduct);
+        return addEntity(orderProduct);
+    }
+    
+    @Override
+    @Transactional
+    public JsonResult<?> addEntity(OrderProduct orderProduct) {
+        return add(new MyEntity<OrderProduct>(orderProduct) {
             @Override
             public OrderProduct set(OrderProduct orderProduct) {
                 SysUser sysUser = sysUserService.thisUser();
@@ -72,7 +94,7 @@ public class OrderProductServiceImpl extends ServiceImpl<OrderProductMapper, Ord
                         .setCreateTime(new Date())
                         .setUpdateTime(new Date())
                         .setCreater(sysUser.getUserId())
-                .setUpdater(sysUser.getUserId());
+                        .setUpdater(sysUser.getUserId());
                 return orderProduct;
             }
         });
@@ -124,6 +146,11 @@ public class OrderProductServiceImpl extends ServiceImpl<OrderProductMapper, Ord
     }
     
     @Override
+    public <D> TableResultData getColumns(D dto) {
+        return getColumns(TableNames.orderProduct, dto,tableOptionService);
+    }
+    
+    @Override
     public List<IdToName> getOptions(String nameLike, Integer page) {
         QueryWrapper<OrderProduct> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda()
@@ -132,5 +159,15 @@ public class OrderProductServiceImpl extends ServiceImpl<OrderProductMapper, Ord
         IPage<OrderProduct> iPage = new Page<>(page,10);
         orderProductMapper.selectPage(iPage,queryWrapper);
         return IdToName.createList2(iPage.getRecords(), OrderProduct::getId, OrderProduct::getId);
+    }
+    
+    @Override
+    public List<OrderProductSelectDTO> getBySalesOrder(Long salesOrderId) {
+        QueryWrapper<OrderProduct> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda()
+                .eq(OrderProduct::getSalesOrderId, salesOrderId);
+        List<OrderProduct> orderProducts = orderProductMapper.selectList(queryWrapper);
+        List<?> dtoList = getDTOList(orderProducts);
+        return dtoList.stream().map(dto -> (OrderProductSelectDTO) dto).collect(Collectors.toList());
     }
 }

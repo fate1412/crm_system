@@ -61,14 +61,6 @@ public class ProductInsertDTO implements Serializable {
     @TableField("off_shelf_time")
     private Date offShelfTime;
     
-    /**
-     * 折扣(0-100)
-     */
-    @TableField("discount")
-    @TableTitle("折扣/%")
-    private Integer discount;
-    
-    
     public boolean isShelf() {
         Date date = new Date();
         return date.after(onShelfTime) && date.before(offShelfTime);

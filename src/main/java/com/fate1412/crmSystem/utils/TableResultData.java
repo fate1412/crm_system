@@ -14,6 +14,7 @@ import java.util.List;
 public class TableResultData {
     private List<TableColumn> tableColumns;
     private List<?> tableDataList;
+    private TableResultData child;
     private Long thisPage;
     private Long total;
     

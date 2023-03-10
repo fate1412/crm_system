@@ -90,14 +90,6 @@ public class ProductSelectDTO implements Serializable {
     private Date offShelfTime;
     
     /**
-     * 折扣(0-100)
-     */
-    @TableField("discount")
-    @TableTitle(value = "折扣/%",inserted = true)
-    private Integer discount;
-    
-    
-    /**
      * 创建人
      */
     @TableField("creater")

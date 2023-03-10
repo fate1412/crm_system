@@ -17,6 +17,7 @@ import com.fate1412.crmSystem.mainTable.service.ICustomerService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fate1412.crmSystem.security.service.ISysUserService;
 import com.fate1412.crmSystem.utils.*;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -85,9 +86,16 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     
     @Override
     @Transactional
-    public JsonResult<?> updateById(CustomerUpdateDTO customerUpdateDTO) {
-        return updateByDTO(customerUpdateDTO, new MyEntity<Customer>(new Customer()) {
-            
+    public JsonResult<?> updateByDTO(CustomerUpdateDTO customerUpdateDTO) {
+        Customer customer = new Customer();
+        BeanUtils.copyProperties(customerUpdateDTO,customer);
+        return updateByEntity(customer);
+    }
+    
+    @Override
+    @Transactional
+    public JsonResult<?> updateByEntity(Customer customer) {
+        return update(new MyEntity<Customer>(customer) {
             @Override
             public Customer set(Customer customer) {
                 SysUser sysUser = sysUserService.thisUser();
@@ -96,7 +104,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                         .setUpdateMember(sysUser.getUserId());
                 return customer;
             }
-            
+        
             @Override
             public ResultCode verification(Customer customer) {
                 return isRight(customer);
@@ -106,10 +114,18 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     
     @Override
     @Transactional
-    public JsonResult<?> add(CustomerInsertDTO customerInsertDTO) {
+    public JsonResult<?> addDTO(CustomerInsertDTO customerInsertDTO) {
+        Customer customer = new Customer();
+        BeanUtils.copyProperties(customerInsertDTO,customer);
+        return addEntity(customer);
+    }
+    
+    @Override
+    @Transactional
+    public JsonResult<?> addEntity(Customer customer) {
         SysUser sysUser = sysUserService.thisUser();
-        return add(customerInsertDTO, new MyEntity<Customer>(new Customer()) {
-            
+        return add(new MyEntity<Customer>(customer) {
+        
             @Override
             public Customer set(Customer customer) {
                 customer
@@ -119,7 +135,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                         .setUpdateMember(sysUser.getUserId());
                 return customer;
             }
-            
+        
             @Override
             public ResultCode verification(Customer customer) {
                 return isRight(customer);
