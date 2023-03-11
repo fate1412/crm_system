@@ -73,7 +73,9 @@ public class SalesOrderController {
             List<OrderProductSelectDTO> orderProductSelectDTOS = orderProductService.getBySalesOrder(dto.getId());
             List<SalesOrderChild> childList = MyCollections.copyListProperties(orderProductSelectDTOS, SalesOrderChild::new);
             TableResultData child = orderProductService.getColumns(new SalesOrderChild());
-            child.setTableDataList(childList);
+            if(!MyCollections.isEmpty(childList)) {
+                child.setTableDataList(childList);
+            }
             tableResultData.setChild(child);
         }
         return ResultTool.success(tableResultData);

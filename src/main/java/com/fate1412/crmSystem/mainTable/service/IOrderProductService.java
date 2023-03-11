@@ -32,4 +32,10 @@ public interface IOrderProductService extends IService<OrderProduct>, MyBaseServ
     JsonResult<?> updateByEntity(OrderProduct orderProduct);
     
     JsonResult<?> addEntity(OrderProduct orderProduct);
+    
+    boolean delById(Long id);
+    
+    boolean delByIds(List<Long> ids);
+    
+    boolean delBySalesOrderId(Long id);
 }

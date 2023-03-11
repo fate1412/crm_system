@@ -16,10 +16,17 @@ public class SalesOrderChild {
      * 产品id
      */
     @TableField("product_id")
-    @TableTitle(value = "产品id",link = true, formType = TableTitle.FormType.Select)
+    @TableTitle(value = "产品",link = true, formType = TableTitle.FormType.Select)
     private Long productId;
     
     private IdToName productIdR =new IdToName(TableNames.product);
+    
+    
+    /**
+     * 销售订单id
+     */
+    @TableField("sales_order_id")
+    private Long salesOrderId;
     
     /**
      * 购买数量

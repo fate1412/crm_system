@@ -6,20 +6,20 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fate1412.crmSystem.customTable.service.ITableOptionService;
 import com.fate1412.crmSystem.mainTable.constant.TableNames;
+import com.fate1412.crmSystem.mainTable.dto.child.SalesOrderChild;
 import com.fate1412.crmSystem.mainTable.dto.insert.OrderProductInsertDTO;
 import com.fate1412.crmSystem.mainTable.dto.select.OrderProductSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.update.OrderProductUpdateDTO;
 import com.fate1412.crmSystem.mainTable.mapper.*;
 import com.fate1412.crmSystem.mainTable.pojo.OrderProduct;
 import com.fate1412.crmSystem.mainTable.pojo.Product;
+import com.fate1412.crmSystem.mainTable.pojo.SalesOrder;
 import com.fate1412.crmSystem.mainTable.service.IOrderProductService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fate1412.crmSystem.security.pojo.SysUser;
 import com.fate1412.crmSystem.security.service.ISysUserService;
-import com.fate1412.crmSystem.utils.IdToName;
-import com.fate1412.crmSystem.utils.JsonResult;
-import com.fate1412.crmSystem.utils.MyCollections;
-import com.fate1412.crmSystem.utils.TableResultData;
+import com.fate1412.crmSystem.utils.*;
+import com.sun.org.apache.xpath.internal.operations.Or;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -63,14 +63,28 @@ public class OrderProductServiceImpl extends ServiceImpl<OrderProductMapper, Ord
     @Override
     @Transactional
     public JsonResult<?> updateByEntity(OrderProduct orderProduct) {
+        SysUser sysUser = sysUserService.thisUser();
+        //查询产品
+        Product product = productMapper.selectById(orderProduct.getProductId());
         return update(new MyEntity<OrderProduct>(orderProduct) {
             @Override
             public OrderProduct set(OrderProduct orderProduct) {
-                SysUser sysUser = sysUserService.thisUser();
                 orderProduct
+                        .setOriginalPrices(orderProduct.getProductNum() * product.getPrice())//总价
+                        .setDiscountPrices(orderProduct.getOriginalPrices() * orderProduct.getDiscount() / 100)//折后总价
                         .setUpdateTime(new Date())
                         .setUpdater(sysUser.getUserId());
                 return orderProduct;
+            }
+    
+            @Override
+            public ResultCode verification(OrderProduct orderProduct) {
+                return isRight(orderProduct);
+            }
+    
+            @Override
+            public boolean after(OrderProduct orderProduct) {
+                return afterUpdateSalesOrder(orderProduct.getSalesOrderId());
             }
         });
     }
@@ -86,18 +100,63 @@ public class OrderProductServiceImpl extends ServiceImpl<OrderProductMapper, Ord
     @Override
     @Transactional
     public JsonResult<?> addEntity(OrderProduct orderProduct) {
+        SysUser sysUser = sysUserService.thisUser();
+        //查询产品
+        Product product = productMapper.selectById(orderProduct.getProductId());
         return add(new MyEntity<OrderProduct>(orderProduct) {
             @Override
             public OrderProduct set(OrderProduct orderProduct) {
-                SysUser sysUser = sysUserService.thisUser();
                 orderProduct
+                        .setOriginalPrices(orderProduct.getProductNum() * product.getPrice())//总价
+                        .setDiscountPrices(orderProduct.getOriginalPrices() * orderProduct.getDiscount() / 100)//折后总价
                         .setCreateTime(new Date())
                         .setUpdateTime(new Date())
                         .setCreater(sysUser.getUserId())
                         .setUpdater(sysUser.getUserId());
                 return orderProduct;
             }
+    
+            @Override
+            public ResultCode verification(OrderProduct orderProduct) {
+                return isRight(orderProduct);
+            }
+    
+            @Override
+            public boolean after(OrderProduct orderProduct) {
+                return afterUpdateSalesOrder(orderProduct.getSalesOrderId());
+            }
         });
+    }
+    
+    @Override
+    public boolean delById(Long id) {
+        OrderProduct orderProduct = getById(id);
+        if (removeById(id)) {
+            return afterUpdateSalesOrder(orderProduct.getSalesOrderId());
+        }
+        return false;
+    }
+    
+    @Override
+    public boolean delByIds(List<Long> ids) {
+        if (MyCollections.isEmpty(ids)) {
+            return true;
+        }
+        List<OrderProduct> orderProductList = listByIds(ids);
+        if (removeByIds(ids)) {
+            return afterUpdateSalesOrder(orderProductList.get(0).getSalesOrderId());
+        }
+        return false;
+    }
+    
+    @Override
+    public boolean delBySalesOrderId(Long id) {
+        QueryWrapper<OrderProduct> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(OrderProduct::getSalesOrderId,id);
+        if (remove(queryWrapper)) {
+            return afterUpdateSalesOrder(id);
+        }
+        return false;
     }
     
     @Override
@@ -169,5 +228,55 @@ public class OrderProductServiceImpl extends ServiceImpl<OrderProductMapper, Ord
         List<OrderProduct> orderProducts = orderProductMapper.selectList(queryWrapper);
         List<?> dtoList = getDTOList(orderProducts);
         return dtoList.stream().map(dto -> (OrderProductSelectDTO) dto).collect(Collectors.toList());
+    }
+    
+    private ResultCode isRight(OrderProduct orderProduct) {
+        OrderProduct old;
+        if (orderProduct.getProductId() != null) {
+            old = orderProductMapper.selectById(orderProduct.getId());
+        }
+        //关联产品
+        if (orderProduct.getProductId() == null) {
+            return ResultCode.PARAM_IS_BLANK;
+        }
+        Product product = productMapper.selectById(orderProduct.getProductId());
+        if (product == null) {
+            return ResultCode.PARAM_NOT_VALID;
+        }
+        Integer stock = product.getStock();//库存
+        //关联订单
+        if (orderProduct.getSalesOrderId() == null) {
+            return ResultCode.PARAM_IS_BLANK;
+        }
+        SalesOrder salesOrder = salesOrderMapper.selectById(orderProduct.getSalesOrderId());
+        if (salesOrder == null) {
+            return ResultCode.PARAM_NOT_VALID;
+        }
+        //购买数量
+        if (orderProduct.getProductNum() <= 0 || orderProduct.getProductNum() > stock) {
+            return ResultCode.PARAM_NOT_VALID;
+        }
+        //发货数量
+        if (orderProduct.getInvoiceNum() !=null && (orderProduct.getInvoiceNum() <= 0 && orderProduct.getInvoiceNum() > orderProduct.getProductNum())) {
+            return ResultCode.PARAM_NOT_VALID;
+        }
+        return ResultCode.SUCCESS;
+    }
+    
+    private boolean  afterUpdateSalesOrder(Long salesOrderId) {
+        List<OrderProductSelectDTO> salesOrderDTOList = getBySalesOrder(salesOrderId);
+        Double originalPrice = 0d;
+        Double discountPrice = 0d;
+        //重新计算总价
+        for (OrderProductSelectDTO dto : salesOrderDTOList) {
+            originalPrice += dto.getOriginalPrices();
+            discountPrice += dto.getDiscountPrices();
+        }
+        SalesOrder salesOrder = new SalesOrder();
+        salesOrder
+                .setId(salesOrderId)
+                .setOriginalPrice(originalPrice)
+                .setDiscountPrice(discountPrice);
+        return salesOrderMapper.updateById(salesOrder) > 0;
     }
 }

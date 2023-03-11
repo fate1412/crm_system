@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -102,80 +103,26 @@ public class SalesOrderServiceImpl extends ServiceImpl<SalesOrderMapper, SalesOr
         //获取当前登录用户
         SysUser sysUser = sysUserService.thisUser();
         
-        List<SalesOrderChild> childList = salesOrderUpdateDTO.getChildList();
-        if (MyCollections.isEmpty(childList)) {
-        
-        }
-        //转换威威OrderProduct集合
-        List<OrderProduct> childProducts = MyCollections.copyListProperties(childList, OrderProduct::new);
-        //提取子对象中的产品id
-        List<Long> productIds = MyCollections.objects2List(childList, SalesOrderChild::getProductId);
-        //查询产品
-        List<Product> productList = productService.listByIds(productIds);
-        //获取产品价格
-        Map<Long, Double> productMap = MyCollections.list2MapL(productList, Product::getId, Product::getPrice);
-        
-        Double originalPrice = 0d;
-        Double discountPrice = 0d;
-        //设置订单产品更新参数
-        for (OrderProduct orderProduct : childProducts) {
-            Long id = orderProduct.getProductId();
-            orderProduct
-                    .setSalesOrderId(salesOrderUpdateDTO.getId())
-                    .setOriginalPrices(orderProduct.getProductNum() * productMap.get(id))//总价
-                    .setDiscountPrices(orderProduct.getOriginalPrices() * orderProduct.getDiscount() / 100)//折后总价
-                    .setUpdater(sysUser.getUserId())
-                    .setUpdateTime(new Date());
-    
-            originalPrice += orderProduct.getOriginalPrices();
-            discountPrice += orderProduct.getDiscountPrices();
-        }
-        //查询订单产品
-        QueryWrapper<OrderProduct> qw1 = new QueryWrapper<>();
-        qw1.lambda().eq(OrderProduct::getSalesOrderId,salesOrderUpdateDTO.getId());
-        List<OrderProduct> orderProductList = orderProductService.list(qw1);
-        
-        //删除
-        List<OrderProduct> delDifference = MyCollections.difference(orderProductList, childProducts, OrderProduct::getId);
-        //更新
-        List<OrderProduct> intersection = MyCollections.intersection(childProducts, orderProductList, OrderProduct::getId);
-        //新增
-        List<OrderProduct> addDifference = MyCollections.removeAll(childProducts, intersection);
-    
-        Double finalOriginalPrice = originalPrice;
-        Double finalDiscountPrice = discountPrice;
         SalesOrder salesOrder = new SalesOrder();
-        BeanUtils.copyProperties(salesOrderUpdateDTO,salesOrder);
+        BeanUtils.copyProperties(salesOrderUpdateDTO, salesOrder);
         return update(new MyEntity<SalesOrder>(salesOrder) {
             @Override
             public SalesOrder set(SalesOrder salesOrder) {
                 salesOrder
-                        .setOriginalPrice(finalOriginalPrice)
-                        .setDiscountPrice(finalDiscountPrice)
                         .setUpdateTime(new Date())
                         .setUpdater(sysUser.getUserId());
                 return salesOrder;
             }
-    
+            
             @Override
             public ResultCode verification(SalesOrder salesOrder) {
-                return super.verification(salesOrder);
+                return isRight(salesOrder);
             }
-    
+            
             @Override
             public boolean after(SalesOrder salesOrder) {
-                //更新订单产品
-                for (OrderProduct orderProduct : intersection) {
-                    orderProductService.updateByEntity(orderProduct);
-                }
-                //删除订单产品
-                List<Long> delIds = MyCollections.objects2List(delDifference, OrderProduct::getId);
-                orderProductService.removeByIds(delIds);
-                //新增
-                for (OrderProduct orderProduct : addDifference) {
-                    orderProductService.addEntity(orderProduct);
-                }
-                return true;
+                List<SalesOrderChild> childList = salesOrderUpdateDTO.getChildList();
+                return afterUpdateChild(salesOrder, childList);
             }
         });
     }
@@ -184,7 +131,7 @@ public class SalesOrderServiceImpl extends ServiceImpl<SalesOrderMapper, SalesOr
     @Transactional
     public JsonResult<?> addDTO(SalesOrderInsertDTO salesOrderInsertDTO) {
         SalesOrder salesOrder = new SalesOrder();
-        BeanUtils.copyProperties(salesOrderInsertDTO,salesOrder);
+        BeanUtils.copyProperties(salesOrderInsertDTO, salesOrder);
         return add(new MyEntity<SalesOrder>(salesOrder) {
             @Override
             public SalesOrder set(SalesOrder salesOrder) {
@@ -198,12 +145,14 @@ public class SalesOrderServiceImpl extends ServiceImpl<SalesOrderMapper, SalesOr
             }
     
             @Override
+            public ResultCode verification(SalesOrder salesOrder) {
+                return isRight(salesOrder);
+            }
+    
+            @Override
             public boolean after(SalesOrder salesOrder) {
-                salesOrderInsertDTO.setId(salesOrder.getId());
-                SalesOrderUpdateDTO salesOrderUpdateDTO = new SalesOrderUpdateDTO();
-                BeanUtils.copyProperties(salesOrderInsertDTO,salesOrderInsertDTO);
-                JsonResult<?> jsonResult = updateByDTO(salesOrderUpdateDTO);
-                return jsonResult.getSuccess();
+                List<SalesOrderChild> childList = salesOrderInsertDTO.getChildList();
+                return afterUpdateChild(salesOrder, childList);
             }
         });
     }
@@ -222,5 +171,51 @@ public class SalesOrderServiceImpl extends ServiceImpl<SalesOrderMapper, SalesOr
         IPage<SalesOrder> iPage = new Page<>(page, 10);
         salesOrderMapper.selectPage(iPage, queryWrapper);
         return IdToName.createList2(iPage.getRecords(), SalesOrder::getId, SalesOrder::getId);
+    }
+    
+    private boolean afterUpdateChild(SalesOrder salesOrder, List<SalesOrderChild> childList) {
+        //删除所有订单产品
+        if (MyCollections.isEmpty(childList)) {
+            orderProductService.delBySalesOrderId(salesOrder.getId());
+        }
+        //转换威威OrderProduct集合
+        List<OrderProduct> childProducts = MyCollections.copyListProperties(childList, OrderProduct::new);
+        childProducts = childProducts.stream().peek(orderProduct -> orderProduct.setSalesOrderId(salesOrder.getId())).collect(Collectors.toList());
+        //查询订单产品
+        QueryWrapper<OrderProduct> qw1 = new QueryWrapper<>();
+        qw1.lambda().eq(OrderProduct::getSalesOrderId, salesOrder.getId());
+        List<OrderProduct> orderProductList = orderProductService.list(qw1);
+        
+        //删除
+        List<OrderProduct> delDifference = MyCollections.difference(orderProductList, childProducts, OrderProduct::getId);
+        //更新
+        List<OrderProduct> intersection = MyCollections.intersection(childProducts, orderProductList, OrderProduct::getId);
+        //新增
+        List<OrderProduct> addDifference = MyCollections.removeAll(childProducts, intersection);
+        //更新订单产品
+        for (OrderProduct orderProduct : intersection) {
+            orderProductService.updateByEntity(orderProduct);
+        }
+        //删除订单产品
+        List<Long> delIds = MyCollections.objects2List(delDifference, OrderProduct::getId);
+        orderProductService.delByIds(delIds);
+        //新增
+        for (OrderProduct orderProduct : addDifference) {
+            orderProductService.addEntity(orderProduct);
+        }
+        return true;
+    }
+    
+    private ResultCode isRight(SalesOrder salesOrder) {
+        if (salesOrder.getCustomerId() == null) {
+            return ResultCode.PARAM_IS_BLANK;
+        }
+        if (salesOrder.getInvoiceStatus() == null) {
+            return ResultCode.PARAM_IS_BLANK;
+        }
+        if (tableOptionService.selectOptions(TableNames.salesOrder,"'invoiceStatus'",salesOrder.getInvoiceStatus())) {
+            return ResultCode.PARAM_NOT_VALID;
+        }
+        return ResultCode.SUCCESS;
     }
 }
