@@ -6,19 +6,20 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fate1412.crmSystem.customTable.service.ITableOptionService;
 import com.fate1412.crmSystem.mainTable.constant.TableNames;
+import com.fate1412.crmSystem.mainTable.dto.child.StockListChild;
 import com.fate1412.crmSystem.mainTable.dto.insert.StockListInsertDTO;
 import com.fate1412.crmSystem.mainTable.dto.select.StockListSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.update.StockListUpdateDTO;
+import com.fate1412.crmSystem.mainTable.pojo.OrderProduct;
 import com.fate1412.crmSystem.mainTable.pojo.StockList;
 import com.fate1412.crmSystem.mainTable.mapper.StockListMapper;
+import com.fate1412.crmSystem.mainTable.pojo.StockListProduct;
+import com.fate1412.crmSystem.mainTable.service.IStockListProductService;
 import com.fate1412.crmSystem.mainTable.service.IStockListService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fate1412.crmSystem.security.pojo.SysUser;
 import com.fate1412.crmSystem.security.service.ISysUserService;
-import com.fate1412.crmSystem.utils.IdToName;
-import com.fate1412.crmSystem.utils.JsonResult;
-import com.fate1412.crmSystem.utils.MyCollections;
-import com.fate1412.crmSystem.utils.TableResultData;
+import com.fate1412.crmSystem.utils.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -44,6 +46,8 @@ public class StockListServiceImpl extends ServiceImpl<StockListMapper, StockList
     private ISysUserService sysUserService;
     @Autowired
     private ITableOptionService tableOptionService;
+    @Autowired
+    private IStockListProductService stockListProductService;
     
     
     @Override
@@ -82,6 +86,7 @@ public class StockListServiceImpl extends ServiceImpl<StockListMapper, StockList
     public JsonResult<?> updateByDTO(StockListUpdateDTO stockListUpdateDTO) {
         StockList stockList = new StockList();
         BeanUtils.copyProperties(stockListUpdateDTO,stockList);
+        List<StockListChild> childList = stockListUpdateDTO.getChildList();
         return update(new MyEntity<StockList>(stockList) {
             @Override
             public StockList set(StockList stockList) {
@@ -91,6 +96,16 @@ public class StockListServiceImpl extends ServiceImpl<StockListMapper, StockList
                         .setUpdater(sysUser.getUserId());
                 return stockList;
             }
+    
+            @Override
+            public ResultCode verification(StockList stockList) {
+                return isRight(stockList);
+            }
+    
+            @Override
+            public boolean after(StockList stockList) {
+                return afterUpdateChild(stockList, childList);
+            }
         });
     }
     
@@ -98,6 +113,7 @@ public class StockListServiceImpl extends ServiceImpl<StockListMapper, StockList
     public JsonResult<?> addDTO(StockListInsertDTO stockListInsertDTO) {
         StockList stockList = new StockList();
         BeanUtils.copyProperties(stockListInsertDTO,stockList);
+        List<StockListChild> childList = stockListInsertDTO.getChildList();
         return add(new MyEntity<StockList>(stockList) {
             @Override
             public StockList set(StockList stockList) {
@@ -109,7 +125,25 @@ public class StockListServiceImpl extends ServiceImpl<StockListMapper, StockList
                         .setUpdater(sysUser.getUserId());
                 return stockList;
             }
+    
+            @Override
+            public ResultCode verification(StockList stockList) {
+                return isRight(stockList);
+            }
+    
+            @Override
+            public boolean after(StockList stockList) {
+                return afterUpdateChild(stockList, childList);
+            }
         });
+    }
+    
+    @Override
+    public boolean delById(Long id) {
+        if (stockListProductService.delByStockListId(id)) {
+            return removeById(id);
+        }
+        return false;
     }
     
     @Override
@@ -126,5 +160,59 @@ public class StockListServiceImpl extends ServiceImpl<StockListMapper, StockList
         IPage<StockList> iPage = new Page<>(page,10);
         stockListMapper.selectPage(iPage,queryWrapper);
         return IdToName.createList2(iPage.getRecords(), StockList::getId, StockList::getId);
+    }
+    
+    private ResultCode isRight(StockList stockList) {
+        //总价
+        if (stockList.getPrices() != null && stockList.getPrices() <0) {
+            return ResultCode.PARAM_NOT_VALID;
+        }
+        if (stockList.getOwner() != null) {
+            SysUser user = sysUserService.getById(stockList.getOwner());
+            if (user == null) {
+                return ResultCode.PARAM_NOT_VALID;
+            }
+        }
+        return ResultCode.SUCCESS;
+    }
+    
+    private boolean afterUpdateChild(StockList stockList, List<StockListChild> childList) {
+        if (MyCollections.isEmpty(childList)) {
+            //删除所有备货单产品
+            stockList.setPrices(0d);
+            if (updateById(stockList)) {
+                return stockListProductService.delByStockListId(stockList.getId());
+            }
+            return false;
+        }
+    
+        childList = childList.stream().peek(t -> t.setStockListId(stockList.getId())).collect(Collectors.toList());
+        
+        QueryWrapper<StockListProduct> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(StockListProduct::getStockListId, stockList.getId());
+        List<StockListProduct> list = stockListProductService.list(queryWrapper);
+    
+        List<StockListProduct> children = MyCollections.copyListProperties(childList, StockListProduct::new);
+    
+        //删除
+        List<StockListProduct> delDifference = MyCollections.difference(list, children, StockListProduct::getId);
+        //更新
+        List<StockListProduct> intersection = MyCollections.intersection(children, list, StockListProduct::getId);
+        //新增
+        List<StockListProduct> addDifference = MyCollections.removeAll(children, intersection);
+    
+        //删除备货单产品
+        List<Long> ids = MyCollections.objects2List(delDifference, StockListProduct::getId);
+        stockListProductService.delByIds(ids);
+        
+        //更新备货单产品
+        for (StockListProduct slp : intersection) {
+            stockListProductService.updateByEntity(slp);
+        }
+        //新增备货单产品
+        for (StockListProduct slp : addDifference) {
+            stockListProductService.addEntity(slp);
+        }
+        return true;
     }
 }

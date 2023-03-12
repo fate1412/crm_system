@@ -60,6 +60,13 @@ public class StockListProductSelectDTO implements Serializable {
     private Integer stockNum;
     
     /**
+     * 价格
+     */
+    @TableField("price")
+    @TableTitle(value = "价格",inserted = true)
+    private Double price;
+    
+    /**
      * 创建时间
      */
     @TableField("create_time")

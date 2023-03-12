@@ -37,14 +37,14 @@ public class StockListSelectDTO implements Serializable {
      * 备货日期
      */
     @TableField("stock_up_date")
-    @TableTitle(value = "备货日期", disabled = true, formType = FormType.Date,inserted = true)
+    @TableTitle(value = "备货日期", formType = FormType.Date,inserted = true)
     private Date stockUpDate;
     
     /**
      * 总价
      */
     @TableField("prices")
-    @TableTitle(value = "总价/元",inserted = true)
+    @TableTitle(value = "总价/元",disabled = true)
     private Double prices;
     
     /**

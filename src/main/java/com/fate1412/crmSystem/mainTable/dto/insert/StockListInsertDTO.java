@@ -6,12 +6,14 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.fate1412.crmSystem.annotations.TableTitle;
 import com.fate1412.crmSystem.annotations.TableTitle.FormType;
 import com.fate1412.crmSystem.mainTable.constant.TableNames;
+import com.fate1412.crmSystem.mainTable.dto.child.StockListChild;
 import com.fate1412.crmSystem.utils.IdToName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * <p>
@@ -76,37 +78,7 @@ public class StockListInsertDTO implements Serializable {
     
     private IdToName ownerR = new IdToName(TableNames.sysUser);
     
-    /**
-     * 创建时间
-     */
-    @TableField("create_time")
-    @TableTitle(value = "创建时间", disabled = true, formType = FormType.DateTime)
-    private Date createTime;
-    
-    /**
-     * 更新时间
-     */
-    @TableField("update_time")
-    @TableTitle(value = "更新时间", disabled = true, formType = FormType.DateTime)
-    private Date updateTime;
-    
-    /**
-     * 创建人
-     */
-    @TableField("creater")
-    @TableTitle(value = "创建人", link = true, disabled = true, formType = FormType.Select)
-    private Long creater;
-    
-    private IdToName createrR = new IdToName(TableNames.sysUser);
-    
-    /**
-     * 修改人
-     */
-    @TableField("updater")
-    @TableTitle(value = "修改人", link = true, disabled = true, formType = FormType.Select)
-    private Long updater;
-    
-    private IdToName updaterR = new IdToName(TableNames.sysUser);
-    
+    private List<StockListChild> childList;
+
     
 }

@@ -19,4 +19,6 @@ public interface ISalesOrderService extends IService<SalesOrder>, MyBaseService<
     JsonResult<?> updateByDTO(SalesOrderUpdateDTO salesOrderUpdateDTO);
     
     JsonResult<?> addDTO(SalesOrderInsertDTO salesOrderInsertDTO);
+    
+    boolean delById(Long id);
 }

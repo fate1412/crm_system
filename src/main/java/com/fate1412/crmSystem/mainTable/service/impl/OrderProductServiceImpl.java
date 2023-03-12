@@ -264,6 +264,9 @@ public class OrderProductServiceImpl extends ServiceImpl<OrderProductMapper, Ord
     
     private boolean  afterUpdateSalesOrder(Long salesOrderId) {
         List<OrderProductSelectDTO> salesOrderDTOList = getDTOBySalesOrderId(salesOrderId);
+        if (MyCollections.isEmpty(salesOrderDTOList)) {
+            return true;
+        }
         Double originalPrice = 0d;
         Double discountPrice = 0d;
         //重新计算总价

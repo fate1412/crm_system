@@ -19,4 +19,6 @@ public interface IStockListService extends IService<StockList>, MyBaseService<St
     JsonResult<?> updateByDTO(StockListUpdateDTO stockListUpdateDTO);
     
     JsonResult<?> addDTO(StockListInsertDTO stockListInsertDTO);
+    
+    boolean delById(Long id);
 }

@@ -1,4 +1,4 @@
-package com.fate1412.crmSystem.mainTable.dto.insert;
+package com.fate1412.crmSystem.mainTable.dto.child;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -26,19 +26,18 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = false)
 @TableName("stock_list_product")
 @Accessors(chain = true)
-public class StockListProductInsertDTO implements Serializable {
+public class StockListChild implements Serializable {
     
     private static final long serialVersionUID = 1L;
     
     @TableId("id")
-    @TableTitle(value = "备货单产品Id", fixed = true, disabled = true)
+    @TableTitle(value = "备货单产品Id", disabled = true)
     private Long id;
     
     /**
      * 备货单id
      */
     @TableField("stock_list_id")
-    @TableTitle(value = "备货单Id", link = true, disabled = true, formType = FormType.Select)
     private Long stockListId;
     
     private IdToName stockListIdR = new IdToName(TableNames.stockList);
@@ -47,7 +46,7 @@ public class StockListProductInsertDTO implements Serializable {
      * 产品id
      */
     @TableField("product_id")
-    @TableTitle(value = "产品id", link = true, disabled = true, formType = FormType.Select)
+    @TableTitle(value = "产品", link = true, formType = FormType.Select)
     private Long productId;
     
     private IdToName productIdR = new IdToName(TableNames.product);
@@ -56,14 +55,15 @@ public class StockListProductInsertDTO implements Serializable {
      * 备货数量
      */
     @TableField("stock_num")
-    @TableTitle("备货数量")
+    @TableTitle(value = "备货数量")
     private Integer stockNum;
     
     /**
      * 价格
      */
     @TableField("price")
+    @TableTitle(value = "单价")
     private Double price;
     
-    
+    private final Boolean isEditor = false;
 }

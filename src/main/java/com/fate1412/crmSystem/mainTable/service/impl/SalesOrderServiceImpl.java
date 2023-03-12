@@ -158,6 +158,14 @@ public class SalesOrderServiceImpl extends ServiceImpl<SalesOrderMapper, SalesOr
     }
     
     @Override
+    public boolean delById(Long id) {
+        if (orderProductService.delBySalesOrderId(id)) {
+            return removeById(id);
+        }
+        return false;
+    }
+    
+    @Override
     public TableResultData getColumns() {
         return getColumns(TableNames.salesOrder, new SalesOrderSelectDTO(), tableOptionService);
     }

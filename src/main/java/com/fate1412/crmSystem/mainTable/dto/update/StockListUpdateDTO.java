@@ -4,12 +4,14 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fate1412.crmSystem.annotations.TableTitle;
+import com.fate1412.crmSystem.mainTable.dto.child.StockListChild;
 import com.fate1412.crmSystem.utils.IdToName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * <p>
@@ -74,5 +76,6 @@ public class StockListUpdateDTO implements Serializable {
     @TableTitle(value = "负责人",link = true,disabled = true)
     private IdToName ownerR;
     
+    private List<StockListChild> childList;
 
 }

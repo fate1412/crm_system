@@ -90,7 +90,7 @@ public class SalesOrderController {
     @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/delete")
     public JsonResult<?> delete(@RequestBody SalesOrderSelectDTO salesOrderSelectDTO) {
-        boolean b = salesOrderService.removeById(salesOrderSelectDTO.getId());
+        boolean b = salesOrderService.delById(salesOrderSelectDTO.getId());
         return ResultTool.create(b);
     }
     

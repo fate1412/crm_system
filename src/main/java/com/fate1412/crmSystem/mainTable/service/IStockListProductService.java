@@ -2,10 +2,16 @@ package com.fate1412.crmSystem.mainTable.service;
 
 import com.fate1412.crmSystem.base.MyBaseService;
 import com.fate1412.crmSystem.mainTable.dto.insert.StockListProductInsertDTO;
+import com.fate1412.crmSystem.mainTable.dto.select.OrderProductSelectDTO;
+import com.fate1412.crmSystem.mainTable.dto.select.StockListProductSelectDTO;
+import com.fate1412.crmSystem.mainTable.dto.select.StockListSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.update.StockListProductUpdateDTO;
 import com.fate1412.crmSystem.mainTable.pojo.StockListProduct;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fate1412.crmSystem.utils.JsonResult;
+import com.fate1412.crmSystem.utils.TableResultData;
+
+import java.util.List;
 
 /**
  * <p>
@@ -19,4 +25,18 @@ public interface IStockListProductService extends IService<StockListProduct>, My
     JsonResult<?> updateByDTO(StockListProductUpdateDTO stockListProductUpdateDTO);
     
     JsonResult<?> addDTO(StockListProductInsertDTO stockListProductInsertDTO);
+    
+    JsonResult<?> updateByEntity(StockListProduct stockListProduct);
+    
+    JsonResult<?> addEntity(StockListProduct stockListProduct);
+    
+    List<StockListProductSelectDTO> getDTOByStockListId(Long stockListId);
+    
+    <D> TableResultData getColumns(D dto);
+    
+    boolean delById(Long id);
+    
+    boolean delByIds(List<Long> ids);
+    
+    boolean delByStockListId(Long id);
 }

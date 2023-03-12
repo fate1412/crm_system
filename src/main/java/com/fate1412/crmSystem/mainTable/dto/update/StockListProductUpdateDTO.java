@@ -47,6 +47,12 @@ public class StockListProductUpdateDTO implements Serializable {
      */
     @TableField("stock_num")
     private Integer stockNum;
+    
+    /**
+     * 价格
+     */
+    @TableField("price")
+    private Double price;
 
 
 
