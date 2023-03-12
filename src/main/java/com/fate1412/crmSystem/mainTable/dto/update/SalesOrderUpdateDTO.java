@@ -28,18 +28,6 @@ public class SalesOrderUpdateDTO implements Serializable {
     private Long id;
 
     /**
-     * 原价
-     */
-    @TableTitle("原价/元")
-    private Double originalPrice;
-
-    /**
-     * 折后价格
-     */
-    @TableTitle("折后价格/元")
-    private Double discountPrice;
-
-    /**
      * 是否通过
      */
     @TableTitle("是否通过")

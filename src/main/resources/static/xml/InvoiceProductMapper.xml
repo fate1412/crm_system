@@ -4,14 +4,39 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.fate1412.crmSystem.mainTable.pojo.InvoiceProduct">
-        <result column="invoice_id" property="invoiceId" />
-        <result column="product_id" property="productId" />
-        <result column="invoice_num" property="invoiceNum" />
-        <result column="create_time" property="createTime" />
-        <result column="update_time" property="updateTime" />
-        <result column="creater" property="creater" />
-        <result column="updater" property="updater" />
-        <result column="del_flag" property="delFlag" />
+        <result column="invoice_id" property="invoiceId"/>
+        <result column="product_id" property="productId"/>
+        <result column="invoice_num" property="invoiceNum"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="creater" property="creater"/>
+        <result column="updater" property="updater"/>
     </resultMap>
+
+    <select id="getUnInvoiceNum" resultType="com.fate1412.crmSystem.mainTable.pojo.OrderProduct">
+        select product_id, sum(product_num) as 'product_num', sum(invoice_num) as 'invoice_num'
+        from order_product
+        where sales_order_id = (select id from sales_order where id = #{salesOrderId})
+        group by product_id
+    </select>
+
+    <select id="getOrderProductList" resultType="com.fate1412.crmSystem.mainTable.pojo.OrderProduct">
+        select *
+        from order_product
+        where sales_order_id = (select id from sales_order where id = #{salesOrderId})
+          and product_id = #{productId}
+    </select>
+
+    <select id="getInvoiceProductList" resultType="com.fate1412.crmSystem.mainTable.pojo.InvoiceProduct">
+        select *
+        from invoice_product ip
+        where invoice_id in (select id from invoice i2 where sales_order_id = #{salesOrderId})
+        <if test="invoiceIds != null">
+            and invoice_id not in
+            <foreach collection="invoiceIds" open="(" separator="," close=")" item="invoiceId">
+                #{invoiceId}
+            </foreach>
+        </if>
+    </select>
 
 </mapper>

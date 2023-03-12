@@ -2,8 +2,12 @@ package com.fate1412.crmSystem.mainTable.controller;
 
 
 import com.fate1412.crmSystem.base.MyPage;
+import com.fate1412.crmSystem.mainTable.dto.child.InvoiceChild;
+import com.fate1412.crmSystem.mainTable.dto.insert.InvoiceInsertDTO;
+import com.fate1412.crmSystem.mainTable.dto.select.InvoiceProductSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.select.InvoiceSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.update.InvoiceUpdateDTO;
+import com.fate1412.crmSystem.mainTable.service.IInvoiceProductService;
 import com.fate1412.crmSystem.mainTable.service.IInvoiceService;
 import com.fate1412.crmSystem.utils.*;
 import org.apache.ibatis.annotations.Param;
@@ -26,11 +30,14 @@ import java.util.List;
 public class InvoiceController {
     @Autowired
     private IInvoiceService invoiceService;
+    @Autowired
+    private IInvoiceProductService invoiceProductService;
     
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/getColumns")
     public JsonResult<Object> getColumns() {
         TableResultData tableResultData = invoiceService.getColumns();
+        tableResultData.setChild(invoiceService.getColumns(new InvoiceChild()));
         return ResultTool.success(tableResultData);
     }
     
@@ -49,16 +56,28 @@ public class InvoiceController {
     
     @PreAuthorize("isAuthenticated()")
     @PutMapping("/add")
-    public JsonResult<?> add(@RequestBody InvoiceSelectDTO invoiceSelectDTO) {
-        return invoiceService.addDTO(invoiceSelectDTO);
+    public JsonResult<?> add(@RequestBody InvoiceInsertDTO invoiceInsertDTO) {
+        return invoiceService.addDTO(invoiceInsertDTO);
     }
     
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/select")
     public JsonResult<Object> select(@Param("id") Long id) {
-        List<?> invoiceSelectDTOList = invoiceService.getDTOListById(MyCollections.toList(id));
+        List<?> dtoList = invoiceService.getDTOListById(MyCollections.toList(id));
         TableResultData tableResultData = invoiceService.getColumns();
-        tableResultData.setTableDataList(invoiceSelectDTOList);
+        tableResultData.setTableDataList(dtoList);
+        if (MyCollections.isEmpty(dtoList)) {
+            tableResultData.setChild(new TableResultData());
+        } else {
+            InvoiceSelectDTO dto = (InvoiceSelectDTO) dtoList.get(0);
+            List<InvoiceProductSelectDTO> invoiceProductSelectDTOS = invoiceProductService.getDTOByInvoiceId(dto.getId());
+            List<InvoiceChild> childList = MyCollections.copyListProperties(invoiceProductSelectDTOS, InvoiceChild::new);
+            TableResultData child = invoiceProductService.getColumns(new InvoiceChild());
+            if(!MyCollections.isEmpty(childList)) {
+                child.setTableDataList(childList);
+            }
+            tableResultData.setChild(child);
+        }
         return ResultTool.success(tableResultData);
     }
     
@@ -71,7 +90,7 @@ public class InvoiceController {
     @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/delete")
     public JsonResult<?> delete(@RequestBody InvoiceSelectDTO invoiceSelectDTO) {
-        boolean b = invoiceService.removeById(invoiceSelectDTO.getId());
+        boolean b = invoiceService.delById(invoiceSelectDTO.getId());
         return ResultTool.create(b);
     }
     

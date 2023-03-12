@@ -7,15 +7,18 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fate1412.crmSystem.customTable.service.ITableOptionService;
 import com.fate1412.crmSystem.mainTable.constant.TableNames;
 import com.fate1412.crmSystem.mainTable.dto.select.InvoiceProductSelectDTO;
+import com.fate1412.crmSystem.mainTable.dto.select.OrderProductSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.update.InvoiceProductUpdateDTO;
 import com.fate1412.crmSystem.mainTable.mapper.InvoiceMapper;
 import com.fate1412.crmSystem.mainTable.mapper.ProductMapper;
+import com.fate1412.crmSystem.mainTable.pojo.Invoice;
 import com.fate1412.crmSystem.mainTable.pojo.InvoiceProduct;
 import com.fate1412.crmSystem.mainTable.mapper.InvoiceProductMapper;
+import com.fate1412.crmSystem.mainTable.pojo.OrderProduct;
 import com.fate1412.crmSystem.mainTable.pojo.Product;
 import com.fate1412.crmSystem.mainTable.service.IInvoiceProductService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.fate1412.crmSystem.security.mapper.SysUserMapper;
+import com.fate1412.crmSystem.mainTable.service.IOrderProductService;
 import com.fate1412.crmSystem.security.pojo.SysUser;
 import com.fate1412.crmSystem.security.service.ISysUserService;
 import com.fate1412.crmSystem.utils.*;
@@ -23,10 +26,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -41,8 +42,6 @@ public class InvoiceProductServiceImpl extends ServiceImpl<InvoiceProductMapper,
     @Autowired
     private InvoiceMapper invoiceMapper;
     @Autowired
-    private SysUserMapper sysUserMapper;
-    @Autowired
     private InvoiceProductMapper invoiceProductMapper;
     @Autowired
     private ProductMapper productMapper;
@@ -50,16 +49,19 @@ public class InvoiceProductServiceImpl extends ServiceImpl<InvoiceProductMapper,
     private ITableOptionService tableOptionService;
     @Autowired
     private ISysUserService sysUserService;
+    @Autowired
+    private IOrderProductService orderProductService;
     
     @Override
     public JsonResult<?> updateByDTO(InvoiceProductUpdateDTO invoiceProductUpdateDTO) {
         InvoiceProduct invoiceProduct = new InvoiceProduct();
-        BeanUtils.copyProperties(invoiceProductUpdateDTO,invoiceProduct);
+        BeanUtils.copyProperties(invoiceProductUpdateDTO, invoiceProduct);
         return updateByEntity(invoiceProduct);
     }
     
     @Override
     public JsonResult<?> updateByEntity(InvoiceProduct invoiceProduct) {
+        InvoiceProduct old = getById(invoiceProduct.getId());
         return update(new MyEntity<InvoiceProduct>(invoiceProduct) {
             @Override
             public InvoiceProduct set(InvoiceProduct invoiceProduct) {
@@ -69,10 +71,15 @@ public class InvoiceProductServiceImpl extends ServiceImpl<InvoiceProductMapper,
                         .setUpdater(sysUser.getUserId());
                 return invoiceProduct;
             }
-        
+            
             @Override
             public ResultCode verification(InvoiceProduct invoiceProduct) {
-                return ResultCode.SUCCESS;
+                return isRight(invoiceProduct);
+            }
+            
+            @Override
+            public boolean after(InvoiceProduct invoiceProduct) {
+                return afterUpdate(invoiceProduct);
             }
         });
     }
@@ -80,7 +87,7 @@ public class InvoiceProductServiceImpl extends ServiceImpl<InvoiceProductMapper,
     @Override
     public JsonResult<?> addDTO(InvoiceProductSelectDTO invoiceProductSelectDTO) {
         InvoiceProduct invoiceProduct = new InvoiceProduct();
-        BeanUtils.copyProperties(invoiceProductSelectDTO,invoiceProduct);
+        BeanUtils.copyProperties(invoiceProductSelectDTO, invoiceProduct);
         return addEntity(invoiceProduct);
     }
     
@@ -97,12 +104,78 @@ public class InvoiceProductServiceImpl extends ServiceImpl<InvoiceProductMapper,
                         .setUpdater(sysUser.getUserId());
                 return invoiceProduct;
             }
-        
+            
             @Override
             public ResultCode verification(InvoiceProduct invoiceProduct) {
-                return null;
+                return isRight(invoiceProduct);
+            }
+            
+            @Override
+            public boolean after(InvoiceProduct invoiceProduct) {
+                return afterUpdate(invoiceProduct);
             }
         });
+    }
+    
+    @Override
+    public List<InvoiceProductSelectDTO> getDTOByInvoiceId(Long invoiceId) {
+        List<InvoiceProduct> invoiceProductList = getByInvoiceId(invoiceId);
+        List<?> dtoList = getDTOList(invoiceProductList);
+        return MyCollections.copyListProperties(dtoList, InvoiceProductSelectDTO::new);
+    }
+    
+    @Override
+    public List<InvoiceProduct> getByInvoiceId(Long invoiceId) {
+        QueryWrapper<InvoiceProduct> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda()
+                .eq(InvoiceProduct::getInvoiceId, invoiceId);
+        return list(queryWrapper);
+    }
+    
+    @Override
+    public boolean delById(Long id) {
+        return delByIds(MyCollections.toList(id));
+    }
+    
+    @Override
+    public boolean delByIds(List<Long> ids) {
+        if (MyCollections.isEmpty(ids)) {
+            return true;
+        }
+        List<InvoiceProduct> list = listByIds(ids);
+        Map<Long, Integer> map = MyCollections.list2MapL(list, InvoiceProduct::getProductId, InvoiceProduct::getInvoiceNum);
+        Invoice invoice = invoiceMapper.selectById(list.get(0).getInvoiceId());
+        removeByIds(ids);
+        return updateOrderProduct(map, invoice);
+    }
+    
+    @Override
+    public boolean delByInvoiceId(Invoice invoice) {
+        QueryWrapper<InvoiceProduct> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(InvoiceProduct::getInvoiceId, invoice.getId());
+        List<InvoiceProduct> list = list(queryWrapper);
+        remove(queryWrapper);
+        Map<Long, Integer> map = MyCollections.list2MapL(list, InvoiceProduct::getProductId, InvoiceProduct::getInvoiceNum);
+        return updateOrderProduct(map, invoice);
+    }
+    
+    private boolean updateOrderProduct(Map<Long, Integer> map, Invoice invoice) {
+        List<OrderProduct> orderProductList = orderProductService.getBySalesOrderId(invoice.getSalesOrderId());
+        orderProductList = orderProductList.stream().peek(orderProduct -> {
+            Integer invoiceNum = map.get(orderProduct.getProductId());
+            if (invoiceNum != null) {
+                if (invoiceNum >= orderProduct.getInvoiceNum()) {
+                    orderProduct.setInvoiceNum(0);
+                    invoiceNum = invoiceNum - orderProduct.getInvoiceNum();
+                    map.put(orderProduct.getProductId(), invoiceNum);
+                } else {
+                    orderProduct.setInvoiceNum(orderProduct.getInvoiceNum() - invoiceNum);
+                    map.put(orderProduct.getProductId(), 0);
+                }
+            }
+            
+        }).collect(Collectors.toList());
+        return orderProductService.updateBatchById(orderProductList);
     }
     
     @Override
@@ -115,7 +188,7 @@ public class InvoiceProductServiceImpl extends ServiceImpl<InvoiceProductMapper,
         List<Long> updateMemberIds = MyCollections.objects2List(invoiceProductList, InvoiceProduct::getUpdater);
         List<Long> userIdList = MyCollections.addList(true, createIds, updateMemberIds);
         
-        List<SysUser> sysUserList = sysUserMapper.selectBatchIds(userIdList);
+        List<SysUser> sysUserList = sysUserService.listByIds(userIdList);
         Map<Long, String> userMap = MyCollections.list2MapL(sysUserList, SysUser::getUserId, SysUser::getRealName);
         
         //产品
@@ -151,6 +224,11 @@ public class InvoiceProductServiceImpl extends ServiceImpl<InvoiceProductMapper,
     }
     
     @Override
+    public <D> TableResultData getColumns(D dto) {
+        return getColumns(TableNames.invoiceProduct, dto, tableOptionService);
+    }
+    
+    @Override
     public List<IdToName> getOptions(String nameLike, Integer page) {
         QueryWrapper<InvoiceProduct> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda()
@@ -160,4 +238,79 @@ public class InvoiceProductServiceImpl extends ServiceImpl<InvoiceProductMapper,
         invoiceProductMapper.selectPage(iPage, queryWrapper);
         return IdToName.createList2(iPage.getRecords(), InvoiceProduct::getId, InvoiceProduct::getId);
     }
+    
+    private ResultCode isRight(InvoiceProduct invoiceProduct) {
+        InvoiceProduct old = null;
+        if (invoiceProduct.getId() != null) {
+            old = getById(invoiceProduct.getId());
+        }
+        //关联发货单
+        if (invoiceProduct.getInvoiceId() == null) {
+            return ResultCode.PARAM_IS_BLANK;
+        }
+        Invoice invoice = invoiceMapper.selectById(invoiceProduct.getInvoiceId());
+        if (invoice == null) {
+            return ResultCode.PARAM_NOT_VALID;
+        }
+        //关联产品
+        if (invoiceProduct.getProductId() == null) {
+            return ResultCode.PARAM_IS_BLANK;
+        }
+        //确保该产品在对应的订单产品中
+        List<OrderProduct> orderProductList = invoiceProductMapper.getOrderProductList(invoice.getSalesOrderId(), invoiceProduct.getProductId());
+        if (MyCollections.isEmpty(orderProductList)) {
+            return ResultCode.PARAM_NOT_VALID;
+        }
+        //发货数量
+        if (invoiceProduct.getInvoiceNum() == null) {
+            return ResultCode.PARAM_IS_BLANK;
+        }
+        List<OrderProduct> orderProducts = invoiceProductMapper.getUnInvoiceNum(invoice.getSalesOrderId());
+        Map<Long, Integer> unInvoiceNumMap = orderProducts.stream().collect(Collectors.toMap(OrderProduct::getProductId, (t -> t.getProductNum() - t.getInvoiceNum())));
+        Integer unInvoiceNum = unInvoiceNumMap.get(invoiceProduct.getProductId());
+        //新增时发货数量判定
+        if (old == null && invoiceProduct.getInvoiceNum() > unInvoiceNum) {
+            return ResultCode.PARAM_NOT_VALID;
+        }
+        //更新时发货数量判定
+        if (old != null && invoiceProduct.getInvoiceNum() > (unInvoiceNum + old.getInvoiceNum())) {
+            return ResultCode.PARAM_NOT_VALID;
+        }
+        return ResultCode.SUCCESS;
+    }
+    
+    private boolean afterUpdate(InvoiceProduct invoiceProduct) {
+        Invoice invoice = invoiceMapper.selectById(invoiceProduct.getInvoiceId());
+        //获取对应的订单产品
+        List<OrderProduct> orderProductList = invoiceProductMapper.getOrderProductList(invoice.getSalesOrderId(), invoiceProduct.getProductId());
+        //获取该订单下的其他发货单产品(当前发货单除外)
+        List<InvoiceProduct> invoiceProductList = invoiceProductMapper.getInvoiceProductList(invoice.getSalesOrderId(), MyCollections.toList(invoice.getId()));
+        Map<Long, Integer> map = null;
+        if (!MyCollections.isEmpty(invoiceProductList)) {
+            map = MyCollections.list2Map(invoiceProductList, InvoiceProduct::getProductId, InvoiceProduct::getInvoiceNum, Integer::sum);
+        }
+
+        //由于一个发货单只能有一个相同的产品，因此已发货数重设即可
+        Integer invoiceNum = invoiceProduct.getInvoiceNum();
+        for (OrderProduct orderProduct : orderProductList) {
+            Integer unInvoiceNum = orderProduct.getProductNum();
+            Integer oldInvoiceNum = 0;
+            if (!MyCollections.isEmpty(map)) {
+                unInvoiceNum = orderProduct.getProductNum() - oldInvoiceNum;
+                oldInvoiceNum = map.get(orderProduct.getProductId());
+            }
+            
+            if (invoiceNum - unInvoiceNum >= 0) {
+                orderProduct.setInvoiceNum(orderProduct.getProductNum());
+                invoiceNum = invoiceNum - unInvoiceNum;
+            } else {
+                orderProduct.setInvoiceNum(oldInvoiceNum + invoiceNum);
+                invoiceNum = 0;
+            }
+            orderProductService.updateByEntity(orderProduct);
+            
+        }
+        return true;
+    }
+    
 }

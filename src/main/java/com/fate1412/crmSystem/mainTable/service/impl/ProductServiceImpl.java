@@ -83,7 +83,6 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
                 Product product2 = getById(productUpdateDTO.getId());
                 product
                         .setIsShelf()
-                        .setRealStock(product2.getRealStock())//设置此值用于校验
                         .setUpdateTime(new Date())
                         .setUpdater(sysUser.getUserId());
                 return product;
@@ -107,7 +106,6 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
                 SysUser sysUser = sysUserService.thisUser();
                 product
                         .setIsShelf()
-                        .setRealStock(product.getStock())
                         .setCreateTime(new Date())
                         .setUpdateTime(new Date())
                         .setUpdater(sysUser.getUserId())
@@ -145,6 +143,13 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         }
         //单价
         if (product.getPrice() <= 0) {
+            return ResultCode.PARAM_NOT_VALID;
+        }
+        //真实库存
+        if (product.getRealStock() == null) {
+            return ResultCode.PARAM_IS_BLANK;
+        }
+        if (product.getRealStock() < 0) {
             return ResultCode.PARAM_NOT_VALID;
         }
         //库存

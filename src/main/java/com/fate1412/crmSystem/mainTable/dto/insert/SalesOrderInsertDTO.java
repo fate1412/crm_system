@@ -32,18 +32,6 @@ public class SalesOrderInsertDTO implements Serializable {
     private Long id;
     
     /**
-     * 原价
-     */
-    @TableTitle("原价/元")
-    private Double originalPrice;
-    
-    /**
-     * 折后价格
-     */
-    @TableTitle("折后价格/元")
-    private Double discountPrice;
-    
-    /**
      * 是否通过
      */
     @TableTitle("是否通过")
@@ -62,34 +50,7 @@ public class SalesOrderInsertDTO implements Serializable {
      */
     @TableTitle("发货状态")
     private Integer invoiceStatus;
-    
-    /**
-     * 创建时间
-     */
-    @TableTitle(value = "创建时间", disabled = true, fixed = true)
-    private Date createTime;
-    
-    /**
-     * 更新时间
-     */
-    @TableTitle(value = "更新时间", disabled = true, fixed = true)
-    private Date updateTime;
-    
-    /**
-     * 创建人
-     */
-    private IdToName createrR = new IdToName(TableNames.sysUser);
-    
-    @TableTitle(value = "创建人", link = true, disabled = true, formType = FormType.Select)
-    private Long creater;
-    
-    /**
-     * 修改人
-     */
-    private IdToName updaterR = new IdToName(TableNames.sysUser);
-    
-    @TableTitle(value = "修改人", link = true, disabled = true, formType = FormType.Date)
-    private Long updater;
+
     
     private List<SalesOrderChild> childList;
     

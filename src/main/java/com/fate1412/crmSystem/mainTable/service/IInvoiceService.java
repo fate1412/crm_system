@@ -1,11 +1,13 @@
 package com.fate1412.crmSystem.mainTable.service;
 
 import com.fate1412.crmSystem.base.MyBaseService;
+import com.fate1412.crmSystem.mainTable.dto.insert.InvoiceInsertDTO;
 import com.fate1412.crmSystem.mainTable.dto.select.InvoiceSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.update.InvoiceUpdateDTO;
 import com.fate1412.crmSystem.mainTable.pojo.Invoice;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fate1412.crmSystem.utils.JsonResult;
+import com.fate1412.crmSystem.utils.TableResultData;
 
 /**
  * <p>
@@ -19,9 +21,9 @@ public interface IInvoiceService extends IService<Invoice>, MyBaseService<Invoic
     
     JsonResult<?> updateByDTO(InvoiceUpdateDTO invoiceUpdateDTO);
     
-    JsonResult<?> updateEntity(Invoice invoice);
+    JsonResult<?> addDTO(InvoiceInsertDTO invoiceInsertDTO);
     
-    JsonResult<?> addDTO(InvoiceSelectDTO invoiceSelectDTO);
+    <D> TableResultData getColumns(D dto);
     
-    JsonResult<?> addEntity(Invoice invoice);
+    boolean delById(Long id);
 }

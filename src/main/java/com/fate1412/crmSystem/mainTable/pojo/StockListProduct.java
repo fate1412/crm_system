@@ -73,9 +73,5 @@ public class StockListProduct implements Serializable {
     @TableField("updater")
     private Long updater;
 
-    @TableField("del_flag")
-    @TableLogic
-    private Boolean delFlag;
-
 
 }

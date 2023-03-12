@@ -50,6 +50,12 @@ public class ProductInsertDTO implements Serializable {
     private Integer stock;
     
     /**
+     * 真实库存
+     */
+    @TableField("real_stock")
+    private Integer realStock;
+    
+    /**
      * 上架时间
      */
     @TableField("on_shelf_time")

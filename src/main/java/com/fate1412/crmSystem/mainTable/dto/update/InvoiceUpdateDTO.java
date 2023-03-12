@@ -4,12 +4,14 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fate1412.crmSystem.annotations.TableTitle;
 import com.fate1412.crmSystem.annotations.TableTitle.FormType;
+import com.fate1412.crmSystem.mainTable.dto.child.InvoiceChild;
 import com.fate1412.crmSystem.utils.IdToName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * <p>
@@ -70,7 +72,7 @@ public class InvoiceUpdateDTO implements Serializable {
     @TableField("receipt_time")
     @TableTitle(value = "收货日期",formType = FormType.Date)
     private Date receiptTime;
-
     
+    private List<InvoiceChild> childList;
 
 }

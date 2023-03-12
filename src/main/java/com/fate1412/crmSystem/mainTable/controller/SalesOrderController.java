@@ -70,7 +70,7 @@ public class SalesOrderController {
             tableResultData.setChild(new TableResultData());
         } else {
             SalesOrderSelectDTO dto = (SalesOrderSelectDTO) dtoList.get(0);
-            List<OrderProductSelectDTO> orderProductSelectDTOS = orderProductService.getBySalesOrder(dto.getId());
+            List<OrderProductSelectDTO> orderProductSelectDTOS = orderProductService.getDTOBySalesOrderId(dto.getId());
             List<SalesOrderChild> childList = MyCollections.copyListProperties(orderProductSelectDTOS, SalesOrderChild::new);
             TableResultData child = orderProductService.getColumns(new SalesOrderChild());
             if(!MyCollections.isEmpty(childList)) {

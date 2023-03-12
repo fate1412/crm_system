@@ -7,6 +7,7 @@ import org.springframework.beans.BeanUtils;
 
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -97,6 +98,17 @@ public class MyCollections {
     }
     
     /**
+     * map转List集合
+     */
+    public static <K,V> List<V> map2list(Map<K,V> map) {
+        List<V> list = new ArrayList<>();
+        map.forEach((k,v)-> {
+            list.add(v);
+        });
+        return list;
+    }
+    
+    /**
      * List对象转Map(重复的取第一个)
      */
     public static <K, V, T> Map<K, V> list2MapL(List<T> list, Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
@@ -111,6 +123,13 @@ public class MyCollections {
     }
     
     /**
+     * List对象转Map(重复的自定义操作)
+     */
+    public static <K, V, T> Map<K, V> list2Map(List<T> list, Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper, BinaryOperator<V> mergeFunction) {
+        return list.stream().collect(Collectors.toMap(keyMapper, valueMapper, mergeFunction));
+    }
+    
+    /**
      * List对象转Map(重复的取第一个)
      */
     public static <K, T> Map<K, T> list2MapL(List<T> list, Function<? super T, ? extends K> keyMapper) {
@@ -122,6 +141,14 @@ public class MyCollections {
      */
     public static <K, T> Map<K, T> list2MapR(List<T> list, Function<? super T, ? extends K> keyMapper) {
         return list.stream().collect(Collectors.toMap(keyMapper, t -> t, (v1, v2) -> v2));
+    }
+    
+    
+    /**
+     * List对象转Map(重复的自定义操作)
+     */
+    public static <K, T> Map<K, T> list2Map(List<T> list, Function<? super T, ? extends K> keyMapper, BinaryOperator<T> mergeFunction) {
+        return list.stream().collect(Collectors.toMap(keyMapper, t -> t, mergeFunction));
     }
     
     /**

@@ -39,10 +39,11 @@ public interface MyBaseService<T> {
     default JsonResult<?> update(MyEntity<T> entity) {
         T t = entity.getT();
         t = entity.set(t);
-        if (entity.verification(t).equals(ResultCode.SUCCESS) && (mapper().updateById(t) > 0)) {
+        ResultCode verification = entity.verification(t);
+        if (verification.equals(ResultCode.SUCCESS) && (mapper().updateById(t) > 0)) {
             return entity.after(t)? ResultTool.success() : ResultTool.fail(ResultCode.UPDATE_ERROR);
         } else {
-            return ResultTool.fail(entity.verification(t));
+            return ResultTool.fail(verification);
         }
     }
     
@@ -50,10 +51,11 @@ public interface MyBaseService<T> {
     default JsonResult<?> add(MyEntity<T> entity) {
         T t = entity.getT();
         t = entity.set(t);
-        if (entity.verification(t).equals(ResultCode.SUCCESS) && (mapper().insert(t) > 0)) {
+        ResultCode verification = entity.verification(t);
+        if (verification.equals(ResultCode.SUCCESS) && (mapper().insert(t) > 0)) {
             return entity.after(t)? ResultTool.success() : ResultTool.fail(ResultCode.INSERT_ERROR);
         } else {
-            return ResultTool.fail(entity.verification(t));
+            return ResultTool.fail(verification);
         }
     }
     

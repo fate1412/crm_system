@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fate1412.crmSystem.customTable.service.ITableOptionService;
 import com.fate1412.crmSystem.mainTable.constant.TableNames;
-import com.fate1412.crmSystem.mainTable.dto.child.SalesOrderChild;
 import com.fate1412.crmSystem.mainTable.dto.insert.OrderProductInsertDTO;
 import com.fate1412.crmSystem.mainTable.dto.select.OrderProductSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.update.OrderProductUpdateDTO;
@@ -19,7 +18,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fate1412.crmSystem.security.pojo.SysUser;
 import com.fate1412.crmSystem.security.service.ISysUserService;
 import com.fate1412.crmSystem.utils.*;
-import com.sun.org.apache.xpath.internal.operations.Or;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -221,20 +219,21 @@ public class OrderProductServiceImpl extends ServiceImpl<OrderProductMapper, Ord
     }
     
     @Override
-    public List<OrderProductSelectDTO> getBySalesOrder(Long salesOrderId) {
-        QueryWrapper<OrderProduct> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda()
-                .eq(OrderProduct::getSalesOrderId, salesOrderId);
-        List<OrderProduct> orderProducts = orderProductMapper.selectList(queryWrapper);
+    public List<OrderProductSelectDTO> getDTOBySalesOrderId(Long salesOrderId) {
+        List<OrderProduct> orderProducts = getBySalesOrderId(salesOrderId);
         List<?> dtoList = getDTOList(orderProducts);
         return dtoList.stream().map(dto -> (OrderProductSelectDTO) dto).collect(Collectors.toList());
     }
     
+    @Override
+    public List<OrderProduct> getBySalesOrderId(Long salesOrderId) {
+        QueryWrapper<OrderProduct> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda()
+                .eq(OrderProduct::getSalesOrderId, salesOrderId);
+        return orderProductMapper.selectList(queryWrapper);
+    }
+    
     private ResultCode isRight(OrderProduct orderProduct) {
-        OrderProduct old;
-        if (orderProduct.getProductId() != null) {
-            old = orderProductMapper.selectById(orderProduct.getId());
-        }
         //关联产品
         if (orderProduct.getProductId() == null) {
             return ResultCode.PARAM_IS_BLANK;
@@ -257,14 +256,14 @@ public class OrderProductServiceImpl extends ServiceImpl<OrderProductMapper, Ord
             return ResultCode.PARAM_NOT_VALID;
         }
         //发货数量
-        if (orderProduct.getInvoiceNum() !=null && (orderProduct.getInvoiceNum() <= 0 && orderProduct.getInvoiceNum() > orderProduct.getProductNum())) {
+        if (orderProduct.getInvoiceNum() != null && (orderProduct.getInvoiceNum() < 0 || orderProduct.getInvoiceNum() > orderProduct.getProductNum())) {
             return ResultCode.PARAM_NOT_VALID;
         }
         return ResultCode.SUCCESS;
     }
     
     private boolean  afterUpdateSalesOrder(Long salesOrderId) {
-        List<OrderProductSelectDTO> salesOrderDTOList = getBySalesOrder(salesOrderId);
+        List<OrderProductSelectDTO> salesOrderDTOList = getDTOBySalesOrderId(salesOrderId);
         Double originalPrice = 0d;
         Double discountPrice = 0d;
         //重新计算总价

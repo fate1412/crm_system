@@ -25,7 +25,9 @@ public interface IOrderProductService extends IService<OrderProduct>, MyBaseServ
     
     JsonResult<?> addDTO(OrderProductInsertDTO orderProductInsertDTO);
     
-    List<OrderProductSelectDTO> getBySalesOrder(Long salesOrderId);
+    List<OrderProductSelectDTO> getDTOBySalesOrderId(Long salesOrderId);
+    
+    List<OrderProduct> getBySalesOrderId(Long salesOrderId);
     
     <D> TableResultData getColumns(D dto);
     

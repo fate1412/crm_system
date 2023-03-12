@@ -65,56 +65,11 @@ public class OrderProductInsertDTO implements Serializable {
     private Integer invoiceNum;
 
     /**
-     * 原总价
-     */
-    @TableField("original_prices")
-    @TableTitle("原总价")
-    private Double originalPrices;
-    
-    /**
      * 折扣(0-100)
      */
     @TableField("discount")
     @TableTitle("折扣/%")
     private Integer discount;
 
-    /**
-     * 折后总价
-     */
-    @TableField("discount_prices")
-    @TableTitle("折后总价")
-    private Double discountPrices;
-
-    /**
-     * 创建时间
-     */
-    @TableField("create_time")
-    @TableTitle(value = "创建时间",disabled = true,formType = FormType.DateTime)
-    private Date createTime;
-
-    /**
-     * 更新时间
-     */
-    @TableField("update_time")
-    @TableTitle(value = "更新时间",disabled = true,formType = FormType.DateTime)
-    private Date updateTime;
-
-    /**
-     * 创建人
-     */
-    @TableField("creater")
-    @TableTitle(value = "创建人",link = true, disabled = true, formType = FormType.Select)
-    private Long creater;
-    
-    private IdToName createrR=new IdToName(TableNames.sysUser);
-    
-    /**
-     * 修改人
-     */
-    @TableField("updater")
-    @TableTitle(value = "修改人",link = true, disabled = true, formType = FormType.Select)
-    private Long updater;
-    
-    private IdToName updaterR=new IdToName(TableNames.sysUser);
 
 }

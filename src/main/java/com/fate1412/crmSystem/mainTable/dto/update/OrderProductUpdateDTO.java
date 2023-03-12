@@ -51,12 +51,6 @@ public class OrderProductUpdateDTO implements Serializable {
      */
     @TableField("invoice_num")
     private Integer invoiceNum;
-
-    /**
-     * 原总价
-     */
-    @TableField("original_prices")
-    private Double originalPrices;
     
     /**
      * 折扣(0-100)
@@ -64,39 +58,6 @@ public class OrderProductUpdateDTO implements Serializable {
     @TableField("discount")
     private Integer discount;
 
-    /**
-     * 折后总价
-     */
-    @TableField("discount_prices")
-    private Double discountPrices;
-
-    /**
-     * 创建时间
-     */
-    @TableField("create_time")
-    private Date createTime;
-
-    /**
-     * 更新时间
-     */
-    @TableField("update_time")
-    private Date updateTime;
-
-    /**
-     * 创建人
-     */
-    @TableField("creater")
-    private Long creater;
-
-    /**
-     * 修改人
-     */
-    @TableField("updater")
-    private Long updater;
-
-    @TableField("del_flag")
-    @TableLogic
-    private Boolean delFlag;
 
 
 }
