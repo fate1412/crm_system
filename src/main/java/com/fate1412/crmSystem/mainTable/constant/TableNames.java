@@ -10,4 +10,5 @@ public class TableNames {
     public static final String stockList = "stockList";
     public static final String stockListProduct = "stockListProduct";
     public static final String sysUser = "sysUser";
+    public static final String sysRole = "sysRole";
 }

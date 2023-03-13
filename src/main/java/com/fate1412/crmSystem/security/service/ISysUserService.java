@@ -1,6 +1,8 @@
 package com.fate1412.crmSystem.security.service;
 
 import com.fate1412.crmSystem.base.MyBaseService;
+import com.fate1412.crmSystem.security.dto.insert.SysUserInsertDTO;
+import com.fate1412.crmSystem.security.dto.select.SysUserRolesDTO;
 import com.fate1412.crmSystem.security.dto.update.SysUserUpdateDTO;
 import com.fate1412.crmSystem.security.pojo.*;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -30,6 +32,12 @@ public interface ISysUserService extends IService<SysUser>, MyBaseService<SysUse
      */
     List<SysRole> getRoleById(Long id);
     
+    
+    /**
+     * 通过id获取用户所有角色
+     */
+    List<SysUserRolesDTO> getUserRolesById(Long id);
+    
     /**
      * 通过用户名获取用户所有角色
      */
@@ -40,6 +48,8 @@ public interface ISysUserService extends IService<SysUser>, MyBaseService<SysUse
      */
     List<SysPermission> getPermissionById(Long id);
     
+    boolean updateRoles(Long id, List<SysUserRolesDTO> userRolesList);
+    
     /**
      * 通过用户名获取用户的权限
      */
@@ -49,14 +59,12 @@ public interface ISysUserService extends IService<SysUser>, MyBaseService<SysUse
     
     JsonResult<?> updateByEntity(SysUser sysUser);
     
-    JsonResult<?> addByDTO(SysUserUpdateDTO sysUserUpdateDTO);
+    JsonResult<?> addByDTO(SysUserInsertDTO sysUserInsertDTO);
     
     JsonResult<?> addEntity(SysUser sysUser);
     
     TableResultData getColumns();
     
     SysUser thisUser();
-    
-    List<IdToName> getRoleOptions(String nameLike, Integer page);
 
 }
