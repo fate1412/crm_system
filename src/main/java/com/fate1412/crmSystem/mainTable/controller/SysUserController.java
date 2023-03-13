@@ -1,8 +1,8 @@
 package com.fate1412.crmSystem.mainTable.controller;
 
 import com.fate1412.crmSystem.base.MyPage;
-import com.fate1412.crmSystem.security.dto.SysUserSelectDTO;
-import com.fate1412.crmSystem.security.dto.SysUserUpdateDTO;
+import com.fate1412.crmSystem.security.dto.select.SysUserSelectDTO;
+import com.fate1412.crmSystem.security.dto.update.SysUserUpdateDTO;
 import com.fate1412.crmSystem.security.service.ISysUserService;
 import com.fate1412.crmSystem.utils.*;
 import lombok.extern.slf4j.Slf4j;
@@ -54,7 +54,7 @@ public class SysUserController {
     @PreAuthorize("isAuthenticated()")
     @PutMapping("/add")
     public JsonResult<?> add(@RequestBody SysUserUpdateDTO sysUserUpdateDTO) {
-        return sysUserService.addEntity(sysUserUpdateDTO);
+        return sysUserService.addByDTO(sysUserUpdateDTO);
     }
     
     @PreAuthorize("isAuthenticated()")
@@ -74,6 +74,13 @@ public class SysUserController {
     @GetMapping("/getOptions")
     public JsonResult<?> getOptions(@Param("nameLike") String nameLike, @Param("page") Integer page) {
         List<IdToName> options = sysUserService.getOptions(nameLike, page);
+        return ResultTool.success(options);
+    }
+    
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/getRoleOptions")
+    public JsonResult<?> getRoleOptions(@Param("nameLike") String nameLike, @Param("page") Integer page) {
+        List<IdToName> options = sysUserService.getRoleOptions(nameLike, page);
         return ResultTool.success(options);
     }
 }

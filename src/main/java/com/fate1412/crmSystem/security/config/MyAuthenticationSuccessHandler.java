@@ -51,7 +51,7 @@ public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHand
     
         //返回json数据
         JSONObject jsonObject= new JSONObject();
-        jsonObject.put("token","admin");
+        jsonObject.put("token",sysUser.getUserId());
         JsonResult<?> result = ResultTool.success(jsonObject);
         //处理编码方式，防止中文乱码的情况
         response.setContentType("text/json;charset=utf-8");

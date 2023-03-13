@@ -1,4 +1,4 @@
-package com.fate1412.crmSystem.security.dto;
+package com.fate1412.crmSystem.security.dto.select;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.fate1412.crmSystem.annotations.TableTitle;
@@ -30,13 +30,25 @@ public class SysUserSelectDTO implements Serializable {
     @TableTitle(value = "用户ID",fixed = true,disabled = true)
     private Long userId;
     
+    @TableField("username")
+    @TableTitle(value = "用户名", disabled = true, inserted = true)
+    private String username;
+    
     @TableField("real_name")
-    @TableTitle("用户姓名")
+    @TableTitle(value = "用户姓名", inserted = true)
     private String realName;
 
     @TableField("phone")
-    @TableTitle("手机号")
+    @TableTitle(value = "手机号" ,inserted = true)
     private String phone;
+    
+    @TableField("last_login_time")
+    @TableTitle(value = "最后登录时间",formType = FormType.DateTime,disabled = true)
+    private Date lastLoginTime;
+    
+    @TableTitle(value = "是否锁定",formType = FormType.Switch, inserted = true)
+    @TableField("lock_flag")
+    private Boolean lockFlag;
 
     /**
      * 创建时间
@@ -52,8 +64,5 @@ public class SysUserSelectDTO implements Serializable {
     @TableTitle(value = "修改时间",formType = FormType.DateTime,disabled = true)
     private Date updateTime;
     
-    @TableField("last_login_time")
-    @TableTitle(value = "最后登录时间",formType = FormType.DateTime,disabled = true)
-    private Date lastLoginTime;
     
 }

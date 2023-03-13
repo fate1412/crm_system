@@ -1,4 +1,4 @@
-package com.fate1412.crmSystem.security.dto;
+package com.fate1412.crmSystem.security.dto.update;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -32,6 +32,10 @@ public class SysUserUpdateDTO implements Serializable {
     @TableTitle(value = "员工ID",fixed = true)
     private Long userId;
     
+    @TableField("username")
+    @TableTitle(value = "用户名", disabled = true, inserted = true)
+    private String username;
+    
     @TableField("real_name")
     @TableTitle("员工姓名")
     private String realName;
@@ -39,5 +43,9 @@ public class SysUserUpdateDTO implements Serializable {
     @TableField("phone")
     @TableTitle("手机号")
     private String phone;
+    
+    
+    @TableField("lock_flag")
+    private Boolean lockFlag;
     
 }

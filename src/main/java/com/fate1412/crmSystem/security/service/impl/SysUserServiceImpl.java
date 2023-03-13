@@ -6,8 +6,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fate1412.crmSystem.customTable.service.ITableOptionService;
 import com.fate1412.crmSystem.mainTable.constant.TableNames;
-import com.fate1412.crmSystem.security.dto.SysUserSelectDTO;
-import com.fate1412.crmSystem.security.dto.SysUserUpdateDTO;
+import com.fate1412.crmSystem.security.dto.select.SysUserSelectDTO;
+import com.fate1412.crmSystem.security.dto.update.SysUserUpdateDTO;
 import com.fate1412.crmSystem.security.mapper.*;
 import com.fate1412.crmSystem.security.pojo.*;
 import com.fate1412.crmSystem.security.service.ISysUserService;
@@ -66,7 +66,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         QueryWrapper<SysUserRole> userRoleQueryWrapper = new QueryWrapper<>();
         userRoleQueryWrapper.lambda().eq(SysUserRole::getUserId, id);
         List<SysUserRole> userRoleList = sysUserRoleMapper.selectList(userRoleQueryWrapper);
-        List<Integer> roleIdList = MyCollections.objects2List(userRoleList, SysUserRole::getRoleId);
+        List<Long> roleIdList = MyCollections.objects2List(userRoleList, SysUserRole::getRoleId);
         //通过角色id获取角色
         QueryWrapper<SysRole> roleQueryWrapper = new QueryWrapper<>();
         roleQueryWrapper.lambda().in(SysRole::getRoleId,roleIdList);
@@ -88,12 +88,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         QueryWrapper<SysUserRole> userRoleQueryWrapper = new QueryWrapper<>();
         userRoleQueryWrapper.lambda().eq(SysUserRole::getUserId, id);
         List<SysUserRole> userRoleList = sysUserRoleMapper.selectList(userRoleQueryWrapper);
-        List<Integer> roleIdList = MyCollections.objects2List(userRoleList, SysUserRole::getRoleId);
+        List<Long> roleIdList = MyCollections.objects2List(userRoleList, SysUserRole::getRoleId);
         //获取角色对应的权限Id
         QueryWrapper<SysRolePermission> rolePermissionQueryWrapper = new QueryWrapper<>();
         rolePermissionQueryWrapper.lambda().in(SysRolePermission::getRoleId,roleIdList);
         List<SysRolePermission> rolePermissions = sysRolePermissionMapper.selectList(rolePermissionQueryWrapper);
-        List<Integer> permissionIds = MyCollections.objects2List(rolePermissions, SysRolePermission::getPermissionId);
+        List<Long> permissionIds = MyCollections.objects2List(rolePermissions, SysRolePermission::getPermissionId);
     
         //获取权限
         QueryWrapper<SysPermission> permissionQueryWrapper = new QueryWrapper<>();
@@ -142,7 +142,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     
     @Override
     @Transactional
-    public JsonResult<?> addEntity(SysUserUpdateDTO sysUserUpdateDTO) {
+    public JsonResult<?> addByDTO(SysUserUpdateDTO sysUserUpdateDTO) {
         SysUser sysUser = new SysUser();
         BeanUtils.copyProperties(sysUserUpdateDTO,sysUser);
         return addEntity(sysUser);
@@ -183,5 +183,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         IPage<SysUser> iPage = new Page<>(page,10);
         sysUserMapper.selectPage(iPage,queryWrapper);
         return IdToName.createList(iPage.getRecords(), SysUser::getUserId, SysUser::getRealName);
+    }
+    
+    @Override
+    public List<IdToName> getRoleOptions(String nameLike, Integer page) {
+        
+        return null;
     }
 }

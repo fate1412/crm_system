@@ -26,13 +26,13 @@ public class SysRolePermission implements Serializable {
      * 权限ID
      */
     @TableId("permission_id")
-    private Integer permissionId;
+    private Long permissionId;
 
     /**
      * 角色ID
      */
     @TableField("role_id")
-    private Integer roleId;
+    private Long roleId;
 
 
 }

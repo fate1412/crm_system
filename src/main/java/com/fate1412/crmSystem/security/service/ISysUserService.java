@@ -1,9 +1,10 @@
 package com.fate1412.crmSystem.security.service;
 
 import com.fate1412.crmSystem.base.MyBaseService;
-import com.fate1412.crmSystem.security.dto.SysUserUpdateDTO;
+import com.fate1412.crmSystem.security.dto.update.SysUserUpdateDTO;
 import com.fate1412.crmSystem.security.pojo.*;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.fate1412.crmSystem.utils.IdToName;
 import com.fate1412.crmSystem.utils.JsonResult;
 import com.fate1412.crmSystem.utils.TableResultData;
 
@@ -48,12 +49,14 @@ public interface ISysUserService extends IService<SysUser>, MyBaseService<SysUse
     
     JsonResult<?> updateByEntity(SysUser sysUser);
     
-    JsonResult<?> addEntity(SysUserUpdateDTO sysUserUpdateDTO);
+    JsonResult<?> addByDTO(SysUserUpdateDTO sysUserUpdateDTO);
     
     JsonResult<?> addEntity(SysUser sysUser);
     
     TableResultData getColumns();
     
     SysUser thisUser();
+    
+    List<IdToName> getRoleOptions(String nameLike, Integer page);
 
 }

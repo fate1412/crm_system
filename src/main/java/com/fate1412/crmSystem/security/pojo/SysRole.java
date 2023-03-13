@@ -26,8 +26,8 @@ public class SysRole implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "role_id", type = IdType.AUTO)
-    private Integer roleId;
+    @TableId(value = "role_id", type = IdType.ASSIGN_ID)
+    private Long roleId;
 
     @TableField("role_name")
     private String roleName;

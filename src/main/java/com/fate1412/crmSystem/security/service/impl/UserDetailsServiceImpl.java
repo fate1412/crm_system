@@ -46,7 +46,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             throw new InternalAuthenticationServiceException("账号不存在");
         }
         //获取用户权限
-        List<SysPermission> permissions = userService.getPermissionByUserName(username);
+        List<SysPermission> permissions = userService.getPermissionById(sysUser.getUserId());
         List<String> permissionCodes = MyCollections.objects2List(permissions, SysPermission::getPermissionCode);
     
         //声明用户授权

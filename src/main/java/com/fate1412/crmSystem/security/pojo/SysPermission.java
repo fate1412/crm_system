@@ -29,8 +29,8 @@ public class SysPermission implements Serializable {
     /**
      * 权限ID
      */
-    @TableId(value = "permission_id", type = IdType.AUTO)
-    private Integer permissionId;
+    @TableId(value = "permission_id", type = IdType.ASSIGN_ID)
+    private Long permissionId;
 
     @TableField("permission_desc")
     private String permissionDesc;

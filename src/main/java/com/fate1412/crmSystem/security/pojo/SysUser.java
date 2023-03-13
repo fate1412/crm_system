@@ -32,7 +32,7 @@ public class SysUser implements UserDetails,Serializable {
     /**
      * 主键ID
      */
-    @TableId(value = "user_id", type = IdType.ASSIGN_UUID)
+    @TableId(value = "user_id", type = IdType.ASSIGN_ID)
     private Long userId;
     
     @TableField("username")
