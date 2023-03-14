@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.fate1412.crmSystem.base.MyPage;
 import com.fate1412.crmSystem.security.dto.insert.SysRoleInsertDTO;
 import com.fate1412.crmSystem.security.dto.select.SysRolePermissionDTO;
+import com.fate1412.crmSystem.security.dto.select.SysRoleSelectDTO;
 import com.fate1412.crmSystem.security.dto.select.SysUserRolesDTO;
 import com.fate1412.crmSystem.security.dto.select.SysUserSelectDTO;
 import com.fate1412.crmSystem.security.dto.update.SysRoleUpdateDTO;
@@ -25,7 +26,7 @@ public class SysRoleController {
     @Autowired
     private ISysRoleService sysRoleService;
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('SysRole_Select')")
     @GetMapping("/select")
     public JsonResult<Object> select(@Param("id") Long id) {
         List<?> dtoListById = sysRoleService.getDTOListById(MyCollections.toList(id));
@@ -34,14 +35,14 @@ public class SysRoleController {
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('SysRole_Select')")
     @GetMapping("/getColumns")
     public JsonResult<Object> getColumns() {
         TableResultData tableResultData = sysRoleService.getColumns();
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('SysRole_Select')")
     @GetMapping("/page/select")
     public JsonResult<Object> selectByPage(@Param("thisPage") Long thisPage, @Param("pageSize") Long pageSize) {
         thisPage = thisPage == null ? 1 : thisPage;
@@ -56,40 +57,40 @@ public class SysRoleController {
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('SysRole_Insert')")
     @PutMapping("/add")
     public JsonResult<?> add(@RequestBody SysRoleInsertDTO sysRoleInsertDTO) {
         return sysRoleService.addByDTO(sysRoleInsertDTO);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('SysRole_Edit')")
     @PostMapping("/update")
     public JsonResult<?> update(@RequestBody SysRoleUpdateDTO sysRoleUpdateDTO) {
         return sysRoleService.updateByDTO(sysRoleUpdateDTO);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('SysRole_Delete')")
     @DeleteMapping("/delete")
-    public JsonResult<?> delete(@RequestBody SysUserSelectDTO sysUserSelectDTO) {
-        boolean b = sysRoleService.removeById(sysUserSelectDTO.getUserId());
+    public JsonResult<?> delete(@RequestBody SysRoleSelectDTO sysRoleSelectDTO) {
+        boolean b = sysRoleService.removeRole(sysRoleSelectDTO.getRoleId());
         return ResultTool.create(b);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('SysRole_Select')")
     @GetMapping("/getOptions")
     public JsonResult<?> getOptions(@Param("nameLike") String nameLike, @Param("page") Integer page) {
         List<IdToName> options = sysRoleService.getOptions(nameLike, page);
         return ResultTool.success(options);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('SysPermission_Select')")
     @GetMapping("/getPermissions")
     public JsonResult<?> getPermissions(@Param("id") Long id) {
         List<SysRolePermissionDTO> rolePermissionDTOList = sysRoleService.getRolePermissionDTOById(id);
         return ResultTool.success(rolePermissionDTOList);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('SysRolePermission_Edit')")
     @PostMapping("/updatePermissions")
     public JsonResult<?> updatePermissions(@RequestBody JSONObject jsonObject) {
         Long id = jsonObject.getLong("id");
@@ -98,7 +99,7 @@ public class SysRoleController {
         return b?ResultTool.success():ResultTool.fail();
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('SysPermission_Select')")
     @GetMapping("/getPermissionsOptions")
     public JsonResult<?> getPermissionsOptions(@Param("nameLike") String nameLike, @Param("page") Integer page) {
         List<IdToName> options = sysRoleService.getPermissionsOptions(nameLike, page);

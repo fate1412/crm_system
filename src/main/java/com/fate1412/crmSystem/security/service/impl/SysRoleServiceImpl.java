@@ -46,7 +46,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     @Autowired
     private SysPermissionMapper sysPermissionMapper;
     @Autowired
-    private ISysRolePermissionService rolePermissionService;
+    private ISysRolePermissionService sysRolePermissionService;
     
     @Override
     @Transactional
@@ -99,7 +99,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     public List<SysPermission> getPermissionById(Long id) {
         QueryWrapper<SysRolePermission> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(SysRolePermission::getRoleId,id);
-        List<SysRolePermission> sysRolePermissions = rolePermissionService.list(queryWrapper);
+        List<SysRolePermission> sysRolePermissions = sysRolePermissionService.list(queryWrapper);
         List<Long> idList = MyCollections.objects2List(sysRolePermissions, SysRolePermission::getPermissionId);
         if (MyCollections.isEmpty(idList)) {
             return new ArrayList<>();
@@ -118,7 +118,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     public boolean updatePermissions(Long id, List<SysRolePermissionDTO> list) {
         QueryWrapper<SysRolePermission> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(SysRolePermission::getRoleId,id);
-        rolePermissionService.remove(queryWrapper);
+        sysRolePermissionService.remove(queryWrapper);
         if (MyCollections.isEmpty(list)) {
             return true;
         }
@@ -128,7 +128,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
             sysRolePermission.setPermissionId(dto.getPermissionId());
             return sysRolePermission;
         }).collect(Collectors.toList());
-        return rolePermissionService.saveBatch(sysRolePermissionList);
+        return sysRolePermissionService.saveBatch(sysRolePermissionList);
     }
     
     @Override
@@ -146,11 +146,20 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     public List<IdToName> getPermissionsOptions(String nameLike, Integer page) {
         QueryWrapper<SysPermission> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda()
-                .select(SysPermission::getPermissionId, SysPermission::getPermissionCode)
-                .like(SysPermission::getPermissionCode,nameLike);
+                .select(SysPermission::getPermissionId, SysPermission::getPermissionDesc)
+                .like(SysPermission::getPermissionDesc,nameLike);
         IPage<SysPermission> iPage = new Page<>(page,10);
         sysPermissionMapper.selectPage(iPage,queryWrapper);
-        return IdToName.createList(iPage.getRecords(), SysPermission::getPermissionId, SysPermission::getPermissionCode);
+        return IdToName.createList(iPage.getRecords(), SysPermission::getPermissionId, SysPermission::getPermissionDesc);
+    }
+    
+    @Override
+    public boolean removeRole(Long id) {
+        QueryWrapper<SysRolePermission> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(SysRolePermission::getRoleId,id);
+        sysRolePermissionService.remove(queryWrapper);
+        return removeById(id);
+
     }
     
     @Override

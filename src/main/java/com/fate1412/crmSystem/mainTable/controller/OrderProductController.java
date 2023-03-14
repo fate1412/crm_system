@@ -48,7 +48,7 @@ public class OrderProductController {
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('OrderProduct_Insert')")
     @PutMapping("/add")
     public JsonResult<?> add(@RequestBody OrderProductInsertDTO orderProductInsertDTO) {
         return orderProductService.addDTO(orderProductInsertDTO);
@@ -63,13 +63,13 @@ public class OrderProductController {
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('OrderProduct_Edit')")
     @PostMapping("/update")
     public JsonResult<?> update(@RequestBody OrderProductUpdateDTO orderProductUpdateDTO) {
         return orderProductService.updateByDTO(orderProductUpdateDTO);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('OrderProduct_Delete')")
     @DeleteMapping("/delete")
     public JsonResult<?> delete(@RequestBody OrderProductSelectDTO orderProductSelectDTO) {
         boolean b = orderProductService.delById(orderProductSelectDTO.getId());

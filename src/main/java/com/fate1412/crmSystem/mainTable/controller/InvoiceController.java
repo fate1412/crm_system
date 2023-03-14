@@ -54,7 +54,7 @@ public class InvoiceController {
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('Invoice_Insert')")
     @PutMapping("/add")
     public JsonResult<?> add(@RequestBody InvoiceInsertDTO invoiceInsertDTO) {
         return invoiceService.addDTO(invoiceInsertDTO);
@@ -81,13 +81,13 @@ public class InvoiceController {
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('Invoice_Edit')")
     @PostMapping("/update")
     public JsonResult<?> update(@RequestBody InvoiceUpdateDTO invoiceUpdateDTO) {
         return invoiceService.updateByDTO(invoiceUpdateDTO);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('Invoice_Delete')")
     @DeleteMapping("/delete")
     public JsonResult<?> delete(@RequestBody InvoiceSelectDTO invoiceSelectDTO) {
         boolean b = invoiceService.delById(invoiceSelectDTO.getId());

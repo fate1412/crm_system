@@ -222,6 +222,15 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
     
     @Override
+    @Transactional
+    public boolean removeUser(Long id) {
+        QueryWrapper<SysUserRole> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(SysUserRole::getUserId,id);
+        sysUserRoleService.remove(queryWrapper);
+        return removeById(id);
+    }
+    
+    @Override
     public List<IdToName> getOptions(String nameLike, Integer page) {
         QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda()

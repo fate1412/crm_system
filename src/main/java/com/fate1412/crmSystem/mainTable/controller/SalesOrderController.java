@@ -54,7 +54,7 @@ public class SalesOrderController {
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('SalesOrder_Insert')")
     @PutMapping("/add")
     public JsonResult<?> add(@RequestBody SalesOrderInsertDTO salesOrderInsertDTO) {
         return salesOrderService.addDTO(salesOrderInsertDTO);
@@ -81,13 +81,13 @@ public class SalesOrderController {
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('SalesOrder_Edit')")
     @PostMapping("/update")
     public JsonResult<?> update(@RequestBody SalesOrderUpdateDTO salesOrderUpdateDTO) {
         return salesOrderService.updateByDTO(salesOrderUpdateDTO);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('SalesOrder_Delete')")
     @DeleteMapping("/delete")
     public JsonResult<?> delete(@RequestBody SalesOrderSelectDTO salesOrderSelectDTO) {
         boolean b = salesOrderService.delById(salesOrderSelectDTO.getId());

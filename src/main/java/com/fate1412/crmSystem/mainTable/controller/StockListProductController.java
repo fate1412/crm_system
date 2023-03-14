@@ -48,7 +48,7 @@ public class StockListProductController {
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('StockListProduct_Insert')")
     @PutMapping("/add")
     public JsonResult<?> add(@RequestBody StockListProductInsertDTO stockListProductInsertDTO) {
         return stockListProductService.addDTO(stockListProductInsertDTO);
@@ -63,13 +63,13 @@ public class StockListProductController {
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('StockListProduct_Edit')")
     @PostMapping("/update")
     public JsonResult<?> update(@RequestBody StockListProductUpdateDTO stockListProductUpdateDTO) {
         return stockListProductService.updateByDTO(stockListProductUpdateDTO);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('StockListProduct_Delete')")
     @DeleteMapping("/delete")
     public JsonResult<?> delete(@RequestBody StockListProductSelectDTO stockListProductSelectDTO) {
         boolean b = stockListProductService.removeById(stockListProductSelectDTO.getId());

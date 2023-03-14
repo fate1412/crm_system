@@ -57,7 +57,7 @@ public class StockListController {
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('StockList_Insert')")
     @PutMapping("/add")
     public JsonResult<?> add(@RequestBody StockListInsertDTO stockListInsertDTO) {
         return stockListService.addDTO(stockListInsertDTO);
@@ -84,13 +84,13 @@ public class StockListController {
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('StockList_Edit')")
     @PostMapping("/update")
     public JsonResult<?> update(@RequestBody StockListUpdateDTO stockListUpdateDTO) {
         return stockListService.updateByDTO(stockListUpdateDTO);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('StockList_Delete')")
     @DeleteMapping("/delete")
     public JsonResult<?> delete(@RequestBody StockListSelectDTO stockListSelectDTO) {
         boolean b = stockListService.delById(stockListSelectDTO.getId());

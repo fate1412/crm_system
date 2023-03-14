@@ -51,7 +51,7 @@ public class CustomerController {
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('Customer_Insert')")
     @PutMapping("/add")
     public JsonResult<?> add(@RequestBody CustomerInsertDTO customerInsertDTO) {
         return customerService.addDTO(customerInsertDTO);
@@ -72,7 +72,7 @@ public class CustomerController {
         return customerService.updateByDTO(customerUpdateDTO);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('Customer_Delete')")
     @DeleteMapping("/delete")
     public JsonResult<?> delete(@RequestBody CustomerSelectDTO customerSelectDTO) {
         boolean b = customerService.removeById(customerSelectDTO.getId());

@@ -48,7 +48,7 @@ public class ProductController {
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('Product_Insert')")
     @PutMapping("/add")
     public JsonResult<?> add(@RequestBody ProductInsertDTO productInsertDTO) {
         return productService.addDTO(productInsertDTO);
@@ -63,13 +63,13 @@ public class ProductController {
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('Product_Edit')")
     @PostMapping("/update")
     public JsonResult<?> update(@RequestBody ProductUpdateDTO productUpdateDTO) {
         return productService.updateByDTO(productUpdateDTO);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('Product_Delete')")
     @DeleteMapping("/delete")
     public JsonResult<?> delete(@RequestBody ProductSelectDTO productSelectDTO) {
         boolean b = productService.removeById(productSelectDTO.getId());

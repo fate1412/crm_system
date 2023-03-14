@@ -36,7 +36,6 @@ public interface ISysRoleService extends IService<SysRole>, MyBaseService<SysRol
     
     TableResultData getColumns();
     
-    
     /**
      * 通过Id获取角色的权限
      */
@@ -51,4 +50,6 @@ public interface ISysRoleService extends IService<SysRole>, MyBaseService<SysRol
     boolean updatePermissions(Long id, List<SysRolePermissionDTO> list);
     
     List<IdToName> getPermissionsOptions(String nameLike, Integer page);
+    
+    boolean removeRole(Long id);
 }

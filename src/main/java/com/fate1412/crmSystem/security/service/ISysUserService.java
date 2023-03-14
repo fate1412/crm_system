@@ -66,5 +66,7 @@ public interface ISysUserService extends IService<SysUser>, MyBaseService<SysUse
     TableResultData getColumns();
     
     SysUser thisUser();
+    
+    boolean removeUser(Long id);
 
 }

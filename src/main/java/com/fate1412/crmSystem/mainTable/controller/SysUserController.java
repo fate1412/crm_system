@@ -55,22 +55,22 @@ public class SysUserController {
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('SysUser_Insert')")
     @PutMapping("/add")
     public JsonResult<?> add(@RequestBody SysUserInsertDTO sysUserInsertDTO) {
         return sysUserService.addByDTO(sysUserInsertDTO);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('SysUser_Edit')")
     @PostMapping("/update")
     public JsonResult<?> update(@RequestBody SysUserUpdateDTO sysUserUpdateDTO) {
         return sysUserService.updateByDTO(sysUserUpdateDTO);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('SysUser_Delete')")
     @DeleteMapping("/delete")
     public JsonResult<?> delete(@RequestBody SysUserSelectDTO sysUserSelectDTO) {
-        boolean b = sysUserService.removeById(sysUserSelectDTO.getUserId());
+        boolean b = sysUserService.removeUser(sysUserSelectDTO.getUserId());
         return ResultTool.create(b);
     }
     
@@ -81,14 +81,14 @@ public class SysUserController {
         return ResultTool.success(options);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('SysRole_Select')")
     @GetMapping("/getRoles")
     public JsonResult<?> getRoles(@Param("id") Long id) {
         List<SysUserRolesDTO> userRolesList = sysUserService.getUserRolesById(id);
         return ResultTool.success(userRolesList);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('SysUserRole_Edit')")
     @PostMapping("/updateRoles")
     public JsonResult<?> updateRoles(@RequestBody JSONObject jsonObject) {
         Long id = jsonObject.getLong("id");
