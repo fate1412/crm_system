@@ -36,7 +36,7 @@ public class SysRoleSelectDTO implements Serializable {
     private String roleName;
 
     @TableField("role_code")
-    @TableTitle(value = "角色Code",inserted = true)
+    @TableTitle(value = "角色编码",inserted = true)
     private String roleCode;
 
     @TableField("role_desc")

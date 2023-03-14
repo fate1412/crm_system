@@ -26,18 +26,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private ISysUserService userService;
     
-    @Autowired
-    private ISysPermissionService permissionService;
-    
-    @Autowired
-    private ISysRoleService roleService;
-    
-    @Autowired
-    private ISysUserRoleService userRoleService;
-    
-    @Autowired
-    private ISysRolePermissionService rolePermissionService;
-    
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         //获取用户

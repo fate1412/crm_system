@@ -66,7 +66,7 @@ public class CustomerController {
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('Customer_Edit')")
     @PostMapping("/update")
     public JsonResult<?> update(@RequestBody CustomerUpdateDTO customerUpdateDTO) {
         return customerService.updateByDTO(customerUpdateDTO);

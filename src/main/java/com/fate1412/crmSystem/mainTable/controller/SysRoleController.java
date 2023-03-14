@@ -1,7 +1,10 @@
 package com.fate1412.crmSystem.mainTable.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.fate1412.crmSystem.base.MyPage;
 import com.fate1412.crmSystem.security.dto.insert.SysRoleInsertDTO;
+import com.fate1412.crmSystem.security.dto.select.SysRolePermissionDTO;
+import com.fate1412.crmSystem.security.dto.select.SysUserRolesDTO;
 import com.fate1412.crmSystem.security.dto.select.SysUserSelectDTO;
 import com.fate1412.crmSystem.security.dto.update.SysRoleUpdateDTO;
 import com.fate1412.crmSystem.security.dto.update.SysUserUpdateDTO;
@@ -79,5 +82,27 @@ public class SysRoleController {
         return ResultTool.success(options);
     }
     
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/getPermissions")
+    public JsonResult<?> getPermissions(@Param("id") Long id) {
+        List<SysRolePermissionDTO> rolePermissionDTOList = sysRoleService.getRolePermissionDTOById(id);
+        return ResultTool.success(rolePermissionDTOList);
+    }
+    
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/updatePermissions")
+    public JsonResult<?> updatePermissions(@RequestBody JSONObject jsonObject) {
+        Long id = jsonObject.getLong("id");
+        List<SysRolePermissionDTO> list = jsonObject.getJSONArray("RolePermissionsList").toJavaList(SysRolePermissionDTO.class);
+        boolean b = sysRoleService.updatePermissions(id, list);
+        return b?ResultTool.success():ResultTool.fail();
+    }
+    
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/getPermissionsOptions")
+    public JsonResult<?> getPermissionsOptions(@Param("nameLike") String nameLike, @Param("page") Integer page) {
+        List<IdToName> options = sysRoleService.getPermissionsOptions(nameLike, page);
+        return ResultTool.success(options);
+    }
 
 }

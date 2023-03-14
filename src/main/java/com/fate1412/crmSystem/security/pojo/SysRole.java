@@ -10,6 +10,7 @@ import java.util.Date;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 /**
  * <p>
@@ -22,6 +23,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @TableName("sys_role")
+@Accessors(chain = true)
 public class SysRole implements Serializable {
 
     private static final long serialVersionUID = 1L;
