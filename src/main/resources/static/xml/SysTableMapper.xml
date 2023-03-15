@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fate1412.crmSystem.customTable.mapper.SysTableMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.fate1412.crmSystem.customTable.pojo.SysTable">
+        <id column="table_name" property="tableName" />
+        <result column="table_column" property="tableColumn" />
+        <result column="name" property="name" />
+        <result column="column_name" property="columnName" />
+        <result column="column_name_r" property="columnNameR" />
+        <result column="fixed" property="fixed" />
+        <result column="link" property="link" />
+        <result column="disabled" property="disabled" />
+        <result column="form_type" property="formType" />
+    </resultMap>
+
+
+    <sql id="whereType">
+        <if test="factor.factor == 'EQ'">
+            ${factor.field} = #{factor.value}
+        </if>
+        <if test="factor.factor == 'NE'">
+            ${factor.field} != #{factor.value}
+        </if>
+        <if test="factor.factor == 'GT'">
+            ${factor.field} > #{factor.value}
+        </if>
+        <if test="factor.factor == 'GE'">
+            ${factor.field} >= #{factor.value}
+        </if>
+        <if test="factor.factor == 'LT'">
+            ${factor.field} &lt; #{factor.value}
+        </if>
+        <if test="factor.factor == 'LE'">
+            ${factor.field} &lt;= #{factor.value}
+        </if>
+        <if test="factor.factor == 'LIKE'">
+            ${factor.field} like '%'#{factor.value}'%'
+        </if>
+        <if test="factor.factor == 'LEFT_LIKE'">
+            ${factor.field} like #{factor.value}'%'
+        </if>
+        <if test="factor.factor == 'RIGHT_LIKE'">
+            ${factor.field} like '%'#{factor.value}
+        </if>
+        <if test="factor.factor == 'NOT_LIKE'">
+            ${factor.field} not like #{factor.value}
+        </if>
+        <if test="factor.factor == 'BETWEEN'">
+            ${factor.field} between #{factor.value} and #{factor.value2}
+        </if>
+        <if test="factor.factor == 'NOT_BETWEEN'">
+            ${factor.field} not between #{factor.value} and #{factor.value2}
+        </if>
+        <if test="factor.factor == 'ISNULL'">
+            ${factor.field} == null
+        </if>
+        <if test="factor.factor == 'IS_NOTNULL'">
+            ${factor.field} != null
+        </if>
+        <if test="factor.factor == 'IN'">
+            ${factor.field} in
+            <foreach collection="factor.values" item="value" open="(" close=")" separator="," >
+                #{value}
+            </foreach>
+        </if>
+        <if test="factor.factor == 'NOT_IN'">
+            ${factor.field} not in
+            <foreach collection="factor.values" item="value" open="(" close=")" separator="," >
+                #{value}
+            </foreach>
+        </if>
+        <if test="factor.factor == 'OR'">
+            or
+        </if>
+    </sql>
+
+    <select id="select" resultType="com.alibaba.fastjson.JSONObject" >
+        select * from ${tableName} where
+        <foreach collection="factors" item="factor" index="index">
+            <if test="(index != 0) and (factor.factor != 'OR') and (factors.get(index-1).factor != 'OR')">
+                and
+            </if>
+            <include refid="whereType"/>
+        </foreach>
+
+    </select>
+
+
+</mapper>
