@@ -43,13 +43,10 @@ public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHand
     
         //此处还可以进行一些处理，比如登录成功之后可能需要返回给前台当前用户有哪些菜单权限，
         //进而前台动态的控制菜单的显示等，具体根据自己的业务需求进行扩展
-        List<SysPermission> permissionList = userService.getPermissionById(sysUser.getUserId());
-        List<String> permissionCodeList = MyCollections.objects2List(permissionList, SysPermission::getPermissionCode);
     
         //返回json数据
         JSONObject jsonObject= new JSONObject();
         jsonObject.put("token",sysUser.getUserId());
-        jsonObject.put("permissionCodeList",permissionCodeList);
         JsonResult<?> result = ResultTool.success(jsonObject);
         //处理编码方式，防止中文乱码的情况
         response.setContentType("text/json;charset=utf-8");

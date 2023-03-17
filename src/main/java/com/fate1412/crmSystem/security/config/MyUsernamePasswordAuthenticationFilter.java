@@ -33,7 +33,7 @@ public class MyUsernamePasswordAuthenticationFilter extends AbstractAuthenticati
     
     public static final String SPRING_SECURITY_FORM_PASSWORD_KEY = "password";
     
-    private static final AntPathRequestMatcher DEFAULT_ANT_PATH_REQUEST_MATCHER = new AntPathRequestMatcher("/user/login",
+    private static final AntPathRequestMatcher DEFAULT_ANT_PATH_REQUEST_MATCHER = new AntPathRequestMatcher("/sysUser/login",
             "POST");
     
     private String usernameParameter = SPRING_SECURITY_FORM_USERNAME_KEY;

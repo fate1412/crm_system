@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fate1412.crmSystem.customTable.service.ITableOptionService;
 import com.fate1412.crmSystem.mainTable.constant.TableNames;
 import com.fate1412.crmSystem.security.dto.insert.SysUserInsertDTO;
+import com.fate1412.crmSystem.security.dto.select.SysRolePermissionDTO;
 import com.fate1412.crmSystem.security.dto.select.SysUserRolesDTO;
 import com.fate1412.crmSystem.security.dto.select.SysUserSelectDTO;
 import com.fate1412.crmSystem.security.dto.update.SysUserUpdateDTO;
@@ -228,6 +229,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         queryWrapper.lambda().eq(SysUserRole::getUserId,id);
         sysUserRoleService.remove(queryWrapper);
         return removeById(id);
+    }
+    
+    @Override
+    public List<SysRolePermissionDTO> getThisUserPermissions() {
+        SysUser sysUser = thisUser();
+        List<SysPermission> permissionList = getPermissionById(sysUser.getUserId());
+        return MyCollections.copyListProperties(permissionList,SysRolePermissionDTO::new);
     }
     
     @Override

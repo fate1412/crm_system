@@ -2,6 +2,7 @@ package com.fate1412.crmSystem.security.service;
 
 import com.fate1412.crmSystem.base.MyBaseService;
 import com.fate1412.crmSystem.security.dto.insert.SysUserInsertDTO;
+import com.fate1412.crmSystem.security.dto.select.SysRolePermissionDTO;
 import com.fate1412.crmSystem.security.dto.select.SysUserRolesDTO;
 import com.fate1412.crmSystem.security.dto.update.SysUserUpdateDTO;
 import com.fate1412.crmSystem.security.pojo.*;
@@ -68,5 +69,7 @@ public interface ISysUserService extends IService<SysUser>, MyBaseService<SysUse
     SysUser thisUser();
     
     boolean removeUser(Long id);
+    
+    List<SysRolePermissionDTO> getThisUserPermissions();
 
 }

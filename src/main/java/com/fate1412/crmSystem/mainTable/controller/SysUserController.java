@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.fate1412.crmSystem.base.MyPage;
 import com.fate1412.crmSystem.exception.DataCheckingException;
 import com.fate1412.crmSystem.security.dto.insert.SysUserInsertDTO;
+import com.fate1412.crmSystem.security.dto.select.SysRolePermissionDTO;
 import com.fate1412.crmSystem.security.dto.select.SysUserRolesDTO;
 import com.fate1412.crmSystem.security.dto.select.SysUserSelectDTO;
 import com.fate1412.crmSystem.security.dto.update.SysUserUpdateDTO;
@@ -41,7 +42,7 @@ public class SysUserController {
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('SysUser_Select')")
     @GetMapping("/page/select")
     public JsonResult<Object> selectByPage(@Param("thisPage") Long thisPage, @Param("pageSize") Long pageSize) {
         thisPage = thisPage == null ? 1 : thisPage;
@@ -95,6 +96,13 @@ public class SysUserController {
         List<SysUserRolesDTO> userRolesList = jsonObject.getJSONArray("userRolesList").toJavaList(SysUserRolesDTO.class);
         boolean b = sysUserService.updateRoles(id, userRolesList);
         return b?ResultTool.success():ResultTool.fail();
+    }
+    
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/getThisUserPermissions")
+    public JsonResult<?> getThisUserPermissions() {
+        List<SysRolePermissionDTO> permissions = sysUserService.getThisUserPermissions();
+        return ResultTool.success(permissions);
     }
 
 }
