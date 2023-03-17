@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fate1412.crmSystem.annotations.TableTitle.FormType;
 import com.fate1412.crmSystem.customTable.dto.OptionDTO;
 import com.fate1412.crmSystem.customTable.service.ITableOptionService;
+import com.fate1412.crmSystem.exception.DataCheckingException;
 import com.fate1412.crmSystem.utils.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -41,9 +42,13 @@ public interface MyBaseService<T> {
         t = entity.set(t);
         ResultCode verification = entity.verification(t);
         if (verification.equals(ResultCode.SUCCESS) && (mapper().updateById(t) > 0)) {
-            return entity.after(t)? ResultTool.success() : ResultTool.fail(ResultCode.UPDATE_ERROR);
+            if (entity.after(t)) {
+                return ResultTool.success();
+            } else {
+                throw new DataCheckingException(ResultCode.UPDATE_ERROR);
+            }
         } else {
-            return ResultTool.fail(verification);
+            throw new DataCheckingException(verification);
         }
     }
     
@@ -53,9 +58,13 @@ public interface MyBaseService<T> {
         t = entity.set(t);
         ResultCode verification = entity.verification(t);
         if (verification.equals(ResultCode.SUCCESS) && (mapper().insert(t) > 0)) {
-            return entity.after(t)? ResultTool.success() : ResultTool.fail(ResultCode.INSERT_ERROR);
+            if (entity.after(t)) {
+                return ResultTool.success();
+            } else {
+                throw new DataCheckingException(ResultCode.INSERT_ERROR);
+            }
         } else {
-            return ResultTool.fail(verification);
+            throw new DataCheckingException(verification);
         }
     }
     

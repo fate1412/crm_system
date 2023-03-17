@@ -31,6 +31,9 @@ public class SysRolePermissionDTO implements Serializable {
     
     @TableField("permission_code")
     private String permissionCode;
+    
+    @TableField("permission_desc")
+    private String permissionDesc;
 
 
 }

@@ -2,6 +2,7 @@ package com.fate1412.crmSystem.mainTable.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.fate1412.crmSystem.base.MyPage;
+import com.fate1412.crmSystem.exception.DataCheckingException;
 import com.fate1412.crmSystem.security.dto.insert.SysUserInsertDTO;
 import com.fate1412.crmSystem.security.dto.select.SysUserRolesDTO;
 import com.fate1412.crmSystem.security.dto.select.SysUserSelectDTO;
@@ -45,7 +46,6 @@ public class SysUserController {
     public JsonResult<Object> selectByPage(@Param("thisPage") Long thisPage, @Param("pageSize") Long pageSize) {
         thisPage = thisPage == null ? 1 : thisPage;
         pageSize = pageSize == null ? 10 : pageSize;
-//        IPage<CustomerSelectDTO> page = customerService.listByPage(thisPage, pageSize);
         MyPage page = sysUserService.listByPage(thisPage, pageSize,null);
         List<?> records = page.getRecords();
         TableResultData tableResultData = sysUserService.getColumns();

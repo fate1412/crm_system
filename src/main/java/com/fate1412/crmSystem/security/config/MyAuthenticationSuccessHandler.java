@@ -2,17 +2,13 @@ package com.fate1412.crmSystem.security.config;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.fate1412.crmSystem.security.mapper.SysUserMapper;
 import com.fate1412.crmSystem.security.pojo.SysPermission;
 import com.fate1412.crmSystem.security.pojo.SysUser;
 import com.fate1412.crmSystem.security.service.ISysUserService;
 import com.fate1412.crmSystem.utils.JsonResult;
-import com.fate1412.crmSystem.utils.JwtTokenUtils;
 import com.fate1412.crmSystem.utils.MyCollections;
 import com.fate1412.crmSystem.utils.ResultTool;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -23,8 +19,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
