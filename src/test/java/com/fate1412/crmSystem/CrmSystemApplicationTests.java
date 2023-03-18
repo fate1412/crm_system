@@ -1,7 +1,7 @@
 package com.fate1412.crmSystem;
 
-import com.fate1412.crmSystem.mainTable.mapper.CustomerMapper;
-import com.fate1412.crmSystem.security.service.ISysUserService;
+import com.fate1412.crmSystem.moduel.mainTable.mapper.CustomerMapper;
+import com.fate1412.crmSystem.moduel.security.service.ISysUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

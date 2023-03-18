@@ -1,7 +1,7 @@
 package com.fate1412.crmSystem.utils;
 
 import com.fate1412.crmSystem.annotations.TableTitle.FormType;
-import com.fate1412.crmSystem.customTable.dto.OptionDTO;
+import com.fate1412.crmSystem.moduel.customTable.dto.OptionDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.experimental.Accessors;

@@ -1,0 +1,20 @@
+package com.fate1412.crmSystem.moduel.security.service.impl;
+
+import com.fate1412.crmSystem.moduel.security.pojo.SysUserRole;
+import com.fate1412.crmSystem.moduel.security.mapper.SysUserRoleMapper;
+import com.fate1412.crmSystem.moduel.security.service.ISysUserRoleService;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.stereotype.Service;
+
+/**
+ * <p>
+ * 用户角色表 服务实现类
+ * </p>
+ *
+ * @author fate1412
+ * @since 2023-02-21
+ */
+@Service
+public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUserRole> implements ISysUserRoleService {
+
+}

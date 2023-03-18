@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.fate1412.crmSystem.mainTable.mapper.InvoiceProductMapper">
+<mapper namespace="com.fate1412.crmSystem.moduel.mainTable.mapper.InvoiceProductMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.fate1412.crmSystem.mainTable.pojo.InvoiceProduct">
+    <resultMap id="BaseResultMap" type="com.fate1412.crmSystem.moduel.mainTable.pojo.InvoiceProduct">
         <result column="invoice_id" property="invoiceId"/>
         <result column="product_id" property="productId"/>
         <result column="invoice_num" property="invoiceNum"/>
@@ -13,21 +13,21 @@
         <result column="updater" property="updater"/>
     </resultMap>
 
-    <select id="getUnInvoiceNum" resultType="com.fate1412.crmSystem.mainTable.pojo.OrderProduct">
+    <select id="getUnInvoiceNum" resultType="com.fate1412.crmSystem.moduel.mainTable.pojo.OrderProduct">
         select product_id, sum(product_num) as 'product_num', sum(invoice_num) as 'invoice_num'
         from order_product
         where sales_order_id = (select id from sales_order where id = #{salesOrderId})
         group by product_id
     </select>
 
-    <select id="getOrderProductList" resultType="com.fate1412.crmSystem.mainTable.pojo.OrderProduct">
+    <select id="getOrderProductList" resultType="com.fate1412.crmSystem.moduel.mainTable.pojo.OrderProduct">
         select *
         from order_product
         where sales_order_id = (select id from sales_order where id = #{salesOrderId})
           and product_id = #{productId}
     </select>
 
-    <select id="getInvoiceProductList" resultType="com.fate1412.crmSystem.mainTable.pojo.InvoiceProduct">
+    <select id="getInvoiceProductList" resultType="com.fate1412.crmSystem.moduel.mainTable.pojo.InvoiceProduct">
         select *
         from invoice_product ip
         where invoice_id in (select id from invoice i2 where sales_order_id = #{salesOrderId})

@@ -52,7 +52,7 @@ public class MysqlGenerator {
         strategy.setEntityLombokModel(true); //使用lombok
         strategy.setLogicDeleteFieldName("del_flag");
         strategy.setEntityTableFieldAnnotationEnable(true);
-        strategy.setInclude("table_column_dict","table_dict","table_option");  // 逆向工程使用的表   如果要生成多个,这里可以传入String[]
+        strategy.setInclude("sys_flow","sys_flow_point","sys_flow_session");  // 逆向工程使用的表   如果要生成多个,这里可以传入String[]
         mpg.setStrategy(strategy);
         
         mpg.setTemplateEngine(new VelocityTemplateEngine());

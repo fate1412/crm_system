@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.fate1412.crmSystem.customTable.mapper.SysTableMapper">
+<mapper namespace="com.fate1412.crmSystem.moduel.customTable.mapper.SysTableMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.fate1412.crmSystem.customTable.pojo.SysTable">
+    <resultMap id="BaseResultMap" type="com.fate1412.crmSystem.moduel.customTable.pojo.SysTable">
         <id column="table_name" property="tableName" />
         <result column="table_column" property="tableColumn" />
         <result column="name" property="name" />
