@@ -1,6 +1,8 @@
 package com.fate1412.crmSystem.mainTable.service;
 
 import com.fate1412.crmSystem.base.MyBaseService;
+import com.fate1412.crmSystem.base.MyPage;
+import com.fate1412.crmSystem.base.SelectPage;
 import com.fate1412.crmSystem.mainTable.dto.insert.StockListProductInsertDTO;
 import com.fate1412.crmSystem.mainTable.dto.select.OrderProductSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.select.StockListProductSelectDTO;
@@ -39,4 +41,6 @@ public interface IStockListProductService extends IService<StockListProduct>, My
     boolean delByIds(List<Long> ids);
     
     boolean delByStockListId(Long id);
+    
+    MyPage listByPage(SelectPage<StockListProductSelectDTO> selectPage);
 }

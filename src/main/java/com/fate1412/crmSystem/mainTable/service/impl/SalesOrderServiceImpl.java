@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fate1412.crmSystem.base.MyPage;
+import com.fate1412.crmSystem.base.SelectPage;
 import com.fate1412.crmSystem.customTable.dto.OptionDTO;
 import com.fate1412.crmSystem.customTable.service.ITableOptionService;
 import com.fate1412.crmSystem.mainTable.constant.TableNames;
@@ -163,6 +165,16 @@ public class SalesOrderServiceImpl extends ServiceImpl<SalesOrderMapper, SalesOr
             return removeById(id);
         }
         return false;
+    }
+    
+    @Override
+    public MyPage listByPage(SelectPage<SalesOrderSelectDTO> selectPage) {
+        SalesOrderSelectDTO like = selectPage.getLike();
+        QueryWrapper<SalesOrder> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda()
+                .like(like.getId()!= null, SalesOrder::getId,like.getId())
+                .like(like.getCustomerId()!= null, SalesOrder::getCustomerId,like.getCustomerId());
+        return listByPage(selectPage.getPage(),selectPage.getPageSize(),queryWrapper);
     }
     
     @Override

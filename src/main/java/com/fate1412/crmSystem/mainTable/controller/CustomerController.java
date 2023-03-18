@@ -2,6 +2,7 @@ package com.fate1412.crmSystem.mainTable.controller;
 
 
 import com.fate1412.crmSystem.base.MyPage;
+import com.fate1412.crmSystem.base.SelectPage;
 import com.fate1412.crmSystem.mainTable.dto.insert.CustomerInsertDTO;
 import com.fate1412.crmSystem.mainTable.dto.select.CustomerSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.update.CustomerUpdateDTO;
@@ -37,16 +38,13 @@ public class CustomerController {
     }
     
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/page/select")
-    public JsonResult<Object> selectByPage(@Param("thisPage") Long thisPage, @Param("pageSize") Long pageSize) {
-        thisPage = thisPage == null ? 1 : thisPage;
-        pageSize = pageSize == null ? 10 : pageSize;
-//        IPage<CustomerSelectDTO> page = customerService.listByPage(thisPage, pageSize);
-        MyPage page = customerService.listByPage(thisPage, pageSize,null);
+    @PostMapping("/page/select")
+    public JsonResult<Object> selectByPage(@RequestBody SelectPage<CustomerSelectDTO> selectPage) {
+        MyPage page = customerService.listByPage(selectPage);
         List<?> records = page.getRecords();
         TableResultData tableResultData = customerService.getColumns();
         tableResultData.setTableDataList(records);
-        tableResultData.setThisPage(thisPage);
+        tableResultData.setThisPage(selectPage.getPage());
         tableResultData.setTotal(page.getTotal());
         return ResultTool.success(tableResultData);
     }

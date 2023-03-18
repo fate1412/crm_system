@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fate1412.crmSystem.base.MyPage;
+import com.fate1412.crmSystem.base.SelectPage;
 import com.fate1412.crmSystem.customTable.dto.OptionDTO;
 import com.fate1412.crmSystem.customTable.service.ITableOptionService;
 import com.fate1412.crmSystem.mainTable.constant.TableNames;
@@ -110,6 +112,16 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                 return isRight(customer);
             }
         });
+    }
+    
+    @Override
+    public MyPage listByPage(SelectPage<CustomerSelectDTO> selectPage) {
+        CustomerSelectDTO like = selectPage.getLike();
+        QueryWrapper<Customer> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda()
+                .like(like.getId() != null, Customer::getId, like.getId())
+                .like(like.getName() != null, Customer::getName,like.getName());
+        return listByPage(selectPage.getPage(),selectPage.getPageSize(),queryWrapper);
     }
     
     @Override

@@ -1,6 +1,8 @@
 package com.fate1412.crmSystem.mainTable.service;
 
 import com.fate1412.crmSystem.base.MyBaseService;
+import com.fate1412.crmSystem.base.MyPage;
+import com.fate1412.crmSystem.base.SelectPage;
 import com.fate1412.crmSystem.mainTable.dto.insert.OrderProductInsertDTO;
 import com.fate1412.crmSystem.mainTable.dto.select.OrderProductSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.update.OrderProductUpdateDTO;
@@ -40,4 +42,6 @@ public interface IOrderProductService extends IService<OrderProduct>, MyBaseServ
     boolean delByIds(List<Long> ids);
     
     boolean delBySalesOrderId(Long id);
+    
+    MyPage listByPage(SelectPage<OrderProductSelectDTO> selectPage);
 }

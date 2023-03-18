@@ -24,13 +24,12 @@ import java.util.Date;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@TableName("invoice_product")
 public class InvoiceProductSelectDTO implements Serializable {
     
     private static final long serialVersionUID = 1L;
     
-    @TableField("id")
     @TableTitle(value = "发货单产品id", fixed = true, disabled = true)
+    @TableField("id")
     private Long id;
     
     /**

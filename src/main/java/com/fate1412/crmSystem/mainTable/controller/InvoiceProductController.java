@@ -2,6 +2,8 @@ package com.fate1412.crmSystem.mainTable.controller;
 
 
 import com.fate1412.crmSystem.base.MyPage;
+import com.fate1412.crmSystem.base.SelectPage;
+import com.fate1412.crmSystem.mainTable.dto.select.CustomerSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.select.InvoiceProductSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.update.InvoiceProductUpdateDTO;
 import com.fate1412.crmSystem.mainTable.service.IInvoiceProductService;
@@ -35,14 +37,12 @@ public class InvoiceProductController {
     }
     
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/page/select")
-    public JsonResult<Object> selectByPage(@Param("thisPage") Long thisPage, @Param("pageSize") Long pageSize) {
-        thisPage = thisPage == null ? 1 : thisPage;
-        pageSize = pageSize == null ? 10 : pageSize;
-        MyPage page = invoiceProductService.listByPage(thisPage, pageSize,null);
+    @PostMapping("/page/select")
+    public JsonResult<Object> selectByPage(@RequestBody SelectPage<InvoiceProductSelectDTO> selectPage) {
+        MyPage page = invoiceProductService.listByPage(selectPage);
         TableResultData tableResultData = invoiceProductService.getColumns();
         tableResultData.setTableDataList(page.getRecords());
-        tableResultData.setThisPage(thisPage);
+        tableResultData.setThisPage(selectPage.getPage());
         tableResultData.setTotal(page.getTotal());
         return ResultTool.success(tableResultData);
     }

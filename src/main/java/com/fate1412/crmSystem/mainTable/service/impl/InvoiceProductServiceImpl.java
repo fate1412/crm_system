@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fate1412.crmSystem.base.MyPage;
+import com.fate1412.crmSystem.base.SelectPage;
 import com.fate1412.crmSystem.customTable.service.ITableOptionService;
 import com.fate1412.crmSystem.mainTable.constant.TableNames;
 import com.fate1412.crmSystem.mainTable.dto.select.InvoiceProductSelectDTO;
@@ -157,6 +159,17 @@ public class InvoiceProductServiceImpl extends ServiceImpl<InvoiceProductMapper,
         remove(queryWrapper);
         Map<Long, Integer> map = MyCollections.list2MapL(list, InvoiceProduct::getProductId, InvoiceProduct::getInvoiceNum);
         return updateOrderProduct(map, invoice);
+    }
+    
+    @Override
+    public MyPage listByPage(SelectPage<InvoiceProductSelectDTO> selectPage) {
+        InvoiceProductSelectDTO like = selectPage.getLike();
+        QueryWrapper<InvoiceProduct> queryWrapper =new QueryWrapper<>();
+        queryWrapper.lambda()
+                .like(like.getId() != null,InvoiceProduct::getId, like.getId())
+                .like(like.getInvoiceId() != null,InvoiceProduct::getInvoiceId, like.getInvoiceId())
+                .like(like.getProductId() != null,InvoiceProduct::getProductId, like.getProductId());
+        return listByPage(selectPage.getPage(),selectPage.getPageSize(),queryWrapper);
     }
     
     private boolean updateOrderProduct(Map<Long, Integer> map, Invoice invoice) {

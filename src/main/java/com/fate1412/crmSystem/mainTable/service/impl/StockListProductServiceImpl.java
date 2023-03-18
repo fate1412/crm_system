@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fate1412.crmSystem.base.MyPage;
+import com.fate1412.crmSystem.base.SelectPage;
 import com.fate1412.crmSystem.customTable.service.ITableOptionService;
 import com.fate1412.crmSystem.mainTable.constant.TableNames;
 import com.fate1412.crmSystem.mainTable.dto.insert.StockListProductInsertDTO;
@@ -159,10 +161,10 @@ public class StockListProductServiceImpl extends ServiceImpl<StockListProductMap
     @Override
     public List<StockListProductSelectDTO> getDTOByStockListId(Long stockListId) {
         QueryWrapper<StockListProduct> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().eq(StockListProduct::getStockListId,stockListId);
+        queryWrapper.lambda().eq(StockListProduct::getStockListId, stockListId);
         List<StockListProduct> list = list(queryWrapper);
         List<?> dtoList = getDTOList(list);
-        return MyCollections.copyListProperties(dtoList,StockListProductSelectDTO::new);
+        return MyCollections.copyListProperties(dtoList, StockListProductSelectDTO::new);
     }
     
     @Override
@@ -191,8 +193,18 @@ public class StockListProductServiceImpl extends ServiceImpl<StockListProductMap
     @Transactional
     public boolean delByStockListId(Long id) {
         QueryWrapper<StockListProduct> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().eq(StockListProduct::getStockListId,id);
+        queryWrapper.lambda().eq(StockListProduct::getStockListId, id);
         return remove(queryWrapper);
+    }
+    
+    @Override
+    public MyPage listByPage(SelectPage<StockListProductSelectDTO> selectPage) {
+        StockListProductSelectDTO like = selectPage.getLike();
+        QueryWrapper<StockListProduct> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda()
+                .like(like.getId() != null, StockListProduct::getId, like.getId())
+                .like(like.getStockListId() != null, StockListProduct::getStockListId, like.getStockListId());
+        return listByPage(selectPage.getPage(), selectPage.getPageSize(), queryWrapper);
     }
     
     @Override

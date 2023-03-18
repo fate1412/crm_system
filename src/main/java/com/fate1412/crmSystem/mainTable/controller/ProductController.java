@@ -2,7 +2,9 @@ package com.fate1412.crmSystem.mainTable.controller;
 
 
 import com.fate1412.crmSystem.base.MyPage;
+import com.fate1412.crmSystem.base.SelectPage;
 import com.fate1412.crmSystem.mainTable.dto.insert.ProductInsertDTO;
+import com.fate1412.crmSystem.mainTable.dto.select.CustomerSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.select.ProductSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.update.ProductUpdateDTO;
 import com.fate1412.crmSystem.mainTable.service.IProductService;
@@ -36,14 +38,12 @@ public class ProductController {
     }
     
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/page/select")
-    public JsonResult<Object> selectByPage(@Param("thisPage") Long thisPage, @Param("pageSize") Long pageSize) {
-        thisPage = thisPage == null ? 1 : thisPage;
-        pageSize = pageSize == null ? 20 : pageSize;
-        MyPage page = productService.listByPage(thisPage, pageSize,null);
+    @PostMapping("/page/select")
+    public JsonResult<Object> selectByPage(@RequestBody SelectPage<ProductSelectDTO> selectPage) {
+        MyPage page = productService.listByPage(selectPage);
         TableResultData tableResultData = productService.getColumns();
         tableResultData.setTableDataList(page.getRecords());
-        tableResultData.setThisPage(thisPage);
+        tableResultData.setThisPage(selectPage.getPage());
         tableResultData.setTotal(page.getTotal());
         return ResultTool.success(tableResultData);
     }

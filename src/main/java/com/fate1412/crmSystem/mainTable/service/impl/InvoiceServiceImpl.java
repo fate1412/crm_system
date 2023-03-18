@@ -4,10 +4,13 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fate1412.crmSystem.base.MyPage;
+import com.fate1412.crmSystem.base.SelectPage;
 import com.fate1412.crmSystem.customTable.service.ITableOptionService;
 import com.fate1412.crmSystem.mainTable.constant.TableNames;
 import com.fate1412.crmSystem.mainTable.dto.child.InvoiceChild;
 import com.fate1412.crmSystem.mainTable.dto.insert.InvoiceInsertDTO;
+import com.fate1412.crmSystem.mainTable.dto.select.CustomerSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.select.InvoiceSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.update.InvoiceUpdateDTO;
 import com.fate1412.crmSystem.mainTable.mapper.*;
@@ -180,6 +183,16 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
             return removeById(invoice.getId());
         }
         return false;
+    }
+    
+    @Override
+    public MyPage listByPage(SelectPage<InvoiceSelectDTO> selectPage) {
+        InvoiceSelectDTO like = selectPage.getLike();
+        QueryWrapper<Invoice> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda()
+                .like(like.getId() != null,Invoice::getId, like.getId())
+                .like(like.getSalesOrderId() != null,Invoice::getSalesOrderId,like.getSalesOrderId());
+        return listByPage(selectPage.getPage(),selectPage.getPageSize(),queryWrapper);
     }
     
     @Override

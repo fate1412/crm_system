@@ -1,6 +1,8 @@
 package com.fate1412.crmSystem.mainTable.service;
 
 import com.fate1412.crmSystem.base.MyBaseService;
+import com.fate1412.crmSystem.base.MyPage;
+import com.fate1412.crmSystem.base.SelectPage;
 import com.fate1412.crmSystem.mainTable.dto.insert.InvoiceInsertDTO;
 import com.fate1412.crmSystem.mainTable.dto.select.InvoiceSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.update.InvoiceUpdateDTO;
@@ -26,4 +28,6 @@ public interface IInvoiceService extends IService<Invoice>, MyBaseService<Invoic
     <D> TableResultData getColumns(D dto);
     
     boolean delById(Long id);
+    
+    MyPage listByPage(SelectPage<InvoiceSelectDTO> selectPage);
 }

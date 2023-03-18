@@ -2,7 +2,9 @@ package com.fate1412.crmSystem.mainTable.controller;
 
 
 import com.fate1412.crmSystem.base.MyPage;
+import com.fate1412.crmSystem.base.SelectPage;
 import com.fate1412.crmSystem.mainTable.dto.insert.StockListProductInsertDTO;
+import com.fate1412.crmSystem.mainTable.dto.select.CustomerSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.select.StockListProductSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.update.StockListProductUpdateDTO;
 import com.fate1412.crmSystem.mainTable.service.IStockListProductService;
@@ -36,14 +38,12 @@ public class StockListProductController {
     }
     
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/page/select")
-    public JsonResult<Object> selectByPage(@Param("thisPage") Long thisPage, @Param("pageSize") Long pageSize) {
-        thisPage = thisPage == null ? 1 : thisPage;
-        pageSize = pageSize == null ? 10 : pageSize;
-        MyPage page = stockListProductService.listByPage(thisPage, pageSize,null);
+    @PostMapping("/page/select")
+    public JsonResult<Object> selectByPage(@RequestBody SelectPage<StockListProductSelectDTO> selectPage) {
+        MyPage page = stockListProductService.listByPage(selectPage);
         TableResultData tableResultData = stockListProductService.getColumns();
         tableResultData.setTableDataList(page.getRecords());
-        tableResultData.setThisPage(thisPage);
+        tableResultData.setThisPage(selectPage.getPage());
         tableResultData.setTotal(page.getTotal());
         return ResultTool.success(tableResultData);
     }

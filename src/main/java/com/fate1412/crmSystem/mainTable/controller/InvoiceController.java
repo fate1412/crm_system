@@ -2,8 +2,10 @@ package com.fate1412.crmSystem.mainTable.controller;
 
 
 import com.fate1412.crmSystem.base.MyPage;
+import com.fate1412.crmSystem.base.SelectPage;
 import com.fate1412.crmSystem.mainTable.dto.child.InvoiceChild;
 import com.fate1412.crmSystem.mainTable.dto.insert.InvoiceInsertDTO;
+import com.fate1412.crmSystem.mainTable.dto.select.CustomerSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.select.InvoiceProductSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.select.InvoiceSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.update.InvoiceUpdateDTO;
@@ -42,14 +44,12 @@ public class InvoiceController {
     }
     
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/page/select")
-    public JsonResult<Object> selectByPage(@Param("thisPage") Long thisPage, @Param("pageSize") Long pageSize) {
-        thisPage = thisPage == null ? 1 : thisPage;
-        pageSize = pageSize == null ? 10 : pageSize;
-        MyPage page = invoiceService.listByPage(thisPage, pageSize,null);
+    @PostMapping("/page/select")
+    public JsonResult<Object> selectByPage(@RequestBody SelectPage<InvoiceSelectDTO> selectPage) {
+        MyPage page = invoiceService.listByPage(selectPage);
         TableResultData tableResultData = invoiceService.getColumns();
         tableResultData.setTableDataList(page.getRecords());
-        tableResultData.setThisPage(thisPage);
+        tableResultData.setThisPage(selectPage.getPage());
         tableResultData.setTotal(page.getTotal());
         return ResultTool.success(tableResultData);
     }

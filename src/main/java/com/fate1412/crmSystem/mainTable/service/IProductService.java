@@ -1,7 +1,10 @@
 package com.fate1412.crmSystem.mainTable.service;
 
 import com.fate1412.crmSystem.base.MyBaseService;
+import com.fate1412.crmSystem.base.MyPage;
+import com.fate1412.crmSystem.base.SelectPage;
 import com.fate1412.crmSystem.mainTable.dto.insert.ProductInsertDTO;
+import com.fate1412.crmSystem.mainTable.dto.select.ProductSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.update.ProductUpdateDTO;
 import com.fate1412.crmSystem.mainTable.pojo.Product;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -20,4 +23,6 @@ public interface IProductService extends IService<Product>, MyBaseService<Produc
     JsonResult<?> updateByDTO(ProductUpdateDTO productUpdateDTO);
     
     JsonResult<?> addDTO(ProductInsertDTO productInsertDTO);
+    
+    MyPage listByPage(SelectPage<ProductSelectDTO> selectPage);
 }

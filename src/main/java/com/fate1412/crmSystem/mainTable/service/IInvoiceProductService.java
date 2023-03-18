@@ -1,6 +1,8 @@
 package com.fate1412.crmSystem.mainTable.service;
 
 import com.fate1412.crmSystem.base.MyBaseService;
+import com.fate1412.crmSystem.base.MyPage;
+import com.fate1412.crmSystem.base.SelectPage;
 import com.fate1412.crmSystem.mainTable.dto.select.InvoiceProductSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.update.InvoiceProductUpdateDTO;
 import com.fate1412.crmSystem.mainTable.pojo.Invoice;
@@ -40,4 +42,6 @@ public interface IInvoiceProductService extends IService<InvoiceProduct>, MyBase
     boolean delByIds(List<Long> ids);
     
     boolean delByInvoiceId(Invoice invoice);
+    
+    MyPage listByPage(SelectPage<InvoiceProductSelectDTO> selectPage);
 }

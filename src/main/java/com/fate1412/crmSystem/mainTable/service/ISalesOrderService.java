@@ -1,7 +1,10 @@
 package com.fate1412.crmSystem.mainTable.service;
 
 import com.fate1412.crmSystem.base.MyBaseService;
+import com.fate1412.crmSystem.base.MyPage;
+import com.fate1412.crmSystem.base.SelectPage;
 import com.fate1412.crmSystem.mainTable.dto.insert.SalesOrderInsertDTO;
+import com.fate1412.crmSystem.mainTable.dto.select.SalesOrderSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.update.SalesOrderUpdateDTO;
 import com.fate1412.crmSystem.mainTable.pojo.SalesOrder;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -21,4 +24,6 @@ public interface ISalesOrderService extends IService<SalesOrder>, MyBaseService<
     JsonResult<?> addDTO(SalesOrderInsertDTO salesOrderInsertDTO);
     
     boolean delById(Long id);
+    
+    MyPage listByPage(SelectPage<SalesOrderSelectDTO> selectPage);
 }

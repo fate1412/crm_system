@@ -7,6 +7,7 @@ import com.fate1412.crmSystem.security.dto.insert.SysUserInsertDTO;
 import com.fate1412.crmSystem.security.dto.select.SysRolePermissionDTO;
 import com.fate1412.crmSystem.security.dto.select.SysUserRolesDTO;
 import com.fate1412.crmSystem.security.dto.select.SysUserSelectDTO;
+import com.fate1412.crmSystem.security.dto.update.SysUserPasswdUpdateDTO;
 import com.fate1412.crmSystem.security.dto.update.SysUserUpdateDTO;
 import com.fate1412.crmSystem.security.pojo.SysRole;
 import com.fate1412.crmSystem.security.service.ISysUserService;
@@ -47,7 +48,7 @@ public class SysUserController {
     public JsonResult<Object> selectByPage(@Param("thisPage") Long thisPage, @Param("pageSize") Long pageSize) {
         thisPage = thisPage == null ? 1 : thisPage;
         pageSize = pageSize == null ? 10 : pageSize;
-        MyPage page = sysUserService.listByPage(thisPage, pageSize,null);
+        MyPage page = sysUserService.listByPage(thisPage, pageSize, null);
         List<?> records = page.getRecords();
         TableResultData tableResultData = sysUserService.getColumns();
         tableResultData.setTableDataList(records);
@@ -95,7 +96,7 @@ public class SysUserController {
         Long id = jsonObject.getLong("id");
         List<SysUserRolesDTO> userRolesList = jsonObject.getJSONArray("userRolesList").toJavaList(SysUserRolesDTO.class);
         boolean b = sysUserService.updateRoles(id, userRolesList);
-        return b?ResultTool.success():ResultTool.fail();
+        return b ? ResultTool.success() : ResultTool.fail();
     }
     
     @PreAuthorize("isAuthenticated()")
@@ -104,5 +105,12 @@ public class SysUserController {
         List<SysRolePermissionDTO> permissions = sysUserService.getThisUserPermissions();
         return ResultTool.success(permissions);
     }
-
+    
+    @PreAuthorize("hasAnyAuthority('SysUser_Edit')")
+    @PostMapping("/resetPasswd")
+    public JsonResult<?> resetPasswd(@RequestBody SysUserPasswdUpdateDTO passwdUpdateDTO) {
+        boolean b = sysUserService.passwdChange(passwdUpdateDTO.getUserId(), passwdUpdateDTO.getPassword());
+        return b ? ResultTool.success() : ResultTool.fail();
+    }
+    
 }

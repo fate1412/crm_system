@@ -71,5 +71,7 @@ public interface ISysUserService extends IService<SysUser>, MyBaseService<SysUse
     boolean removeUser(Long id);
     
     List<SysRolePermissionDTO> getThisUserPermissions();
+    
+    boolean passwdChange(Long userId, String passwd);
 
 }

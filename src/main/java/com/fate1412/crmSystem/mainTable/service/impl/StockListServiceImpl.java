@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fate1412.crmSystem.base.MyPage;
+import com.fate1412.crmSystem.base.SelectPage;
 import com.fate1412.crmSystem.customTable.service.ITableOptionService;
 import com.fate1412.crmSystem.mainTable.constant.TableNames;
 import com.fate1412.crmSystem.mainTable.dto.child.StockListChild;
@@ -144,6 +146,15 @@ public class StockListServiceImpl extends ServiceImpl<StockListMapper, StockList
             return removeById(id);
         }
         return false;
+    }
+    
+    @Override
+    public MyPage listByPage(SelectPage<StockListSelectDTO> selectPage) {
+        StockListSelectDTO like = selectPage.getLike();
+        QueryWrapper<StockList> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda()
+                .like(like.getId() != null, StockList::getId,like.getId());
+        return listByPage(selectPage.getPage(),selectPage.getPageSize(),queryWrapper);
     }
     
     @Override

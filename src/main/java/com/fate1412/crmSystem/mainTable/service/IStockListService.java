@@ -1,7 +1,10 @@
 package com.fate1412.crmSystem.mainTable.service;
 
 import com.fate1412.crmSystem.base.MyBaseService;
+import com.fate1412.crmSystem.base.MyPage;
+import com.fate1412.crmSystem.base.SelectPage;
 import com.fate1412.crmSystem.mainTable.dto.insert.StockListInsertDTO;
+import com.fate1412.crmSystem.mainTable.dto.select.StockListSelectDTO;
 import com.fate1412.crmSystem.mainTable.dto.update.StockListUpdateDTO;
 import com.fate1412.crmSystem.mainTable.pojo.StockList;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -21,4 +24,6 @@ public interface IStockListService extends IService<StockList>, MyBaseService<St
     JsonResult<?> addDTO(StockListInsertDTO stockListInsertDTO);
     
     boolean delById(Long id);
+    
+    MyPage listByPage(SelectPage<StockListSelectDTO> selectPage);
 }
