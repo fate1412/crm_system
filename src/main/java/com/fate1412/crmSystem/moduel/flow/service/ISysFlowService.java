@@ -5,11 +5,14 @@ import com.fate1412.crmSystem.base.MyBaseService;
 import com.fate1412.crmSystem.base.MyPage;
 import com.fate1412.crmSystem.base.SelectPage;
 import com.fate1412.crmSystem.moduel.flow.dto.insert.SysFlowInsertDTO;
+import com.fate1412.crmSystem.moduel.flow.dto.select.SysFlowPointSelectDTO;
 import com.fate1412.crmSystem.moduel.flow.dto.select.SysFlowSelectDTO;
 import com.fate1412.crmSystem.moduel.flow.dto.update.SysFlowUpdateDTO;
 import com.fate1412.crmSystem.moduel.flow.pojo.SysFlow;
 import com.fate1412.crmSystem.moduel.mainTable.dto.select.CustomerSelectDTO;
 import com.fate1412.crmSystem.utils.JsonResult;
+
+import java.util.List;
 
 /**
  * <p>
@@ -29,4 +32,12 @@ public interface ISysFlowService extends IService<SysFlow>, MyBaseService<SysFlo
     JsonResult<?> updateByEntity(SysFlow sysFlow);
     
     MyPage listByPage(SelectPage<SysFlowSelectDTO> selectPage);
+    
+    List<SysFlowPointSelectDTO> getFlowPoints(Long sysFlowId);
+    
+    boolean updateFlowPoints(Long flowId, List<SysFlowPointSelectDTO> flowPointDTOList);
+    
+    boolean delFlow(Long flowId);
+    
+    
 }

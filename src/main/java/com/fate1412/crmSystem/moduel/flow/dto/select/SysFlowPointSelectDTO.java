@@ -1,12 +1,13 @@
-package com.fate1412.crmSystem.moduel.flow.pojo;
+package com.fate1412.crmSystem.moduel.flow.dto.select;
 
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
-import java.io.Serializable;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.io.Serializable;
 
 /**
  * <p>
@@ -19,7 +20,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @TableName("sys_flow_point")
-public class SysFlowPoint implements Serializable {
+public class SysFlowPointSelectDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -43,6 +44,8 @@ public class SysFlowPoint implements Serializable {
      */
     @TableField("approver")
     private Long approver;
+    
+    private String approverR;
 
     /**
      * 下一个节点(-1表示没有下一个节点)

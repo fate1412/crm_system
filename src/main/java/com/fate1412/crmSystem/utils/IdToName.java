@@ -12,11 +12,11 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @NoArgsConstructor
 public class IdToName {
-    private Long id;
+    private Object id;
     private String name;
     private String tableName;
     
-    public IdToName(Long id, String name) {
+    public IdToName(Object id, String name) {
         this.id = id;
         this.name = name;
     }
@@ -25,11 +25,11 @@ public class IdToName {
         this.tableName = tableName;
     }
     
-    public static <T> IdToName create(T t, Function<? super T, ? extends Long> idMapper, Function<? super T, ? extends String> nameMapper) {
+    public static <T> IdToName create(T t, Function<? super T, ?> idMapper, Function<? super T, ? extends String> nameMapper) {
         return new IdToName(idMapper.apply(t), nameMapper.apply(t));
     }
     
-    public static <T> IdToName create2(T t, Function<? super T, ? extends Long> idMapper, Function<? super T, ? extends Long> nameMapper) {
+    public static <T> IdToName create2(T t, Function<? super T, ?> idMapper, Function<? super T, ? extends Long> nameMapper) {
         return new IdToName(idMapper.apply(t), nameMapper.apply(t).toString());
     }
     

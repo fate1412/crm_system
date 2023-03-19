@@ -41,13 +41,7 @@ public class SysFlow implements Serializable {
      * 关联表
      */
     @TableField("relevance_table")
-    private Integer relevanceTable;
-
-    /**
-     * 触发动作
-     */
-    @TableField("trigger_action")
-    private Integer triggerAction;
+    private Long relevanceTable;
 
     /**
      * 创建时间

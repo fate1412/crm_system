@@ -94,5 +94,12 @@ public class CustomerSelectDTO implements Serializable {
     
     private IdToName ownerR = new IdToName(TableNames.sysUser);
     
+    /**
+     * 是否通过审批
+     */
+    @TableField("pass")
+    @TableTitle(value = "是否通过", disabled = true, formType = FormType.Switch)
+    private Boolean pass;
+    
     
 }

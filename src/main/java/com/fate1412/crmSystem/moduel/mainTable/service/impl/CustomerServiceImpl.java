@@ -8,6 +8,7 @@ import com.fate1412.crmSystem.base.MyPage;
 import com.fate1412.crmSystem.base.SelectPage;
 import com.fate1412.crmSystem.moduel.customTable.dto.OptionDTO;
 import com.fate1412.crmSystem.moduel.customTable.service.ITableOptionService;
+import com.fate1412.crmSystem.moduel.flow.service.ISysFlowSessionService;
 import com.fate1412.crmSystem.moduel.mainTable.constant.TableNames;
 import com.fate1412.crmSystem.moduel.mainTable.dto.insert.CustomerInsertDTO;
 import com.fate1412.crmSystem.moduel.mainTable.dto.select.CustomerSelectDTO;
@@ -50,6 +51,9 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     
     @Autowired
     private ITableOptionService tableOptionService;
+    
+    @Autowired
+    private ISysFlowSessionService flowSessionService;
     
     @Override
     public List<?> getDTOList(List<Customer> customerList) {
@@ -152,6 +156,15 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             @Override
             public ResultCode verification(Customer customer) {
                 return isRight(customer);
+            }
+    
+            @Override
+            public boolean after(Customer customer) {
+                if (flowSessionService.addFlowSession(TableNames.customer,customer.getId())) {
+                    customer.setPass(false);
+                    return mapper().updateById(customer) > 0;
+                }
+                return true;
             }
         });
     }

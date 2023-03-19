@@ -36,15 +36,9 @@ public class SysFlowInsertDTO implements Serializable {
      * 关联表
      */
     @TableField("relevance_table")
-    private Integer relevanceTable;
+    private Long relevanceTable;
     
     private IdToName relevanceTableR;
-
-    /**
-     * 触发动作
-     */
-    @TableField("trigger_action")
-    private Integer triggerAction;
 
     /**
      * 创建时间

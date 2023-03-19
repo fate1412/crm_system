@@ -1,10 +1,16 @@
 package com.fate1412.crmSystem.moduel.customTable.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fate1412.crmSystem.moduel.customTable.pojo.TableDict;
 import com.fate1412.crmSystem.moduel.customTable.mapper.TableDictMapper;
 import com.fate1412.crmSystem.moduel.customTable.service.ITableDictService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fate1412.crmSystem.moduel.security.pojo.SysUser;
+import com.fate1412.crmSystem.utils.IdToName;
+import com.fate1412.crmSystem.utils.TableResultData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,4 +37,29 @@ public class TableDictServiceImpl extends ServiceImpl<TableDictMapper, TableDict
         return list(queryWrapper);
     }
     
+    @Override
+    public List<IdToName> getOptions(String nameLike, Integer page) {
+        QueryWrapper<TableDict> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda()
+                .select(TableDict::getId, TableDict::getShowName)
+                .like(TableDict::getShowName, nameLike);
+        IPage<TableDict> iPage = new Page<>(page, 10);
+        mapper.selectPage(iPage, queryWrapper);
+        return IdToName.createList(iPage.getRecords(), TableDict::getId, TableDict::getShowName);
+    }
+    
+    @Override
+    public TableResultData getColumns() {
+        return null;
+    }
+    
+    @Override
+    public List<?> getDTOList(List<TableDict> tableDicts) {
+        return null;
+    }
+    
+    @Override
+    public BaseMapper<TableDict> mapper() {
+        return mapper;
+    }
 }

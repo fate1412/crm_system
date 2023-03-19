@@ -42,17 +42,10 @@ public class SysFlowSelectDTO implements Serializable {
      * 关联表
      */
     @TableField("relevance_table")
-    @TableTitle(value = "关联表",inserted = true,disabled = true)
-    private Integer relevanceTable;
+    @TableTitle(value = "关联表",inserted = true,disabled = true,formType = FormType.Select,link = true)
+    private Long relevanceTable;
     
     private IdToName relevanceTableR = new IdToName(TableNames.tableDict);
-
-    /**
-     * 触发动作
-     */
-    @TableField("trigger_action")
-    @TableTitle(value = "触发动作",inserted = true,disabled = true)
-    private Integer triggerAction;
 
     /**
      * 创建时间
@@ -72,7 +65,7 @@ public class SysFlowSelectDTO implements Serializable {
      * 创建人
      */
     @TableField("creater")
-    @TableTitle(value = "创建人",disabled = true,link = true)
+    @TableTitle(value = "创建人",disabled = true,link = true,formType = FormType.Select)
     private Long creater;
     
     private IdToName createrR = new IdToName(TableNames.sysUser);
@@ -81,7 +74,7 @@ public class SysFlowSelectDTO implements Serializable {
      * 修改人
      */
     @TableField("updater")
-    @TableTitle(value = "修改人",disabled = true,link = true)
+    @TableTitle(value = "修改人",disabled = true,link = true,formType = FormType.Select)
     private Long updater;
     
     private IdToName updaterR = new IdToName(TableNames.sysUser);
