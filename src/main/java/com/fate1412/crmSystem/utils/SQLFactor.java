@@ -146,4 +146,94 @@ public class SQLFactor<T> {
         return new Page<T>(page, pageSize);
     }
     
+    
+    @Data
+    public static class SQLFactors {
+        private final List<SQLFactor<Object>> sqlFactors = new ArrayList<>();
+        
+        public List<SQLFactor<Object>> eq(String field, Object value) {
+            return create(field,"EQ",value);
+        }
+        
+        public List<SQLFactor<Object>> ne(String field, Object value) {
+            return create(field,"NE",value);
+        }
+        
+        public List<SQLFactor<Object>> gt(String field, Object value) {
+            return create(field,"GT",value);
+        }
+        
+        public List<SQLFactor<Object>> ge(String field, Object value) {
+            return create(field,"GE",value);
+        }
+        
+        public List<SQLFactor<Object>> lt(String field, Object value) {
+            return create(field,"LT",value);
+        }
+        
+        public List<SQLFactor<Object>> le(String field, Object value) {
+            return create(field,"LE",value);
+        }
+        
+        public List<SQLFactor<Object>> like(String field, Object value) {
+            return create(field,"LIKE",value);
+        }
+        
+        public List<SQLFactor<Object>> likeL(String field, Object value) {
+            return create(field,"LEFT_LIKE",value);
+        }
+        
+        public List<SQLFactor<Object>> likeR(String field, Object value) {
+            return create(field,"RIGHT_LIKE",value);
+        }
+        
+        public List<SQLFactor<Object>> notLike(String field, Object value) {
+            return create(field,"NOT_LIKE",value);
+        }
+        
+        public List<SQLFactor<Object>> between(String field, Object value, Object value2) {
+            SQLFactor<Object> sqlFactor = new SQLFactor<>(field, "BETWEEN", value, value2);
+            sqlFactors.add(sqlFactor);
+            return sqlFactors;
+        }
+        
+        public List<SQLFactor<Object>> notBetween(String field, Object value, Object value2) {
+            SQLFactor<Object> sqlFactor = new SQLFactor<>(field, "NOT_BETWEEN", value, value2);
+            sqlFactors.add(sqlFactor);
+            return sqlFactors;
+        }
+        
+        public List<SQLFactor<Object>> isNull(String field) {
+            return create(field,"ISNULL",null);
+        }
+        
+        public List<SQLFactor<Object>> isNotNull(String field) {
+            return create(field,"IS_NOTNULL",null);
+        }
+        
+        public List<SQLFactor<Object>> in(String field, List<Object> values) {
+            SQLFactor<Object> sqlFactor = new SQLFactor<>(field, "IN", values);
+            sqlFactors.add(sqlFactor);
+            return sqlFactors;
+        }
+        
+        public List<SQLFactor<Object>> notIn(String field, List<Object> values) {
+            SQLFactor<Object> sqlFactor = new SQLFactor<Object>(field, "NOT_IN", values);
+            sqlFactors.add(sqlFactor);
+            return sqlFactors;
+        }
+        
+        public List<SQLFactor<Object>> or() {
+            return create(null,"OR",null);
+        }
+        
+        private List<SQLFactor<Object>> create(String field, String factor, Object value) {
+            SQLFactor<Object> sqlFactor = new SQLFactor<>(field,factor,value);
+            sqlFactors.add(sqlFactor);
+            return sqlFactors;
+        }
+        
+        
+    }
+    
 }
