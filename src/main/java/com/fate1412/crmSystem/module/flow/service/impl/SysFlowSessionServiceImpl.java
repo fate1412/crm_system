@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fate1412.crmSystem.base.MyPage;
 import com.fate1412.crmSystem.base.SelectPage;
+import com.fate1412.crmSystem.exception.DataCheckingException;
 import com.fate1412.crmSystem.module.customTable.mapper.TableDictMapper;
 import com.fate1412.crmSystem.module.customTable.pojo.TableDict;
 import com.fate1412.crmSystem.module.customTable.service.ITableDictService;
@@ -23,6 +24,7 @@ import com.fate1412.crmSystem.module.security.pojo.SysUser;
 import com.fate1412.crmSystem.module.security.service.ISysUserService;
 import com.fate1412.crmSystem.utils.IdToName;
 import com.fate1412.crmSystem.utils.MyCollections;
+import com.fate1412.crmSystem.utils.ResultCode;
 import com.fate1412.crmSystem.utils.SQLFactor.SQLFactors;
 import com.fate1412.crmSystem.utils.TableResultData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +37,7 @@ import java.util.Map;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author fate1412
@@ -43,7 +45,7 @@ import java.util.Map;
  */
 @Service
 public class SysFlowSessionServiceImpl extends ServiceImpl<SysFlowSessionMapper, SysFlowSession> implements ISysFlowSessionService {
-
+    
     @Autowired
     private SysFlowSessionMapper mapper;
     @Autowired
@@ -64,13 +66,32 @@ public class SysFlowSessionServiceImpl extends ServiceImpl<SysFlowSessionMapper,
         QueryWrapper<SysFlowSession> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda()
                 .eq(SysFlowSession::getTableName, tableName)
-                .eq(SysFlowSession::getDataId,dataId);
+                .eq(SysFlowSession::getDataId, dataId);
         return mapper.selectList(queryWrapper);
     }
     
     @Override
-    @Transactional
     public boolean addFlowSession(String tableName, Long dataId) {
+        return addFlowSession(tableName, dataId, null, null);
+    }
+    
+    @Override
+    @Transactional
+    public boolean addFlowSession(String tableName, Long dataId, Long sessionId, Integer agree) {
+        SysFlowSession oldSession = null;
+        if (sessionId != null) {
+            //获取当前审批任务最后一个节点
+            oldSession = mapper.selectById(sessionId);
+            //已审批
+            if (oldSession.getPass() != 0) {
+                throw new DataCheckingException(ResultCode.APPROVE);
+            }
+            //最后一个节点
+            if (oldSession.getNextApprover() == null) {
+                oldSession.setPass(agree == 1 ? 1 : 2);
+                return mapper.updateById(oldSession) > 0;
+            }
+        }
         //查询是否存在此表
         List<TableDict> tableDictList = tableDictService.getByTableName(MyCollections.toList(tableName));
         if (MyCollections.isEmpty(tableDictList)) {
@@ -87,7 +108,7 @@ public class SysFlowSessionServiceImpl extends ServiceImpl<SysFlowSessionMapper,
         //查出审批节点
         QueryWrapper<SysFlowPoint> pointQueryWrapper = new QueryWrapper<>();
         pointQueryWrapper.lambda()
-                .eq(SysFlowPoint::getFlowId,flow.getId())
+                .eq(SysFlowPoint::getFlowId, flow.getId())
                 .orderByAsc(SysFlowPoint::getPanelPoint);
         List<SysFlowPoint> flowPointList = flowPointMapper.selectList(pointQueryWrapper);
         if (MyCollections.isEmpty(flowPointList)) {
@@ -96,22 +117,23 @@ public class SysFlowSessionServiceImpl extends ServiceImpl<SysFlowSessionMapper,
         Map<Long, SysFlowPoint> pointMap = MyCollections.list2MapL(flowPointList, SysFlowPoint::getId);
         //获取需要审批的数据
         SQLFactors sqlFactors = new SQLFactors();
-        sqlFactors.eq("id",dataId);
+        sqlFactors.eq("id", dataId);
         List<JSONObject> jsonObjectList = tableDictMapper.select(tableDict.getRealTableName(), sqlFactors.getSqlFactors());
         if (MyCollections.isEmpty(jsonObjectList)) {
             //数据不存在
             return false;
         }
         JSONObject data = jsonObjectList.get(0);
-    
-        List<SysFlowSession> sysFlowSessionList = getSysFlowSession(tableName, dataId);
+
+//        List<SysFlowSession> sysFlowSessionList = getSysFlowSession(tableName, dataId);
+        
         SysFlowSession sysFlowSession = new SysFlowSession();
         sysFlowSession
                 .setFlowId(flow.getId())
                 .setDataId(dataId)
                 .setCreater(data.getLong("creater"))
                 .setTableName(tableDict.getTableName());
-        if (MyCollections.isEmpty(sysFlowSessionList)) {
+        if (sessionId == null) {
             //新审批
             sysFlowSession.setPointId(flowPointList.get(0).getId());
             sysFlowSession.setApprover(flowPointList.get(0).getApprover());
@@ -121,17 +143,17 @@ public class SysFlowSessionServiceImpl extends ServiceImpl<SysFlowSessionMapper,
                 sysFlowSession.setNextApprover(pointMap.get(nextPoint).getApprover());
             }
         } else {
-            //获取前一个节点
-            SysFlowSession flowSession = sysFlowSessionList.get(sysFlowSessionList.size() - 1);
             //设置新节点
-            sysFlowSession.setPointId(pointMap.get(flowSession.getPointId()).getNextPoint());
-            sysFlowSession.setApprover(pointMap.get(flowSession.getPointId()).getApprover());
+            sysFlowSession.setPointId(pointMap.get(oldSession.getPointId()).getNextPoint());
+            sysFlowSession.setApprover(pointMap.get(oldSession.getPointId()).getApprover());
             //获取新节点的下一个节点
             Long nextPoint = pointMap.get(sysFlowSession.getPointId()).getNextPoint();
             //设置下一个审批人
             if (pointMap.get(nextPoint) != null) {
                 sysFlowSession.setNextApprover(pointMap.get(nextPoint).getApprover());
             }
+            oldSession.setPass(agree == 1 ? 1 : 2);
+            mapper.updateById(oldSession);
         }
         
         return mapper.insert(sysFlowSession) > 0;
@@ -142,8 +164,8 @@ public class SysFlowSessionServiceImpl extends ServiceImpl<SysFlowSessionMapper,
         SysFlowSessionSelectDTO like = selectPage.getLike();
         QueryWrapper<SysFlowSession> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda()
-                .like(like.getDataId() != null,SysFlowSession::getDataId,like.getDataId());
-        return listByPage(selectPage.getPage(),selectPage.getPageSize(),queryWrapper);
+                .like(like.getDataId() != null, SysFlowSession::getDataId, like.getDataId());
+        return listByPage(selectPage.getPage(), selectPage.getPageSize(), queryWrapper);
     }
     
     @Override
@@ -153,7 +175,7 @@ public class SysFlowSessionServiceImpl extends ServiceImpl<SysFlowSessionMapper,
     
     @Override
     public TableResultData getColumns() {
-        return getColumns(TableNames.sysFlowSession,new SysFlowSessionSelectDTO(),tableOptionService);
+        return getColumns(TableNames.sysFlowSession, new SysFlowSessionSelectDTO(), tableOptionService);
     }
     
     @Override
@@ -172,15 +194,15 @@ public class SysFlowSessionServiceImpl extends ServiceImpl<SysFlowSessionMapper,
         List<Long> userIds = MyCollections.addList(createrIds, nextApproverIds);
         List<SysUser> sysUserList = sysUserService.listByIds(userIds);
         Map<Long, String> userMap = MyCollections.list2MapL(sysUserList, SysUser::getUserId, SysUser::getRealName);
-    
-    
+        
+        
         List<SysFlowSessionSelectDTO> dtoList = MyCollections.copyListProperties(sysFlowSessions, SysFlowSessionSelectDTO::new);
         dtoList.forEach(dto -> {
             Long creater = dto.getCreater();
             Long nextApprover = dto.getNextApprover();
             String tableName = dto.getTableName();
-            dto.setCreaterR(new IdToName(creater,userMap.get(creater), TableNames.sysUser));
-            dto.setNextApproverR(new IdToName(nextApprover,userMap.get(nextApprover), TableNames.sysUser));
+            dto.setCreaterR(new IdToName(creater, userMap.get(creater), TableNames.sysUser));
+            dto.setNextApproverR(new IdToName(nextApprover, userMap.get(nextApprover), TableNames.sysUser));
             dto.setTableNameR(tableMap.get(tableName));
             dto.setPassR(dto.getPassString());
         });

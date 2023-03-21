@@ -43,6 +43,12 @@ public class SysFlowSessionController {
         tableResultData.setTotal(page.getTotal());
         return ResultTool.success(tableResultData);
     }
+    
+    @PostMapping("/approve")
+    public JsonResult<?> approve(@RequestBody SysFlowSessionSelectDTO sessionSelectDTO) {
+        boolean b = service.addFlowSession(sessionSelectDTO.getTableName(), sessionSelectDTO.getDataId(), sessionSelectDTO.getId(), sessionSelectDTO.getPass());
+        return b? ResultTool.success() : ResultTool.fail();
+    }
 
 }
 

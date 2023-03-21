@@ -12,7 +12,7 @@ public enum ResultCode {
     PARAM_IS_BLANK(1002, "参数为空"),
     PARAM_TYPE_ERROR(1003, "参数类型错误"),
     PARAM_NOT_COMPLETE(1004, "参数缺失"),
-    PARAM_REPEAT(1004, "参数重复"),
+    PARAM_REPEAT(1005, "参数重复"),
     
     /* 用户错误 */
     USER_NOT_LOGIN(2001, "用户未登录"),
@@ -28,7 +28,9 @@ public enum ResultCode {
     /* 业务错误 */
     NO_PERMISSION(3001, "没有权限"),
     UPDATE_ERROR(3002,"更新失败"),
-    INSERT_ERROR(3003,"新增失败");
+    INSERT_ERROR(3003,"新增失败"),
+    APPROVE(3004,"已审批");
+    
     private Integer code;
     private String message;
     
