@@ -146,6 +146,33 @@ public class SysFlowServiceImpl extends ServiceImpl<SysFlowMapper, SysFlow> impl
     }
     
     @Override
+    public List<SysFlowPoint> getFlowPoints(String tableName) {
+        //查询是否存在此表
+        List<TableDict> tableDictList = tableDictService.getByTableName(MyCollections.toList(tableName));
+        if (MyCollections.isEmpty(tableDictList)) {
+            return new ArrayList<>();
+        }
+        TableDict tableDict = tableDictList.get(0);
+        //查询是否存在流程
+        QueryWrapper<SysFlow> flowQueryWrapper = new QueryWrapper<>();
+        flowQueryWrapper.lambda().eq(SysFlow::getRelevanceTable, tableDict.getId());
+        SysFlow flow = mapper.selectOne(flowQueryWrapper);
+        if (flow == null) {
+            return new ArrayList<>();
+        }
+        //查出审批节点
+        QueryWrapper<SysFlowPoint> pointQueryWrapper = new QueryWrapper<>();
+        pointQueryWrapper.lambda()
+                .eq(SysFlowPoint::getFlowId, flow.getId())
+                .orderByAsc(SysFlowPoint::getPanelPoint);
+        List<SysFlowPoint> flowPointList = sysFlowPointService.list(pointQueryWrapper);
+        if (MyCollections.isEmpty(flowPointList)) {
+            return new ArrayList<>();
+        }
+        return flowPointList;
+    }
+    
+    @Override
     @Transactional
     public boolean updateFlowPoints(Long flowId, List<SysFlowPointSelectDTO> flowPointDTOList) {
         

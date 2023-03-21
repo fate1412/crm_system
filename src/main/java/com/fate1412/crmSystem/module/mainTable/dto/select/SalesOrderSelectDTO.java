@@ -1,5 +1,6 @@
 package com.fate1412.crmSystem.module.mainTable.dto.select;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.fate1412.crmSystem.annotations.TableTitle;
 import com.fate1412.crmSystem.annotations.TableTitle.FormType;
 import com.fate1412.crmSystem.module.mainTable.constant.TableNames;
@@ -89,4 +90,11 @@ public class SalesOrderSelectDTO implements Serializable {
     
     @TableTitle(value = "修改人", link = true, disabled = true, formType = FormType.Select)
     private Long updater;
+    
+    /**
+     * 是否通过审批
+     */
+    @TableField("pass")
+    @TableTitle(value = "是否审批", disabled = true)
+    private String pass;
 }

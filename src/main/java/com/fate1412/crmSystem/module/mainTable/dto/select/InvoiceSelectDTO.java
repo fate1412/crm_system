@@ -123,5 +123,10 @@ public class InvoiceSelectDTO implements Serializable {
     
     private IdToName updaterR = new IdToName(TableNames.sysUser);
     
-    
+    /**
+     * 是否通过审批
+     */
+    @TableField("pass")
+    @TableTitle(value = "是否审批", disabled = true)
+    private String pass;
 }

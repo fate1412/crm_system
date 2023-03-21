@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(value = DataCheckingException.class)
     public JsonResult<?> DataCheckingExceptionHandler(DataCheckingException e) {
-        log.error("数据校验异常！ msg: -> ", e);
+//        log.error("数据校验异常！ msg: -> ", e);
         return ResultTool.fail(e.getResultCode());
     }
     

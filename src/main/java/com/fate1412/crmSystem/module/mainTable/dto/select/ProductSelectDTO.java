@@ -121,4 +121,10 @@ public class ProductSelectDTO implements Serializable {
     @TableTitle(value = "更新时间", disabled = true, formType = FormType.DateTime)
     private Date updateTime;
     
+    /**
+     * 是否通过审批
+     */
+    @TableField("pass")
+    @TableTitle(value = "是否审批", disabled = true)
+    private String pass;
 }

@@ -8,6 +8,9 @@ import com.fate1412.crmSystem.base.MyPage;
 import com.fate1412.crmSystem.base.SelectPage;
 import com.fate1412.crmSystem.module.customTable.dto.OptionDTO;
 import com.fate1412.crmSystem.module.customTable.service.ITableOptionService;
+import com.fate1412.crmSystem.module.flow.pojo.SysFlowPoint;
+import com.fate1412.crmSystem.module.flow.pojo.SysFlowSession;
+import com.fate1412.crmSystem.module.flow.service.ISysFlowService;
 import com.fate1412.crmSystem.module.flow.service.ISysFlowSessionService;
 import com.fate1412.crmSystem.module.mainTable.constant.TableNames;
 import com.fate1412.crmSystem.module.mainTable.dto.insert.CustomerInsertDTO;
@@ -55,6 +58,9 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     @Autowired
     private ISysFlowSessionService flowSessionService;
     
+    @Autowired
+    private ISysFlowService flowService;
+    
     @Override
     public List<?> getDTOList(List<Customer> customerList) {
         if (MyCollections.isEmpty(customerList)) {
@@ -73,8 +79,13 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         
         Map<Long, String> userMap = MyCollections.list2MapL(sysUserList, SysUser::getUserId, SysUser::getRealName);
         
+        //审批
+        List<Long> customerIds = MyCollections.objects2List(customerList, Customer::getId);
+        Map<Long, Integer> passMap = flowSessionService.getPass(TableNames.customer, customerIds);
+        
         List<CustomerSelectDTO> customerSelectDTOList = MyCollections.copyListProperties(customerList, CustomerSelectDTO::new);
         customerSelectDTOList.forEach(customerDTO -> {
+            Long id = customerDTO.getId();
             Long createId = customerDTO.getCreater();
             Long updateMemberId = customerDTO.getUpdateMember();
             Long ownerId = customerDTO.getOwner();
@@ -82,6 +93,14 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             customerDTO.setUpdateMemberR(new IdToName(updateMemberId, userMap.get(updateMemberId), sysUser));
             customerDTO.setOwnerR(new IdToName(ownerId, userMap.get(ownerId), sysUser));
             customerDTO.setCustomerTypeR(optionsMap.get(customerDTO.getCustomerType()));
+            
+            Integer pass = passMap.get(id);
+            switch (pass) {
+                case 0: customerDTO.setPass("未审批");break;
+                case 1: customerDTO.setPass("已通过");break;
+                default: customerDTO.setPass("已拒绝");
+            }
+            
         });
         return customerSelectDTOList;
     }
@@ -95,7 +114,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     @Transactional
     public JsonResult<?> updateByDTO(CustomerUpdateDTO customerUpdateDTO) {
         Customer customer = new Customer();
-        BeanUtils.copyProperties(customerUpdateDTO,customer);
+        BeanUtils.copyProperties(customerUpdateDTO, customer);
         return updateByEntity(customer);
     }
     
@@ -111,7 +130,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                         .setUpdateMember(sysUser.getUserId());
                 return customer;
             }
-        
+            
             @Override
             public ResultCode verification(Customer customer) {
                 return isRight(customer);
@@ -125,15 +144,15 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         QueryWrapper<Customer> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda()
                 .like(like.getId() != null, Customer::getId, like.getId())
-                .like(like.getName() != null, Customer::getName,like.getName());
-        return listByPage(selectPage.getPage(),selectPage.getPageSize(),queryWrapper);
+                .like(like.getName() != null, Customer::getName, like.getName());
+        return listByPage(selectPage.getPage(), selectPage.getPageSize(), queryWrapper);
     }
     
     @Override
     @Transactional
     public JsonResult<?> addDTO(CustomerInsertDTO customerInsertDTO) {
         Customer customer = new Customer();
-        BeanUtils.copyProperties(customerInsertDTO,customer);
+        BeanUtils.copyProperties(customerInsertDTO, customer);
         return addEntity(customer);
     }
     
@@ -142,7 +161,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
     public JsonResult<?> addEntity(Customer customer) {
         SysUser sysUser = sysUserService.thisUser();
         return add(new MyEntity<Customer>(customer) {
-        
+            
             @Override
             public Customer set(Customer customer) {
                 customer
@@ -152,18 +171,15 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                         .setUpdateMember(sysUser.getUserId());
                 return customer;
             }
-        
+            
             @Override
             public ResultCode verification(Customer customer) {
                 return isRight(customer);
             }
-    
+            
             @Override
             public boolean after(Customer customer) {
-                if (flowSessionService.addFlowSession(TableNames.customer,customer.getId())) {
-                    customer.setPass(false);
-                    return mapper().updateById(customer) > 0;
-                }
+                flowSessionService.addFlowSession(TableNames.customer, customer.getId());
                 return true;
             }
         });
@@ -179,9 +195,9 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         QueryWrapper<Customer> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda()
                 .select(Customer::getId, Customer::getName)
-                .like(Customer::getName,nameLike);
-        IPage<Customer> iPage = new Page<>(page,10);
-        customerMapper.selectPage(iPage,queryWrapper);
+                .like(Customer::getName, nameLike);
+        IPage<Customer> iPage = new Page<>(page, 10);
+        customerMapper.selectPage(iPage, queryWrapper);
         return IdToName.createList(iPage.getRecords(), Customer::getId, Customer::getName);
     }
     
@@ -191,15 +207,15 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
             return ResultCode.PARAM_IS_BLANK;//参数为空
         }
         //客户类型
-        if (!tableOptionService.selectOptions(TableNames.customer,"customerType",customer.getCustomerType())) {
+        if (!tableOptionService.selectOptions(TableNames.customer, "customerType", customer.getCustomerType())) {
             return ResultCode.PARAM_NOT_VALID;//参数无效
         }
         //手机号(简单校验11位数字)
-        if (!Pattern.matches("\\d{11}",customer.getMobile())) {
+        if (!Pattern.matches("\\d{11}", customer.getMobile())) {
             return ResultCode.PARAM_NOT_VALID;//参数无效
         }
         //负责人
-        if (customer.getOwner()!=null) {
+        if (customer.getOwner() != null) {
             SysUser sysUser = sysUserService.getById(customer.getOwner());
             if (sysUser == null) {
                 return ResultCode.PARAM_NOT_VALID;//参数无效

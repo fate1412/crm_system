@@ -7,10 +7,12 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fate1412.crmSystem.base.MyPage;
 import com.fate1412.crmSystem.base.SelectPage;
 import com.fate1412.crmSystem.module.customTable.service.ITableOptionService;
+import com.fate1412.crmSystem.module.flow.service.ISysFlowSessionService;
 import com.fate1412.crmSystem.module.mainTable.constant.TableNames;
 import com.fate1412.crmSystem.module.mainTable.dto.insert.ProductInsertDTO;
 import com.fate1412.crmSystem.module.mainTable.dto.select.ProductSelectDTO;
 import com.fate1412.crmSystem.module.mainTable.dto.update.ProductUpdateDTO;
+import com.fate1412.crmSystem.module.mainTable.pojo.Invoice;
 import com.fate1412.crmSystem.module.mainTable.pojo.Product;
 import com.fate1412.crmSystem.module.mainTable.mapper.ProductMapper;
 import com.fate1412.crmSystem.module.mainTable.service.IProductService;
@@ -44,6 +46,8 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     private ISysUserService sysUserService;
     @Autowired
     private ITableOptionService tableOptionService;
+    @Autowired
+    private ISysFlowSessionService flowSessionService;
     
     @Override
     public List<?> getDTOList(List<Product> productList) {
@@ -58,12 +62,22 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         List<SysUser> sysUserList = sysUserService.listByIds(userIdList);
         Map<Long, String> userMap = MyCollections.list2MapL(sysUserList, SysUser::getUserId, SysUser::getRealName);
     
+        //审批
+        List<Long> productIds = MyCollections.objects2List(productList, Product::getId);
+        Map<Long, Integer> passMap = flowSessionService.getPass(TableNames.product, productIds);
+    
         List<ProductSelectDTO> productSelectDTOList = MyCollections.copyListProperties(productList, ProductSelectDTO::new);
         productSelectDTOList.forEach(dto -> {
             Long createId = dto.getCreater();
             Long updater = dto.getUpdater();
             dto.setCreaterR(new IdToName(createId,userMap.get(createId), TableNames.sysUser));
             dto.setUpdaterR(new IdToName(updater,userMap.get(updater),TableNames.sysUser));
+            Integer pass = passMap.get(dto.getId());
+            switch (pass) {
+                case 0: dto.setPass("未审批");break;
+                case 1: dto.setPass("已通过");break;
+                default: dto.setPass("已拒绝");
+            }
         });
         return productSelectDTOList;
     }
@@ -117,6 +131,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     
             @Override
             public ResultCode verification(Product product) {
+                flowSessionService.addFlowSession(TableNames.product, product.getId());
                 return isRight(product);
             }
         });

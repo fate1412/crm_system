@@ -79,13 +79,6 @@ public class Customer implements Serializable {
      */
     @TableField("owner")
     private Long owner;
-    
-    
-    /**
-     * 是否通过审批
-     */
-    @TableField("pass")
-    private Boolean pass;
 
 
 }

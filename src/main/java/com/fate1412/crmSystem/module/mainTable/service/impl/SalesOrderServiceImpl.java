@@ -8,6 +8,7 @@ import com.fate1412.crmSystem.base.MyPage;
 import com.fate1412.crmSystem.base.SelectPage;
 import com.fate1412.crmSystem.module.customTable.dto.OptionDTO;
 import com.fate1412.crmSystem.module.customTable.service.ITableOptionService;
+import com.fate1412.crmSystem.module.flow.service.ISysFlowSessionService;
 import com.fate1412.crmSystem.module.mainTable.constant.TableNames;
 import com.fate1412.crmSystem.module.mainTable.dto.child.SalesOrderChild;
 import com.fate1412.crmSystem.module.mainTable.dto.insert.SalesOrderInsertDTO;
@@ -56,6 +57,8 @@ public class SalesOrderServiceImpl extends ServiceImpl<SalesOrderMapper, SalesOr
     private IProductService productService;
     @Autowired
     private IOrderProductService orderProductService;
+    @Autowired
+    private ISysFlowSessionService flowSessionService;
     
     @Override
     public List<?> getDTOList(List<SalesOrder> salesOrderList) {
@@ -80,6 +83,10 @@ public class SalesOrderServiceImpl extends ServiceImpl<SalesOrderMapper, SalesOr
         
         List<Customer> customerList = customerMapper.selectBatchIds(salesOrderIdList);
         Map<Long, String> customerMap = MyCollections.list2MapL(customerList, Customer::getId, Customer::getName);
+    
+        //审批
+        List<Long> salesOrderIds = MyCollections.objects2List(salesOrderList, SalesOrder::getId);
+        Map<Long, Integer> passMap = flowSessionService.getPass(TableNames.salesOrder, salesOrderIds);
         
         List<SalesOrderSelectDTO> salesOrderSelectDTOList = MyCollections.copyListProperties(salesOrderList, SalesOrderSelectDTO::new);
         salesOrderSelectDTOList.forEach(dto -> {
@@ -90,6 +97,12 @@ public class SalesOrderServiceImpl extends ServiceImpl<SalesOrderMapper, SalesOr
             dto.setUpdaterR(new IdToName(updater, userMap.get(updater), TableNames.sysUser));
             dto.setCustomerIdR(new IdToName(customerId, customerMap.get(customerId), "customer"));
             dto.setInvoiceStatusR(optionsMap.get(dto.getInvoiceStatus()));
+            Integer pass = passMap.get(dto.getId());
+            switch (pass) {
+                case 0: dto.setPass("未审批");break;
+                case 1: dto.setPass("已通过");break;
+                default: dto.setPass("已拒绝");
+            }
         });
         return salesOrderSelectDTOList;
     }
@@ -153,6 +166,7 @@ public class SalesOrderServiceImpl extends ServiceImpl<SalesOrderMapper, SalesOr
     
             @Override
             public boolean after(SalesOrder salesOrder) {
+                flowSessionService.addFlowSession(TableNames.salesOrder, salesOrder.getId());
                 List<SalesOrderChild> childList = salesOrderInsertDTO.getChildList();
                 return afterUpdateChild(salesOrder, childList);
             }

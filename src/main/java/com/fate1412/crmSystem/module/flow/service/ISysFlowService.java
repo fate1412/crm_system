@@ -9,6 +9,7 @@ import com.fate1412.crmSystem.module.flow.dto.select.SysFlowPointSelectDTO;
 import com.fate1412.crmSystem.module.flow.dto.select.SysFlowSelectDTO;
 import com.fate1412.crmSystem.module.flow.dto.update.SysFlowUpdateDTO;
 import com.fate1412.crmSystem.module.flow.pojo.SysFlow;
+import com.fate1412.crmSystem.module.flow.pojo.SysFlowPoint;
 import com.fate1412.crmSystem.utils.JsonResult;
 
 import java.util.List;
@@ -33,6 +34,8 @@ public interface ISysFlowService extends IService<SysFlow>, MyBaseService<SysFlo
     MyPage listByPage(SelectPage<SysFlowSelectDTO> selectPage);
     
     List<SysFlowPointSelectDTO> getFlowPoints(Long sysFlowId);
+    
+    List<SysFlowPoint> getFlowPoints(String tableName);
     
     boolean updateFlowPoints(Long flowId, List<SysFlowPointSelectDTO> flowPointDTOList);
     

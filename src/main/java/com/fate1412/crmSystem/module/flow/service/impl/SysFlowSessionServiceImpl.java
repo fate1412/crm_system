@@ -12,12 +12,12 @@ import com.fate1412.crmSystem.module.customTable.pojo.TableDict;
 import com.fate1412.crmSystem.module.customTable.service.ITableDictService;
 import com.fate1412.crmSystem.module.customTable.service.ITableOptionService;
 import com.fate1412.crmSystem.module.flow.dto.select.SysFlowSessionSelectDTO;
-import com.fate1412.crmSystem.module.flow.mapper.SysFlowMapper;
 import com.fate1412.crmSystem.module.flow.mapper.SysFlowPointMapper;
 import com.fate1412.crmSystem.module.flow.mapper.SysFlowSessionMapper;
 import com.fate1412.crmSystem.module.flow.pojo.SysFlow;
 import com.fate1412.crmSystem.module.flow.pojo.SysFlowPoint;
 import com.fate1412.crmSystem.module.flow.pojo.SysFlowSession;
+import com.fate1412.crmSystem.module.flow.service.ISysFlowService;
 import com.fate1412.crmSystem.module.flow.service.ISysFlowSessionService;
 import com.fate1412.crmSystem.module.mainTable.constant.TableNames;
 import com.fate1412.crmSystem.module.security.pojo.SysUser;
@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -51,7 +52,7 @@ public class SysFlowSessionServiceImpl extends ServiceImpl<SysFlowSessionMapper,
     @Autowired
     private ISysUserService sysUserService;
     @Autowired
-    private SysFlowMapper flowMapper;
+    private ISysFlowService flowService;
     @Autowired
     private SysFlowPointMapper flowPointMapper;
     @Autowired
@@ -71,6 +72,55 @@ public class SysFlowSessionServiceImpl extends ServiceImpl<SysFlowSessionMapper,
     }
     
     @Override
+    public List<SysFlowSession> getSysFlowSession(String tableName, List<Long> dataIds) {
+        QueryWrapper<SysFlowSession> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda()
+                .eq(SysFlowSession::getTableName, tableName)
+                .in(SysFlowSession::getDataId, dataIds);
+        return mapper.selectList(queryWrapper);
+    }
+    
+    @Override
+    public Map<Long, Integer> getPass(String tableName, List<Long> dataIds) {
+        Map<Long, Integer> passMap = new HashMap<>();
+        //审批
+        List<SysFlowSession> sysFlowSessionList = getSysFlowSession(tableName, dataIds);
+        Map<Long, List<SysFlowSession>> sessionMap = MyCollections.list2MapList(sysFlowSessionList, SysFlowSession::getDataId);
+        //审批节点
+        List<SysFlowPoint> flowPoints = flowService.getFlowPoints(TableNames.customer);
+        //取最后一个的审批节点
+        SysFlowPoint LastFlowPoint = flowPoints.get(flowPoints.size() - 1);
+        
+        dataIds.forEach(id -> {
+            //验证是否通过审批
+            List<SysFlowSession> sysFlowSessions = sessionMap.get(id);
+            if (MyCollections.isEmpty(sysFlowSessions)) {
+                //没有审批流的数据直接通过
+                passMap.put(id, 1);
+            } else {
+                //有审批流数据判断是否完成审批
+                Map<Long, Integer> map = MyCollections.list2MapL(sysFlowSessions, SysFlowSession::getPointId, SysFlowSession::getPass);
+                Integer pass = map.get(LastFlowPoint.getId());
+                //未到达最后一个节点
+                if (pass == null) {
+                    //未审批
+                    passMap.put(id, 0);
+                    //已被拒绝
+                    map.forEach((k,v) -> {
+                        if (v !=0 && v != 1) {
+                            passMap.put(id, 2);
+                        }
+                    });
+                }else {
+                    //到达最后一个节点
+                    passMap.put(id, pass);
+                }
+            }
+        });
+        return passMap;
+    }
+    
+    @Override
     public boolean addFlowSession(String tableName, Long dataId) {
         return addFlowSession(tableName, dataId, null, null);
     }
@@ -85,6 +135,11 @@ public class SysFlowSessionServiceImpl extends ServiceImpl<SysFlowSessionMapper,
             //已审批
             if (oldSession.getPass() != 0) {
                 throw new DataCheckingException(ResultCode.APPROVE);
+            }
+            SysUser sysUser = sysUserService.thisUser();
+            //判断审批人
+            if (!sysUser.getUserId().equals(oldSession.getApprover())) {
+                throw new DataCheckingException(ResultCode.NO_PERMISSION);
             }
             //最后一个节点
             if (oldSession.getNextApprover() == null) {
@@ -101,7 +156,7 @@ public class SysFlowSessionServiceImpl extends ServiceImpl<SysFlowSessionMapper,
         //查询是否存在流程
         QueryWrapper<SysFlow> flowQueryWrapper = new QueryWrapper<>();
         flowQueryWrapper.lambda().eq(SysFlow::getRelevanceTable, tableDict.getId());
-        SysFlow flow = flowMapper.selectOne(flowQueryWrapper);
+        SysFlow flow = flowService.getOne(flowQueryWrapper);
         if (flow == null) {
             return false;
         }
@@ -161,10 +216,12 @@ public class SysFlowSessionServiceImpl extends ServiceImpl<SysFlowSessionMapper,
     
     @Override
     public MyPage listByPage(SelectPage<SysFlowSessionSelectDTO> selectPage) {
+        SysUser sysUser = sysUserService.thisUser();
         SysFlowSessionSelectDTO like = selectPage.getLike();
         QueryWrapper<SysFlowSession> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda()
-                .like(like.getDataId() != null, SysFlowSession::getDataId, like.getDataId());
+                .like(like.getDataId() != null, SysFlowSession::getDataId, like.getDataId())
+                .eq(SysFlowSession::getApprover, sysUser.getUserId());
         return listByPage(selectPage.getPage(), selectPage.getPageSize(), queryWrapper);
     }
     

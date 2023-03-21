@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fate1412.crmSystem.base.MyPage;
 import com.fate1412.crmSystem.base.SelectPage;
 import com.fate1412.crmSystem.module.customTable.service.ITableOptionService;
+import com.fate1412.crmSystem.module.flow.service.ISysFlowSessionService;
 import com.fate1412.crmSystem.module.mainTable.constant.TableNames;
 import com.fate1412.crmSystem.module.mainTable.dto.child.InvoiceChild;
 import com.fate1412.crmSystem.module.mainTable.dto.insert.InvoiceInsertDTO;
@@ -58,6 +59,8 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
     private ITableOptionService tableOptionService;
     @Autowired
     private IOrderProductService orderProductService;
+    @Autowired
+    private ISysFlowSessionService flowSessionService;
     
     @Override
     @Transactional
@@ -120,6 +123,7 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
         
             @Override
             public boolean after(Invoice invoice) {
+                flowSessionService.addFlowSession(TableNames.invoice, invoice.getId());
                 return afterUpdateChild(invoice,invoiceInsertDTO.getChildList());
             }
         });
@@ -143,6 +147,10 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
         
         List<Customer> customerList = customerMapper.selectBatchIds(salesOrderIdList);
         Map<Long, String> customerMap = MyCollections.list2MapL(customerList, Customer::getId, Customer::getName);
+    
+        //审批
+        List<Long> invoiceListIds = MyCollections.objects2List(invoiceList, Invoice::getId);
+        Map<Long, Integer> passMap = flowSessionService.getPass(TableNames.invoice, invoiceListIds);
         
         
         List<InvoiceSelectDTO> invoiceSelectDTOList = MyCollections.copyListProperties(invoiceList, InvoiceSelectDTO::new);
@@ -155,7 +163,12 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
             dto.setUpdaterR(new IdToName(updateMemberId, userMap.get(updateMemberId), TableNames.sysUser));
             dto.setSalesOrderIdR(new IdToName(salesOrderId, salesOrderId.toString(), TableNames.salesOrder));
             dto.setCustomerIdR(new IdToName(customerId, customerMap.get(customerId), TableNames.customer));
-            
+            Integer pass = passMap.get(dto.getId());
+            switch (pass) {
+                case 0: dto.setPass("未审批");break;
+                case 1: dto.setPass("已通过");break;
+                default: dto.setPass("已拒绝");
+            }
         });
         return invoiceSelectDTOList;
     }

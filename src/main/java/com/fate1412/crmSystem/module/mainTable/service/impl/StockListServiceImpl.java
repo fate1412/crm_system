@@ -7,11 +7,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fate1412.crmSystem.base.MyPage;
 import com.fate1412.crmSystem.base.SelectPage;
 import com.fate1412.crmSystem.module.customTable.service.ITableOptionService;
+import com.fate1412.crmSystem.module.flow.service.ISysFlowSessionService;
 import com.fate1412.crmSystem.module.mainTable.constant.TableNames;
 import com.fate1412.crmSystem.module.mainTable.dto.child.StockListChild;
 import com.fate1412.crmSystem.module.mainTable.dto.insert.StockListInsertDTO;
 import com.fate1412.crmSystem.module.mainTable.dto.select.StockListSelectDTO;
 import com.fate1412.crmSystem.module.mainTable.dto.update.StockListUpdateDTO;
+import com.fate1412.crmSystem.module.mainTable.pojo.Invoice;
 import com.fate1412.crmSystem.module.mainTable.pojo.StockList;
 import com.fate1412.crmSystem.module.mainTable.mapper.StockListMapper;
 import com.fate1412.crmSystem.module.mainTable.pojo.StockListProduct;
@@ -49,6 +51,8 @@ public class StockListServiceImpl extends ServiceImpl<StockListMapper, StockList
     private ITableOptionService tableOptionService;
     @Autowired
     private IStockListProductService stockListProductService;
+    @Autowired
+    private ISysFlowSessionService flowSessionService;
     
     
     @Override
@@ -62,8 +66,13 @@ public class StockListServiceImpl extends ServiceImpl<StockListMapper, StockList
         List<Long> ownerList = MyCollections.objects2List(stockLists, StockList::getOwner);
         List<Long> userIdList = MyCollections.addList(true, createIds, updateMemberIds, ownerList);
     
+        //用户
         List<SysUser> sysUserList = sysUserService.listByIds(userIdList);
         Map<Long, String> userMap = MyCollections.list2MapL(sysUserList, SysUser::getUserId, SysUser::getRealName);
+    
+        //审批
+        List<Long> stockListIds = MyCollections.objects2List(stockLists, StockList::getId);
+        Map<Long, Integer> passMap = flowSessionService.getPass(TableNames.stockList, stockListIds);
         
     
         List<StockListSelectDTO> stockListSelectDTOList = MyCollections.copyListProperties(stockLists, StockListSelectDTO::new);
@@ -74,6 +83,12 @@ public class StockListServiceImpl extends ServiceImpl<StockListMapper, StockList
             dto.setCreaterR(new IdToName(createId,userMap.get(createId), TableNames.sysUser));
             dto.setUpdaterR(new IdToName(updater,userMap.get(updater),TableNames.sysUser));
             dto.setOwnerR(new IdToName(owner,userMap.get(owner),TableNames.sysUser));
+            Integer pass = passMap.get(dto.getId());
+            switch (pass) {
+                case 0: dto.setPass("未审批");break;
+                case 1: dto.setPass("已通过");break;
+                default: dto.setPass("已拒绝");
+            }
         });
         return stockListSelectDTOList;
     }
@@ -134,6 +149,7 @@ public class StockListServiceImpl extends ServiceImpl<StockListMapper, StockList
     
             @Override
             public boolean after(StockList stockList) {
+                flowSessionService.addFlowSession(TableNames.stockList, stockList.getId());
                 return afterUpdateChild(stockList, childList);
             }
         });

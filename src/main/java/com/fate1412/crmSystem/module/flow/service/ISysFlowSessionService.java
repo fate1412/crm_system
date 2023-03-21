@@ -8,6 +8,7 @@ import com.fate1412.crmSystem.module.flow.pojo.SysFlowSession;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -20,6 +21,10 @@ import java.util.List;
 public interface ISysFlowSessionService extends IService<SysFlowSession>, MyBaseService<SysFlowSession> {
     
     List<SysFlowSession> getSysFlowSession(String tableName, Long dataId);
+    
+    List<SysFlowSession> getSysFlowSession(String tableName, List<Long> dataIds);
+    
+    Map<Long,Integer> getPass(String tableName, List<Long> dataIds);
     
     boolean addFlowSession(String tableName, Long dataId, Long sessionId, Integer agree);
     
