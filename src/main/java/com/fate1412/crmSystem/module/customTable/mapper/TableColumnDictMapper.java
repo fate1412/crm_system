@@ -1,7 +1,7 @@
 package com.fate1412.crmSystem.module.customTable.mapper;
 
-import com.fate1412.crmSystem.module.customTable.pojo.TableColumnDict;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.fate1412.crmSystem.module.customTable.pojo.TableColumnDict;
 import org.apache.ibatis.annotations.Mapper;
 
 /**

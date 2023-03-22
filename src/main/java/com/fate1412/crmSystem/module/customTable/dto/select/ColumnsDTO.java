@@ -1,4 +1,4 @@
-package com.fate1412.crmSystem.module.customTable.dto;
+package com.fate1412.crmSystem.module.customTable.dto.select;
 
 import lombok.Data;
 

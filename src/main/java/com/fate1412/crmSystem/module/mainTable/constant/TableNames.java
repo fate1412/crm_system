@@ -14,4 +14,5 @@ public class TableNames {
     public static final String sysFlow = "sysFlow";
     public static final String sysFlowSession = "sysFlowSession";
     public static final String tableDict = "tableDict";
+    public static final String tableColumnDict = "tableColumnDict";
 }

@@ -1,7 +1,7 @@
 package com.fate1412.crmSystem.module.customTable.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.fate1412.crmSystem.module.customTable.dto.OptionDTO;
+import com.fate1412.crmSystem.module.customTable.dto.select.OptionDTO;
 import com.fate1412.crmSystem.module.customTable.pojo.TableOption;
 import com.fate1412.crmSystem.module.customTable.mapper.TableOptionMapper;
 import com.fate1412.crmSystem.module.customTable.service.ITableOptionService;

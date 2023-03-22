@@ -4,10 +4,15 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fate1412.crmSystem.base.MyPage;
+import com.fate1412.crmSystem.base.SelectPage;
+import com.fate1412.crmSystem.module.customTable.dto.select.TableDictSelectDTO;
 import com.fate1412.crmSystem.module.customTable.pojo.TableDict;
 import com.fate1412.crmSystem.module.customTable.mapper.TableDictMapper;
 import com.fate1412.crmSystem.module.customTable.service.ITableDictService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fate1412.crmSystem.module.customTable.service.ITableOptionService;
+import com.fate1412.crmSystem.module.mainTable.constant.TableNames;
 import com.fate1412.crmSystem.utils.IdToName;
 import com.fate1412.crmSystem.utils.MyCollections;
 import com.fate1412.crmSystem.utils.TableResultData;
@@ -29,6 +34,8 @@ import java.util.List;
 public class TableDictServiceImpl extends ServiceImpl<TableDictMapper, TableDict> implements ITableDictService {
     @Autowired
     private TableDictMapper mapper;
+    @Autowired
+    private ITableOptionService tableOptionService;
     
     
     @Override
@@ -39,6 +46,14 @@ public class TableDictServiceImpl extends ServiceImpl<TableDictMapper, TableDict
         QueryWrapper<TableDict> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().in(TableDict::getTableName, tableNames);
         return list(queryWrapper);
+    }
+    
+    @Override
+    public MyPage listByPage(SelectPage<TableDictSelectDTO> selectPage) {
+        TableDictSelectDTO like = selectPage.getLike();
+        QueryWrapper<TableDict> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().like(like.getShowName()!= null,TableDict::getShowName,like.getShowName());
+        return listByPage(1,1000,queryWrapper);
     }
     
     @Override
@@ -54,12 +69,12 @@ public class TableDictServiceImpl extends ServiceImpl<TableDictMapper, TableDict
     
     @Override
     public TableResultData getColumns() {
-        return null;
+        return getColumns(TableNames.tableDict,new TableDictSelectDTO(),tableOptionService);
     }
     
     @Override
-    public List<?> getDTOList(List<TableDict> tableDicts) {
-        return null;
+    public List<?> getDTOList(List<TableDict> tableDictList) {
+        return MyCollections.copyListProperties(tableDictList,TableDictSelectDTO::new);
     }
     
     @Override

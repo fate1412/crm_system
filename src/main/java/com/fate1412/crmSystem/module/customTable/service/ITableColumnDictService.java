@@ -1,6 +1,10 @@
 package com.fate1412.crmSystem.module.customTable.service;
 
-import com.fate1412.crmSystem.module.customTable.dto.TableColumnDTO;
+import com.fate1412.crmSystem.base.MyBaseService;
+import com.fate1412.crmSystem.base.MyPage;
+import com.fate1412.crmSystem.base.SelectPage;
+import com.fate1412.crmSystem.module.customTable.dto.select.TableColumnSelectDTO;
+import com.fate1412.crmSystem.module.customTable.dto.select.TableDictSelectDTO;
 import com.fate1412.crmSystem.module.customTable.pojo.TableColumnDict;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -14,9 +18,11 @@ import java.util.List;
  * @author fate1412
  * @since 2023-03-04
  */
-public interface ITableColumnDictService extends IService<TableColumnDict> {
+public interface ITableColumnDictService extends IService<TableColumnDict>, MyBaseService<TableColumnDict> {
     
     List<TableColumnDict> listByTableName(String tableName);
 
-    List<TableColumnDTO> DTOListByTableName(String tableName);
+    List<TableColumnSelectDTO> DTOListByTableName(String tableName);
+    
+    MyPage listByPage(SelectPage<TableDictSelectDTO> selectPage);
 }
