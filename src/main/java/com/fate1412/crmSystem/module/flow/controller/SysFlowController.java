@@ -37,14 +37,14 @@ public class SysFlowController {
     private ISysFlowService service;
     
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('SysFlow_Select')")
     @GetMapping("/getColumns")
     public JsonResult<Object> getColumns() {
         TableResultData tableResultData = service.getColumns();
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('SysFlow_Select')")
     @PostMapping("/page/select")
     public JsonResult<Object> selectByPage(@RequestBody SelectPage<SysFlowSelectDTO> selectPage) {
         MyPage page = service.listByPage(selectPage);
@@ -56,13 +56,13 @@ public class SysFlowController {
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("hasAnyAuthority('Customer_Insert')")
+    @PreAuthorize("hasAnyAuthority('SysFlow_Insert')")
     @PutMapping("/add")
     public JsonResult<?> add(@RequestBody SysFlowInsertDTO sysFlowInsertDTO) {
         return service.addDTO(sysFlowInsertDTO);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('SysFlow_Select')")
     @GetMapping("/select")
     public JsonResult<Object> select(@Param("id") Long id) {
         List<?> dtoList = service.getDTOListById(MyCollections.toList(id));
@@ -71,27 +71,27 @@ public class SysFlowController {
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("hasAnyAuthority('Customer_Edit')")
+    @PreAuthorize("hasAnyAuthority('SysFlowr_Edit')")
     @PostMapping("/update")
     public JsonResult<?> update(@RequestBody SysFlowUpdateDTO sysFlowUpdateDTO) {
         return service.updateByDTO(sysFlowUpdateDTO);
     }
     
-    @PreAuthorize("hasAnyAuthority('Customer_Delete')")
+    @PreAuthorize("hasAnyAuthority('SysFlow_Delete')")
     @DeleteMapping("/delete")
     public JsonResult<?> delete(@RequestBody SysFlowSelectDTO sysFlowSelectDTO) {
         boolean b = service.delFlow(sysFlowSelectDTO.getId());
         return ResultTool.create(b);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('SysFlow_Select')")
     @GetMapping("/getFlowPoints")
     public JsonResult<Object> getFlowPoints(@Param("id") Long id) {
         List<SysFlowPointSelectDTO> flowPoints = service.getFlowPoints(id);
         return ResultTool.success(flowPoints);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('SysFlowr_Edit')")
     @PostMapping("/updateFlowPoints")
     public JsonResult<?> updateFlowPoints(@RequestBody JSONObject jsonObject) {
         Long flowId = jsonObject.getLong("flowId");

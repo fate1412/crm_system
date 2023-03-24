@@ -5,6 +5,7 @@ import com.fate1412.crmSystem.utils.JsonResult;
 import com.fate1412.crmSystem.utils.ResultCode;
 import com.fate1412.crmSystem.utils.ResultTool;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -34,5 +35,15 @@ public class GlobalExceptionHandler {
     public JsonResult<?> NullPointerExceptionHandler(NullPointerException e) {
         log.error("数据校验异常！ msg: -> ", e);
         return ResultTool.fail(ResultCode.PARAM_IS_BLANK);
+    }
+    
+    
+    /**
+     * 类型转换异常
+     */
+    @ExceptionHandler(value = HttpMessageNotReadableException.class)
+    public JsonResult<?> HttpMessageNotReadableExceptionHandler(HttpMessageNotReadableException e) {
+        log.error("数据校验异常！ msg: -> ", e);
+        return ResultTool.fail(ResultCode.PARAM_TYPE_ERROR);
     }
 }

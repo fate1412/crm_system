@@ -94,7 +94,9 @@ public interface MyBaseService<T> {
     abstract class MyEntity<T> {
         private T t;
         
-        public abstract T set(T t);
+        public T set(T t) {
+            return t;
+        }
     
         /**
          * 数据校验

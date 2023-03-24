@@ -15,5 +15,19 @@
         <result column="show_name" property="showName" />
         <result column="column_index" property="columnIndex" />
     </resultMap>
+    <insert id="insert">
+        insert into table_column_dict (
+        id, table_name, column_name,
+        real_column_name, column_type,
+        fixed, disabled, link,
+        show_name, column_index)
+        values
+        <foreach collection="list" item="entity" index="index" separator=",">
+            (#(entity.id),#(entity.tableName),#(entity.columnName),
+            #(entity.realColumnName),#(entity.columnType),#(entity.fixed),
+            #(entity.disabled),#(entity.link),#(entity.showName),#(entity.columnIndex)
+            )
+        </foreach>
+    </insert>
 
 </mapper>

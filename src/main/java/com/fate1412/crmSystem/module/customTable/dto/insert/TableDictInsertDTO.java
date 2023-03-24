@@ -1,13 +1,16 @@
-package com.fate1412.crmSystem.module.customTable.pojo;
+package com.fate1412.crmSystem.module.customTable.dto.insert;
 
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
-import java.io.Serializable;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.fate1412.crmSystem.annotations.TableTitle;
+import com.fate1412.crmSystem.module.customTable.dto.child.TableColumnChild;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * <p>
@@ -19,26 +22,27 @@ import lombok.experimental.Accessors;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
 @TableName("table_dict")
-public class TableDict implements Serializable {
+public class TableDictInsertDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "id", type = IdType.ASSIGN_ID)
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     @TableField("real_table_name")
+    @TableTitle(value = "真实表名",disabled = true,inserted = true)
     private String realTableName;
 
     @TableField("table_name")
+    @TableTitle(value = "tableName",inserted = true)
     private String tableName;
 
     @TableField("show_name")
+    @TableTitle(value = "表名",inserted = true)
     private String showName;
     
     @TableField("custom")
     private Boolean custom;
-
 
 }

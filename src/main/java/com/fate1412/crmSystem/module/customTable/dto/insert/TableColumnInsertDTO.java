@@ -1,14 +1,14 @@
-package com.fate1412.crmSystem.module.customTable.dto.select;
+package com.fate1412.crmSystem.module.customTable.dto.insert;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fate1412.crmSystem.annotations.TableTitle;
 import com.fate1412.crmSystem.annotations.TableTitle.FormType;
+import com.fate1412.crmSystem.module.customTable.dto.child.TableColumnChild;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,7 +21,7 @@ import java.util.List;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class TableColumnSelectDTO {
+public class TableColumnInsertDTO {
 
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
@@ -57,5 +57,7 @@ public class TableColumnSelectDTO {
     @TableField("link")
     @TableTitle(value = "可链接(非主键)",formType = FormType.Switch,inserted = true)
     private Boolean link;
+    
+    private List<TableColumnChild> childList;
 
 }

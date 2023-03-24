@@ -6,18 +6,22 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fate1412.crmSystem.base.MyPage;
 import com.fate1412.crmSystem.base.SelectPage;
+import com.fate1412.crmSystem.module.customTable.dto.insert.TableDictInsertDTO;
 import com.fate1412.crmSystem.module.customTable.dto.select.TableDictSelectDTO;
+import com.fate1412.crmSystem.module.customTable.mapper.TableColumnDictMapper;
+import com.fate1412.crmSystem.module.customTable.pojo.TableColumnDict;
 import com.fate1412.crmSystem.module.customTable.pojo.TableDict;
 import com.fate1412.crmSystem.module.customTable.mapper.TableDictMapper;
 import com.fate1412.crmSystem.module.customTable.service.ITableDictService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fate1412.crmSystem.module.customTable.service.ITableOptionService;
 import com.fate1412.crmSystem.module.mainTable.constant.TableNames;
-import com.fate1412.crmSystem.utils.IdToName;
-import com.fate1412.crmSystem.utils.MyCollections;
-import com.fate1412.crmSystem.utils.TableResultData;
+import com.fate1412.crmSystem.utils.*;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +39,8 @@ public class TableDictServiceImpl extends ServiceImpl<TableDictMapper, TableDict
     @Autowired
     private TableDictMapper mapper;
     @Autowired
+    private TableColumnDictMapper tableColumnDictMapper;
+    @Autowired
     private ITableOptionService tableOptionService;
     
     
@@ -46,6 +52,24 @@ public class TableDictServiceImpl extends ServiceImpl<TableDictMapper, TableDict
         QueryWrapper<TableDict> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().in(TableDict::getTableName, tableNames);
         return list(queryWrapper);
+    }
+    
+    @Override
+    @Transactional
+    public JsonResult<?> addDTO(TableDictInsertDTO tableDictInsertDTO) {
+        TableDict tableDict = new TableDict();
+        BeanUtils.copyProperties(tableDictInsertDTO,tableDict);
+        return add(new MyEntity<TableDict>(tableDict) {
+            @Override
+            public ResultCode verification(TableDict tableDict) {
+                return isRight(tableDict);
+            }
+    
+            @Override
+            public boolean after(TableDict tableDict) {
+                return afterUpdate(tableDict);
+            }
+        });
     }
     
     @Override
@@ -80,5 +104,30 @@ public class TableDictServiceImpl extends ServiceImpl<TableDictMapper, TableDict
     @Override
     public BaseMapper<TableDict> mapper() {
         return mapper;
+    }
+    
+    private ResultCode isRight(TableDict tableDict) {
+        if (StringUtils.isBlank(tableDict.getRealTableName())) {
+            return ResultCode.PARAM_NOT_VALID;
+        }
+        if (StringUtils.isBlank(tableDict.getTableName())) {
+            return ResultCode.PARAM_NOT_VALID;
+        }
+        if (StringUtils.isBlank(tableDict.getShowName())) {
+            return ResultCode.PARAM_IS_BLANK;
+        }
+        return ResultCode.SUCCESS;
+    }
+    
+    private boolean afterUpdate(TableDict tableDict) {
+        if (mapper.createTable(tableDict)) {
+//            List<TableColumnDict> list = new ArrayList<>();
+//            TableColumnDict tableColumnDict = new TableColumnDict();
+//            tableColumnDict
+//                    .setTableName(tableDict.getTableName());
+//            tableColumnDictMapper.insert(list);
+        }
+        
+        return true;
     }
 }

@@ -21,5 +21,5 @@ import java.util.List;
 public interface TableDictMapper extends BaseMapper<TableDict> {
     List<JSONObject> select(@Param("tableName") String tableName , @Param("factors") List<SQLFactor<Object>> factors);
     
-    List<JSONObject> se();
+    boolean createTable(@Param("tableDict") TableDict tableDict);
 }

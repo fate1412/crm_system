@@ -3,10 +3,12 @@ package com.fate1412.crmSystem.module.customTable.service;
 import com.fate1412.crmSystem.base.MyBaseService;
 import com.fate1412.crmSystem.base.MyPage;
 import com.fate1412.crmSystem.base.SelectPage;
+import com.fate1412.crmSystem.module.customTable.dto.insert.TableDictInsertDTO;
 import com.fate1412.crmSystem.module.customTable.dto.select.TableDictSelectDTO;
 import com.fate1412.crmSystem.module.customTable.pojo.TableDict;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fate1412.crmSystem.module.mainTable.dto.select.ProductSelectDTO;
+import com.fate1412.crmSystem.utils.JsonResult;
 
 import java.util.List;
 
@@ -24,5 +26,5 @@ public interface ITableDictService extends IService<TableDict>, MyBaseService<Ta
     
     MyPage listByPage(SelectPage<TableDictSelectDTO> selectPage);
     
-    
+    JsonResult<?> addDTO(TableDictInsertDTO tableDictInsertDTO);
 }

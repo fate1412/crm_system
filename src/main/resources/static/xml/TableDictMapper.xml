@@ -83,8 +83,17 @@
             </foreach>
         </if>
     </select>
-    <select id="se" resultType="com.alibaba.fastjson.JSONObject">
-        select * from customer
-    </select>
+    <update id="createTable">
+        create table if not exists ${tableDict.realTableName}
+        (
+            `id` bigint NOT NULL,
+            `create_time` datetime NOT NULL COMMENT '创建时间',
+            `update_time` datetime NOT NULL COMMENT '更新时间',
+            `creater` bigint NOT NULL COMMENT '创建人',
+            `updater` bigint NOT NULL COMMENT '修改人',
+            `del_flag` tinyint(1) NOT NULL DEFAULT '0',
+            PRIMARY KEY (`id`)
+        ) COMMENT= #{tableDict.showName}
+    </update>
 
 </mapper>

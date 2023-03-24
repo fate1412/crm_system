@@ -3,8 +3,17 @@ package com.fate1412.crmSystem.module.customTable.controller;
 
 import com.fate1412.crmSystem.base.MyPage;
 import com.fate1412.crmSystem.base.SelectPage;
+import com.fate1412.crmSystem.module.customTable.dto.child.TableColumnChild;
+import com.fate1412.crmSystem.module.customTable.dto.insert.TableColumnInsertDTO;
+import com.fate1412.crmSystem.module.customTable.dto.insert.TableDictInsertDTO;
+import com.fate1412.crmSystem.module.customTable.dto.select.TableColumnSelectDTO;
 import com.fate1412.crmSystem.module.customTable.dto.select.TableDictSelectDTO;
+import com.fate1412.crmSystem.module.customTable.dto.select.TableOptionSelectDTO;
 import com.fate1412.crmSystem.module.customTable.service.ITableColumnDictService;
+import com.fate1412.crmSystem.module.customTable.service.ITableOptionService;
+import com.fate1412.crmSystem.module.mainTable.dto.child.SalesOrderChild;
+import com.fate1412.crmSystem.module.mainTable.dto.select.OrderProductSelectDTO;
+import com.fate1412.crmSystem.module.mainTable.dto.select.SalesOrderSelectDTO;
 import com.fate1412.crmSystem.utils.JsonResult;
 import com.fate1412.crmSystem.utils.MyCollections;
 import com.fate1412.crmSystem.utils.ResultTool;
@@ -27,10 +36,12 @@ import java.util.List;
  * @since 2023-03-04
  */
 @RestController
-@RequestMapping("/tableColumnDict")
+@RequestMapping("/columns")
 public class TableColumnDictController {
     @Autowired
     private ITableColumnDictService service;
+    @Autowired
+    private ITableOptionService tableOptionService;
     
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/getColumns")
@@ -51,10 +62,28 @@ public class TableColumnDictController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/select")
     public JsonResult<Object> select(@Param("id") Long id) {
-        List<?> dtoListById = service.getDTOListById(MyCollections.toList(id));
+        List<?> dtoList = service.getDTOListById(MyCollections.toList(id));
         TableResultData tableResultData = service.getColumns();
-        tableResultData.setTableDataList(dtoListById);
+        tableResultData.setTableDataList(dtoList);
+        if (!MyCollections.isEmpty(dtoList)) {
+            TableColumnSelectDTO dto = (TableColumnSelectDTO) dtoList.get(0);
+            if (dto.getColumnType() == 1) {
+                List<TableOptionSelectDTO> TableOptionSelectDTOList = tableOptionService.getDTOByTableColumnId(dto.getId());
+                List<TableColumnChild> childList = MyCollections.copyListProperties(TableOptionSelectDTOList, TableColumnChild::new);
+                TableResultData child = tableOptionService.getColumns(new TableColumnChild());
+                if (!MyCollections.isEmpty(childList)) {
+                    child.setTableDataList(childList);
+                }
+                tableResultData.setChild(child);
+            }
+        }
         return ResultTool.success(tableResultData);
+    }
+    
+    @PreAuthorize("isAuthenticated()")
+    @PutMapping("/add")
+    public JsonResult<?> createTable(@RequestBody TableColumnInsertDTO tableColumnInsertDTO) {
+        return service.addDTO(tableColumnInsertDTO);
     }
 }
 

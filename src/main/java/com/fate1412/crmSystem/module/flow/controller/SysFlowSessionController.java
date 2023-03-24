@@ -32,7 +32,7 @@ public class SysFlowSessionController {
     @Autowired
     private ISysFlowSessionService service;
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('SysFlow_Select')")
     @PostMapping("/page/select")
     public JsonResult<Object> selectByPage(@RequestBody SelectPage<SysFlowSessionSelectDTO> selectPage) {
         MyPage page = service.listByPage(selectPage);
@@ -44,6 +44,7 @@ public class SysFlowSessionController {
         return ResultTool.success(tableResultData);
     }
     
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/approve")
     public JsonResult<?> approve(@RequestBody SysFlowSessionSelectDTO sessionSelectDTO) {
         boolean b = service.addFlowSession(sessionSelectDTO.getTableName(), sessionSelectDTO.getDataId(), sessionSelectDTO.getId(), sessionSelectDTO.getPass());

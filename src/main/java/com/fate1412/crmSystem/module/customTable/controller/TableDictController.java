@@ -3,6 +3,7 @@ package com.fate1412.crmSystem.module.customTable.controller;
 
 import com.fate1412.crmSystem.base.MyPage;
 import com.fate1412.crmSystem.base.SelectPage;
+import com.fate1412.crmSystem.module.customTable.dto.insert.TableDictInsertDTO;
 import com.fate1412.crmSystem.module.customTable.dto.select.TableDictSelectDTO;
 import com.fate1412.crmSystem.module.customTable.service.ITableDictService;
 import com.fate1412.crmSystem.module.mainTable.dto.select.ProductSelectDTO;
@@ -58,6 +59,12 @@ public class TableDictController {
     public JsonResult<?> getOptions(@Param("nameLike") String nameLike, @Param("page") Integer page) {
         List<IdToName> options = service.getOptions(nameLike, page);
         return ResultTool.success(options);
+    }
+    
+    @PreAuthorize("isAuthenticated()")
+    @PutMapping("/add")
+    public JsonResult<?> createTable(@RequestBody TableDictInsertDTO tableDictInsertDTO) {
+        return service.addDTO(tableDictInsertDTO);
     }
 
 }
