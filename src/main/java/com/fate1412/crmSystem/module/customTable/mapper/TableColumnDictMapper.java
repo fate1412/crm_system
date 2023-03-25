@@ -3,6 +3,7 @@ package com.fate1412.crmSystem.module.customTable.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.fate1412.crmSystem.module.customTable.pojo.TableColumnDict;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -17,5 +18,5 @@ import java.util.List;
 @Mapper
 public interface TableColumnDictMapper extends BaseMapper<TableColumnDict> {
 
-    int insert(List<TableColumnDict> list);
+    int insertList(@Param("list") List<TableColumnDict> list);
 }

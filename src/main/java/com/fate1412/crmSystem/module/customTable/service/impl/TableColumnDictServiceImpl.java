@@ -23,6 +23,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -85,6 +86,7 @@ public class TableColumnDictServiceImpl extends ServiceImpl<TableColumnDictMappe
         Map<Integer, String> optionMap = MyCollections.list2MapL(columnType, OptionDTO::getOptionKey, OptionDTO::getOption);
     
         List<TableColumnSelectDTO> dtoList = MyCollections.copyListProperties(tableColumnDictList, TableColumnSelectDTO::new);
+        dtoList.sort(Comparator.comparingInt(TableColumnSelectDTO::getColumnIndex));
         dtoList.forEach(dto -> {
             dto.setColumnTypeR(optionMap.get(dto.getColumnType()));
         });

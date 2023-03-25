@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fate1412.crmSystem.base.MyPage;
 import com.fate1412.crmSystem.base.SelectPage;
+import com.fate1412.crmSystem.exception.DataCheckingException;
 import com.fate1412.crmSystem.module.customTable.dto.insert.TableDictInsertDTO;
 import com.fate1412.crmSystem.module.customTable.dto.select.TableDictSelectDTO;
 import com.fate1412.crmSystem.module.customTable.mapper.TableColumnDictMapper;
@@ -55,19 +56,26 @@ public class TableDictServiceImpl extends ServiceImpl<TableDictMapper, TableDict
     }
     
     @Override
+    public TableDict getByRealName(String realNames) {
+        QueryWrapper<TableDict> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().in(TableDict::getRealTableName, realNames);
+        return getOne(queryWrapper);
+    }
+    
+    @Override
     @Transactional
     public JsonResult<?> addDTO(TableDictInsertDTO tableDictInsertDTO) {
         TableDict tableDict = new TableDict();
-        BeanUtils.copyProperties(tableDictInsertDTO,tableDict);
+        BeanUtils.copyProperties(tableDictInsertDTO, tableDict);
         return add(new MyEntity<TableDict>(tableDict) {
             @Override
             public ResultCode verification(TableDict tableDict) {
                 return isRight(tableDict);
             }
-    
+            
             @Override
             public boolean after(TableDict tableDict) {
-                return afterUpdate(tableDict);
+                return afterAdd(tableDict);
             }
         });
     }
@@ -76,8 +84,8 @@ public class TableDictServiceImpl extends ServiceImpl<TableDictMapper, TableDict
     public MyPage listByPage(SelectPage<TableDictSelectDTO> selectPage) {
         TableDictSelectDTO like = selectPage.getLike();
         QueryWrapper<TableDict> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().like(like.getShowName()!= null,TableDict::getShowName,like.getShowName());
-        return listByPage(1,1000,queryWrapper);
+        queryWrapper.lambda().like(like.getShowName() != null, TableDict::getShowName, like.getShowName());
+        return listByPage(1, 1000, queryWrapper);
     }
     
     @Override
@@ -93,12 +101,12 @@ public class TableDictServiceImpl extends ServiceImpl<TableDictMapper, TableDict
     
     @Override
     public TableResultData getColumns() {
-        return getColumns(TableNames.tableDict,new TableDictSelectDTO(),tableOptionService);
+        return getColumns(TableNames.tableDict, new TableDictSelectDTO(), tableOptionService);
     }
     
     @Override
     public List<?> getDTOList(List<TableDict> tableDictList) {
-        return MyCollections.copyListProperties(tableDictList,TableDictSelectDTO::new);
+        return MyCollections.copyListProperties(tableDictList, TableDictSelectDTO::new);
     }
     
     @Override
@@ -110,7 +118,15 @@ public class TableDictServiceImpl extends ServiceImpl<TableDictMapper, TableDict
         if (StringUtils.isBlank(tableDict.getRealTableName())) {
             return ResultCode.PARAM_NOT_VALID;
         }
+        TableDict byRealName = getByRealName(tableDict.getRealTableName());
+        if (byRealName != null) {
+            return ResultCode.PARAM_NOT_VALID;
+        }
         if (StringUtils.isBlank(tableDict.getTableName())) {
+            return ResultCode.PARAM_NOT_VALID;
+        }
+        List<TableDict> byTableName = getByTableName(MyCollections.toList(tableDict.getTableName()));
+        if (!MyCollections.isEmpty(byTableName)) {
             return ResultCode.PARAM_NOT_VALID;
         }
         if (StringUtils.isBlank(tableDict.getShowName())) {
@@ -119,15 +135,35 @@ public class TableDictServiceImpl extends ServiceImpl<TableDictMapper, TableDict
         return ResultCode.SUCCESS;
     }
     
-    private boolean afterUpdate(TableDict tableDict) {
-        if (mapper.createTable(tableDict)) {
-//            List<TableColumnDict> list = new ArrayList<>();
-//            TableColumnDict tableColumnDict = new TableColumnDict();
-//            tableColumnDict
-//                    .setTableName(tableDict.getTableName());
-//            tableColumnDictMapper.insert(list);
+    private boolean afterAdd(TableDict tableDict) {
+        String tableName = tableDict.getTableName();
+        String showName = tableDict.getShowName();
+        List<TableColumnDict> list = new ArrayList<>();
+        list.add(TableColumnDict.create(tableName, "id", "id", showName + "Id", 0)
+                .setDisabled(true)
+                .setFixed(true)
+                .setCustom(false));
+        list.add(TableColumnDict.create(tableName, "createTime", "create_time", "创建时间", 21)
+                .setColumnType(3)
+                .setDisabled(true)
+                .setCustom(false));
+        list.add(TableColumnDict.create(tableName, "updateTime", "update_time", "更新时间", 2)
+                .setColumnType(3)
+                .setDisabled(true)
+                .setCustom(false));
+        list.add(TableColumnDict.create(tableName, "creater", "creater", "创建人", 23)
+                .setDisabled(true)
+                .setLink(true)
+                .setCustom(false));
+        list.add(TableColumnDict.create(tableName, "updater", "updater", "修改人", 24)
+                .setDisabled(true)
+                .setLink(true)
+                .setCustom(false));
+        boolean b= tableColumnDictMapper.insertList(list) > 0;
+        if (!b) {
+            throw new DataCheckingException(ResultCode.COMMON_FAIL);
         }
-        
-        return true;
+        mapper.createTable(tableDict);
+        return b;
     }
 }

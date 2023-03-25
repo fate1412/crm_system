@@ -57,5 +57,8 @@ public class TableColumnSelectDTO {
     @TableField("link")
     @TableTitle(value = "可链接(非主键)",formType = FormType.Switch,inserted = true)
     private Boolean link;
+    
+    @TableField("custom")
+    private Boolean custom;
 
 }

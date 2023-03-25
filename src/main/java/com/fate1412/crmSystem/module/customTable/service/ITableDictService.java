@@ -24,6 +24,8 @@ public interface ITableDictService extends IService<TableDict>, MyBaseService<Ta
     
     List<TableDict> getByTableName(List<String> tableNames);
     
+    TableDict getByRealName(String realNames);
+    
     MyPage listByPage(SelectPage<TableDictSelectDTO> selectPage);
     
     JsonResult<?> addDTO(TableDictInsertDTO tableDictInsertDTO);

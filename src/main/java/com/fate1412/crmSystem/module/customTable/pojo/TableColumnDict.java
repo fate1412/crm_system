@@ -54,6 +54,25 @@ public class TableColumnDict implements Serializable {
 
     @TableField("column_index")
     private Integer columnIndex;
+    
+    @TableField("custom")
+    private Boolean custom;
 
+    
+    public static TableColumnDict create(String tableName, String columnName, String realColumnName, String showName, Integer index) {
+        TableColumnDict tableColumnDict = new TableColumnDict();
+        tableColumnDict
+                .setTableName(tableName)
+                .setColumnName(columnName)
+                .setRealColumnName(realColumnName)
+                .setColumnIndex(index)
+                .setShowName(showName)
+                .setColumnType(0)
+                .setFixed(false)
+                .setDisabled(false)
+                .setLink(false)
+                .setCustom(true);
+        return tableColumnDict;
+    }
 
 }
