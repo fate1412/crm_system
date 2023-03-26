@@ -11,14 +11,18 @@ public @interface TableTitle {
     boolean link() default false;
     boolean disabled() default false;
     boolean inserted() default false;
-    FormType formType() default FormType.Input;
+    FormType formType() default FormType.String;
     
     enum FormType {
-        Input("Input",0),
         Select("Select",1),
         Date("Date",2),
         DateTime("DateTime",3),
-        Switch("Switch",4);
+        Switch("Switch",4),
+        String("String",5),
+        Integer("Integer",6),
+        Double("Double",7),
+        Number("Number",8),
+        Long("Long",9);
         private String type;
         private Integer index;
     

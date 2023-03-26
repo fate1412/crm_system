@@ -26,4 +26,6 @@ public interface ITableOptionService extends IService<TableOption> {
     List<TableOptionSelectDTO> getDTOByTableColumnId(Integer id);
     
     <D> TableResultData getColumns(D dto);
+    
+    boolean delAllOption(String tableName);
 }

@@ -9,11 +9,13 @@ import com.fate1412.crmSystem.module.customTable.dto.insert.TableDictInsertDTO;
 import com.fate1412.crmSystem.module.customTable.dto.select.TableColumnSelectDTO;
 import com.fate1412.crmSystem.module.customTable.dto.select.TableDictSelectDTO;
 import com.fate1412.crmSystem.module.customTable.dto.select.TableOptionSelectDTO;
+import com.fate1412.crmSystem.module.customTable.dto.update.TableColumnUpdateDTO;
 import com.fate1412.crmSystem.module.customTable.service.ITableColumnDictService;
 import com.fate1412.crmSystem.module.customTable.service.ITableOptionService;
 import com.fate1412.crmSystem.module.mainTable.dto.child.SalesOrderChild;
 import com.fate1412.crmSystem.module.mainTable.dto.select.OrderProductSelectDTO;
 import com.fate1412.crmSystem.module.mainTable.dto.select.SalesOrderSelectDTO;
+import com.fate1412.crmSystem.module.mainTable.dto.update.SalesOrderUpdateDTO;
 import com.fate1412.crmSystem.utils.JsonResult;
 import com.fate1412.crmSystem.utils.MyCollections;
 import com.fate1412.crmSystem.utils.ResultTool;
@@ -82,8 +84,21 @@ public class TableColumnDictController {
     
     @PreAuthorize("isAuthenticated()")
     @PutMapping("/add")
-    public JsonResult<?> createTable(@RequestBody TableColumnInsertDTO tableColumnInsertDTO) {
+    public JsonResult<?> insert(@RequestBody TableColumnInsertDTO tableColumnInsertDTO) {
         return service.addDTO(tableColumnInsertDTO);
+    }
+    
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/update")
+    public JsonResult<?> update(@RequestBody TableColumnUpdateDTO tableColumnUpdateDTO) {
+        return service.updateByDTO(tableColumnUpdateDTO);
+    }
+    
+    @PreAuthorize("isAuthenticated()")
+    @DeleteMapping("/delete")
+    public JsonResult<?> delete(@RequestBody TableDictSelectDTO tableDictSelectDTO) {
+        boolean b = service.delById(tableDictSelectDTO.getId());
+        return ResultTool.create(b);
     }
 }
 

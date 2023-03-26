@@ -6,6 +6,7 @@ import com.fate1412.crmSystem.base.SelectPage;
 import com.fate1412.crmSystem.module.customTable.dto.insert.TableColumnInsertDTO;
 import com.fate1412.crmSystem.module.customTable.dto.select.TableColumnSelectDTO;
 import com.fate1412.crmSystem.module.customTable.dto.select.TableDictSelectDTO;
+import com.fate1412.crmSystem.module.customTable.dto.update.TableColumnUpdateDTO;
 import com.fate1412.crmSystem.module.customTable.pojo.TableColumnDict;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fate1412.crmSystem.utils.JsonResult;
@@ -29,4 +30,8 @@ public interface ITableColumnDictService extends IService<TableColumnDict>, MyBa
     MyPage listByPage(SelectPage<TableDictSelectDTO> selectPage);
     
     JsonResult<?> addDTO(TableColumnInsertDTO tableColumnInsertDTO);
+    
+    JsonResult<?> updateByDTO(TableColumnUpdateDTO tableColumnUpdateDTO);
+    
+    boolean delById(Long id);
 }

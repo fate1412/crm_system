@@ -1,6 +1,7 @@
 package com.fate1412.crmSystem.module.customTable.mapper;
 
 import com.alibaba.fastjson.JSONObject;
+import com.fate1412.crmSystem.module.customTable.pojo.TableColumnDict;
 import com.fate1412.crmSystem.module.customTable.pojo.TableDict;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.fate1412.crmSystem.utils.SQLFactor;
@@ -22,4 +23,8 @@ public interface TableDictMapper extends BaseMapper<TableDict> {
     List<JSONObject> select(@Param("tableName") String tableName , @Param("factors") List<SQLFactor<Object>> factors);
     
     Integer createTable(@Param("tableDict") TableDict tableDict);
+    
+    Integer createColumn(@Param("tableName") String tableName,@Param("columnDict")TableColumnDict columnDict);
+    
+    Integer delColumn(@Param("tableName") String tableName,@Param("columnName") String columnName);
 }

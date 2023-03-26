@@ -74,4 +74,11 @@ public class TableOptionServiceImpl extends ServiceImpl<TableOptionMapper, Table
         tableResultData.setTableDataList(MyCollections.toList(dto));
         return tableResultData;
     }
+    
+    @Override
+    public boolean delAllOption(String tableName) {
+        QueryWrapper<TableOption> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(TableOption::getTableName,tableName);
+        return remove(queryWrapper);
+    }
 }

@@ -36,6 +36,9 @@ public class TableColumnInsertDTO {
 
     @TableField("table_name")
     private String tableName;
+    
+    @TableField("real_column_name")
+    private String realColumnName;
 
     @TableField("column_name")
     @TableTitle(value = "columnName",inserted = true)
@@ -57,7 +60,5 @@ public class TableColumnInsertDTO {
     @TableField("link")
     @TableTitle(value = "可链接(非主键)",formType = FormType.Switch,inserted = true)
     private Boolean link;
-    
-    private List<TableColumnChild> childList;
 
 }

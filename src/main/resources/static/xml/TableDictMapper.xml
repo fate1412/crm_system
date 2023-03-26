@@ -70,6 +70,9 @@
             or
         </if>
     </sql>
+    <update id="delColumn">
+        alter table ${tableName} drop column ${columnName};
+    </update>
 
     <select id="select" resultType="com.alibaba.fastjson.JSONObject" >
         select * from ${tableName}
@@ -94,6 +97,41 @@
             `del_flag` tinyint(1) NOT NULL DEFAULT '0',
             PRIMARY KEY (`id`)
         ) COMMENT= #{tableDict.showName}
+    </update>
+
+    <update id="createColumn">
+        alter table ${tableName} add ${columnDict.realColumnName}
+        <if test="columnDict.columnType == 1 and columnDict.link == false">
+            varchar(100)
+        </if>
+        <if test="columnDict.columnType == 1 and columnDict.link == true">
+            bigint
+        </if>
+        <if test="columnDict.columnType == 2">
+            date
+        </if>
+        <if test="columnDict.columnType == 3">
+            datetime
+        </if>
+        <if test="columnDict.columnType == 4">
+            tinyint(1)
+        </if>
+        <if test="columnDict.columnType == 5">
+            varchar(100)
+        </if>
+        <if test="columnDict.columnType == 6">
+            int
+        </if>
+        <if test="columnDict.columnType == 7">
+            double
+        </if>
+        <if test="columnDict.columnType == 8">
+            varchar(100)
+        </if>
+        <if test="columnDict.columnType == 9">
+            bigint
+        </if>
+        COMMENT #{columnDict.showName}
     </update>
 
 </mapper>

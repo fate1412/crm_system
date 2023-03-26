@@ -153,10 +153,8 @@ public class OrderProductServiceImpl extends ServiceImpl<OrderProductMapper, Ord
     public boolean delBySalesOrderId(Long id) {
         QueryWrapper<OrderProduct> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(OrderProduct::getSalesOrderId,id);
-        if (remove(queryWrapper)) {
-            return afterUpdateSalesOrder(id);
-        }
-        return false;
+        remove(queryWrapper);
+        return afterUpdateSalesOrder(id);
     }
     
     @Override
@@ -278,7 +276,12 @@ public class OrderProductServiceImpl extends ServiceImpl<OrderProductMapper, Ord
     private boolean  afterUpdateSalesOrder(Long salesOrderId) {
         List<OrderProductSelectDTO> salesOrderDTOList = getDTOBySalesOrderId(salesOrderId);
         if (MyCollections.isEmpty(salesOrderDTOList)) {
-            return true;
+            SalesOrder salesOrder = new SalesOrder();
+            salesOrder
+                    .setId(salesOrderId)
+                    .setOriginalPrice(0D)
+                    .setDiscountPrice(0D);
+            return salesOrderMapper.updateById(salesOrder) > 0;
         }
         Double originalPrice = 0d;
         Double discountPrice = 0d;

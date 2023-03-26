@@ -18,7 +18,7 @@ public class TableColumn {
     private Boolean link = false;
     private Boolean disabled = false;
     private Boolean inserted = true;
-    private FormType formType = FormType.Input;
+    private FormType formType = FormType.String;
     private List<OptionDTO> options;
     
     public TableColumn(String label, String prop) {

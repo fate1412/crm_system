@@ -8,6 +8,7 @@ import com.fate1412.crmSystem.annotations.TableTitle;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 
 /**
@@ -29,6 +30,7 @@ public class TableDictSelectDTO implements Serializable {
     private Long id;
 
     @TableField("real_table_name")
+    @NotBlank
     @TableTitle(value = "真实表名",disabled = true,inserted = true)
     private String realTableName;
 
