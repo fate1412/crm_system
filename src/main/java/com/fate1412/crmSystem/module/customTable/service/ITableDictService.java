@@ -29,4 +29,6 @@ public interface ITableDictService extends IService<TableDict>, MyBaseService<Ta
     MyPage listByPage(SelectPage<TableDictSelectDTO> selectPage);
     
     JsonResult<?> addDTO(TableDictInsertDTO tableDictInsertDTO);
+    
+    boolean delById(Long id);
 }

@@ -33,5 +33,5 @@ public interface ITableColumnDictService extends IService<TableColumnDict>, MyBa
     
     JsonResult<?> updateByDTO(TableColumnUpdateDTO tableColumnUpdateDTO);
     
-    boolean delById(Long id);
+    boolean delById(Integer id);
 }

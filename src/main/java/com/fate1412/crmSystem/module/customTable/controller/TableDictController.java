@@ -5,6 +5,7 @@ import com.fate1412.crmSystem.base.MyPage;
 import com.fate1412.crmSystem.base.SelectPage;
 import com.fate1412.crmSystem.module.customTable.dto.insert.TableDictInsertDTO;
 import com.fate1412.crmSystem.module.customTable.dto.select.TableDictSelectDTO;
+import com.fate1412.crmSystem.module.customTable.dto.update.TableColumnUpdateDTO;
 import com.fate1412.crmSystem.module.customTable.service.ITableDictService;
 import com.fate1412.crmSystem.module.mainTable.dto.select.ProductSelectDTO;
 import com.fate1412.crmSystem.utils.*;
@@ -29,14 +30,14 @@ public class TableDictController {
     @Autowired
     private ITableDictService service;
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('TableDict_Select')")
     @GetMapping("/getColumns")
     public JsonResult<Object> getColumns() {
         TableResultData tableResultData = service.getColumns();
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('TableDict_Select')")
     @PostMapping("/page/select")
     public JsonResult<Object> selectByPage(@RequestBody SelectPage<TableDictSelectDTO> selectPage) {
         MyPage page = service.listByPage(selectPage);
@@ -45,7 +46,7 @@ public class TableDictController {
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('TableDict_Select')")
     @GetMapping("/select")
     public JsonResult<Object> select(@Param("id") Long id) {
         List<?> dtoListById = service.getDTOListById(MyCollections.toList(id));
@@ -54,17 +55,24 @@ public class TableDictController {
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('TableDict_Select')")
     @GetMapping("/getOptions")
     public JsonResult<?> getOptions(@Param("nameLike") String nameLike, @Param("page") Integer page) {
         List<IdToName> options = service.getOptions(nameLike, page);
         return ResultTool.success(options);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('TableDict_Insert')")
     @PutMapping("/add")
     public JsonResult<?> createTable(@RequestBody TableDictInsertDTO tableDictInsertDTO) {
         return service.addDTO(tableDictInsertDTO);
+    }
+    
+    @PreAuthorize("hasAnyAuthority('TableDict_Delete')")
+    @DeleteMapping("/delete")
+    public JsonResult<?> delete(@RequestBody TableDictSelectDTO tableDictSelectDTO) {
+        boolean b = service.delById(tableDictSelectDTO.getId());
+        return ResultTool.create(b);
     }
 
 }

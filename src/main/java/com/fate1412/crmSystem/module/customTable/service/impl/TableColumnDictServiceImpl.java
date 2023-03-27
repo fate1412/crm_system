@@ -112,7 +112,7 @@ public class TableColumnDictServiceImpl extends ServiceImpl<TableColumnDictMappe
     
     @Override
     @Transactional
-    public boolean delById(Long id) {
+    public boolean delById(Integer id) {
         TableColumnDict tableColumnDict = mapper.selectById(id);
         if (!removeById(id)) {
             throw new DataCheckingException(ResultCode.COMMON_FAIL);

@@ -74,6 +74,10 @@
         alter table ${tableName} drop column ${columnName};
     </update>
 
+    <delete id="delTable">
+        DROP TABLE ${tableName}
+    </delete>
+
     <select id="select" resultType="com.alibaba.fastjson.JSONObject" >
         select * from ${tableName}
         <if test="factors != null and factors.size() > 0">

@@ -81,6 +81,23 @@ public class TableDictServiceImpl extends ServiceImpl<TableDictMapper, TableDict
     }
     
     @Override
+    @Transactional
+    public boolean delById(Long id) {
+        TableDict tableDict = mapper.selectById(id);
+        if (removeById(id)) {
+            QueryWrapper<TableColumnDict> columnDictQueryWrapper = new QueryWrapper<>();
+            columnDictQueryWrapper.lambda().eq(TableColumnDict::getTableName, tableDict.getTableName());
+            if (tableColumnDictMapper.delete(columnDictQueryWrapper) <= 0) {
+                throw new DataCheckingException(ResultCode.COMMON_FAIL);
+            }
+            tableOptionService.delAllOption(tableDict.getTableName());
+            mapper.delTable(tableDict.getRealTableName());
+            return true;
+        }
+        return false;
+    }
+    
+    @Override
     public MyPage listByPage(SelectPage<TableDictSelectDTO> selectPage) {
         TableDictSelectDTO like = selectPage.getLike();
         QueryWrapper<TableDict> queryWrapper = new QueryWrapper<>();
@@ -115,23 +132,29 @@ public class TableDictServiceImpl extends ServiceImpl<TableDictMapper, TableDict
     }
     
     private ResultCode isRight(TableDict tableDict) {
+        //真实表名
         if (StringUtils.isBlank(tableDict.getRealTableName())) {
             return ResultCode.PARAM_NOT_VALID;
         }
+        tableDict.setRealTableName(tableDict.getRealTableName().trim());
         TableDict byRealName = getByRealName(tableDict.getRealTableName());
         if (byRealName != null) {
             return ResultCode.PARAM_NOT_VALID;
         }
+        //表名
         if (StringUtils.isBlank(tableDict.getTableName())) {
             return ResultCode.PARAM_NOT_VALID;
         }
+        tableDict.setTableName(tableDict.getTableName().trim());
         List<TableDict> byTableName = getByTableName(MyCollections.toList(tableDict.getTableName()));
         if (!MyCollections.isEmpty(byTableName)) {
             return ResultCode.PARAM_NOT_VALID;
         }
+        //展示名
         if (StringUtils.isBlank(tableDict.getShowName())) {
             return ResultCode.PARAM_IS_BLANK;
         }
+        tableDict.setShowName(tableDict.getShowName().trim());
         return ResultCode.SUCCESS;
     }
     
@@ -139,7 +162,8 @@ public class TableDictServiceImpl extends ServiceImpl<TableDictMapper, TableDict
         String tableName = tableDict.getTableName();
         String showName = tableDict.getShowName();
         List<TableColumnDict> list = new ArrayList<>();
-        list.add(TableColumnDict.create(tableName, "id", "id", showName + "Id", 0)
+        list.add(TableColumnDict.create(tableName, "id", "id", showName + "Id", 1)
+                .setColumnType(9)
                 .setDisabled(true)
                 .setFixed(true)
                 .setCustom(false));
@@ -155,17 +179,19 @@ public class TableDictServiceImpl extends ServiceImpl<TableDictMapper, TableDict
                 .setColumnType(1)
                 .setDisabled(true)
                 .setLink(true)
-                .setCustom(false));
+                .setCustom(false)
+                .setLinkTable(9L));
         list.add(TableColumnDict.create(tableName, "updater", "updater", "修改人", 24)
                 .setColumnType(1)
                 .setDisabled(true)
                 .setLink(true)
-                .setCustom(false));
+                .setCustom(false)
+                .setLinkTable(9L));
         boolean b= tableColumnDictMapper.insertList(list) > 0;
         if (!b) {
             throw new DataCheckingException(ResultCode.COMMON_FAIL);
         }
         mapper.createTable(tableDict);
-        return b;
+        return true;
     }
 }

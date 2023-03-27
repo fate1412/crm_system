@@ -27,4 +27,6 @@ public interface TableDictMapper extends BaseMapper<TableDict> {
     Integer createColumn(@Param("tableName") String tableName,@Param("columnDict")TableColumnDict columnDict);
     
     Integer delColumn(@Param("tableName") String tableName,@Param("columnName") String columnName);
+    
+    Integer delTable(@Param("tableName") String tableName);
 }

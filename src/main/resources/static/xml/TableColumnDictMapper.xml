@@ -20,12 +20,12 @@
         table_name, column_name,
         real_column_name, column_type,
         fixed, disabled, link,
-        show_name, column_index, link_table)
+        show_name, column_index,custom, link_table)
         values
         <foreach collection="list" item="entity" index="index" separator=",">
             (#{entity.tableName},#{entity.columnName},#{entity.realColumnName},
              #{entity.columnType},#{entity.fixed},#{entity.disabled},#{entity.link},
-             #{entity.showName},#{entity.columnIndex},#{entity.linkTable}
+             #{entity.showName},#{entity.columnIndex},#{entity.custom},#{entity.linkTable}
             )
         </foreach>
     </insert>

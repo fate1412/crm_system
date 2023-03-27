@@ -45,14 +45,14 @@ public class TableColumnDictController {
     @Autowired
     private ITableOptionService tableOptionService;
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('TableDict_Select')")
     @GetMapping("/getColumns")
     public JsonResult<Object> getColumns() {
         TableResultData tableResultData = service.getColumns();
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('TableDict_Select')")
     @PostMapping("/page/select")
     public JsonResult<Object> selectByPage(@RequestBody SelectPage<TableDictSelectDTO> selectPage) {
         MyPage page = service.listByPage(selectPage);
@@ -61,7 +61,7 @@ public class TableColumnDictController {
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('TableDict_Select')")
     @GetMapping("/select")
     public JsonResult<Object> select(@Param("id") Long id) {
         List<?> dtoList = service.getDTOListById(MyCollections.toList(id));
@@ -69,7 +69,7 @@ public class TableColumnDictController {
         tableResultData.setTableDataList(dtoList);
         if (!MyCollections.isEmpty(dtoList)) {
             TableColumnSelectDTO dto = (TableColumnSelectDTO) dtoList.get(0);
-            if (dto.getColumnType() == 1) {
+            if (dto.getColumnType() == 1 && !dto.getLink()) {
                 List<TableOptionSelectDTO> TableOptionSelectDTOList = tableOptionService.getDTOByTableColumnId(dto.getId());
                 List<TableColumnChild> childList = MyCollections.copyListProperties(TableOptionSelectDTOList, TableColumnChild::new);
                 TableResultData child = tableOptionService.getColumns(new TableColumnChild());
@@ -82,22 +82,22 @@ public class TableColumnDictController {
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('Columns_Insert')")
     @PutMapping("/add")
     public JsonResult<?> insert(@RequestBody TableColumnInsertDTO tableColumnInsertDTO) {
         return service.addDTO(tableColumnInsertDTO);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('Columns_Insert')")
     @PostMapping("/update")
     public JsonResult<?> update(@RequestBody TableColumnUpdateDTO tableColumnUpdateDTO) {
         return service.updateByDTO(tableColumnUpdateDTO);
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyAuthority('Columns_Delete')")
     @DeleteMapping("/delete")
-    public JsonResult<?> delete(@RequestBody TableDictSelectDTO tableDictSelectDTO) {
-        boolean b = service.delById(tableDictSelectDTO.getId());
+    public JsonResult<?> delete(@RequestBody TableColumnSelectDTO tableColumnSelectDTO) {
+        boolean b = service.delById(tableColumnSelectDTO.getId());
         return ResultTool.create(b);
     }
 }

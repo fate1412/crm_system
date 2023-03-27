@@ -1,5 +1,6 @@
 package com.fate1412.crmSystem.module.customTable.dto.insert;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -60,5 +61,8 @@ public class TableColumnInsertDTO {
     @TableField("link")
     @TableTitle(value = "可链接(非主键)",formType = FormType.Switch,inserted = true)
     private Boolean link;
+    
+    @TableField(value = "link_table",updateStrategy = FieldStrategy.IGNORED)
+    private Long linkTable;
 
 }
