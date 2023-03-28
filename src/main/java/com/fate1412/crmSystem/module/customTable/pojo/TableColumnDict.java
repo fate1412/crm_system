@@ -38,9 +38,6 @@ public class TableColumnDict implements Serializable {
     @TableField("column_type")
     private Integer columnType;
 
-    @TableField("fixed")
-    private Boolean fixed;
-
     @TableField("disabled")
     private Boolean disabled;
 
@@ -72,7 +69,6 @@ public class TableColumnDict implements Serializable {
                 .setColumnIndex(index)
                 .setShowName(showName)
                 .setColumnType(0)
-                .setFixed(false)
                 .setDisabled(false)
                 .setLink(false)
                 .setCustom(true);

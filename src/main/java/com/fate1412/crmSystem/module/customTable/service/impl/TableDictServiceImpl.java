@@ -166,7 +166,7 @@ public class TableDictServiceImpl extends ServiceImpl<TableDictMapper, TableDict
                 .setColumnType(9)
                 .setDisabled(true)
                 .setInserted(false)
-                .setFixed(true)
+                .setLink(true)
                 .setCustom(false));
         list.add(TableColumnDict.create(tableName, "createTime", "create_time", "创建时间", 21)
                 .setColumnType(3)

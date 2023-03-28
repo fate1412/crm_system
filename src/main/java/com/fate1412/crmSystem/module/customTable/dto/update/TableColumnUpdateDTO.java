@@ -36,11 +36,11 @@ public class TableColumnUpdateDTO {
     
 
     @TableField("disabled")
-    @TableTitle(value = "不可修改",formType = FormType.Switch,inserted = true)
+    @TableTitle(value = "不可修改",formType = FormType.Boolean,inserted = true)
     private Boolean disabled;
 
     @TableField("link")
-    @TableTitle(value = "可链接(非主键)",formType = FormType.Switch,inserted = true)
+    @TableTitle(value = "可链接(非主键)",formType = FormType.Boolean,inserted = true)
     private Boolean link;
     
     @TableField("link_table")

@@ -17,7 +17,7 @@ public @interface TableTitle {
         Select("Select",1),
         Date("Date",2),
         DateTime("DateTime",3),
-        Switch("Switch",4),
+        Boolean("Boolean",4),
         String("String",5),
         Integer("Integer",6),
         Double("Double",7),

@@ -52,7 +52,7 @@ public class SalesOrderSelectDTO implements Serializable {
     /**
      * 是否通过
      */
-    @TableTitle(value = "是否通过", inserted = true, formType = FormType.Switch)
+    @TableTitle(value = "是否通过", inserted = true, formType = FormType.Boolean)
     private Boolean isPass;
     
     /**

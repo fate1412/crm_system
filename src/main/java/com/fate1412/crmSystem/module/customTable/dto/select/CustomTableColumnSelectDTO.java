@@ -55,18 +55,15 @@ public class CustomTableColumnSelectDTO {
     private String formType;
 
     @TableField("disabled")
-    @TableTitle(value = "不可修改",formType = FormType.Switch,inserted = true)
+    @TableTitle(value = "不可修改",formType = FormType.Boolean,inserted = true)
     private Boolean disabled;
     
     @TableField("inserted")
-    @TableTitle(value = "新建填写",formType = FormType.Switch,inserted = true)
+    @TableTitle(value = "新建可填写",formType = FormType.Boolean,inserted = true)
     private Boolean inserted;
-    
-    @TableField("fixed")
-    private Boolean fixed;
 
     @TableField("link")
-    @TableTitle(value = "可链接(非主键)",formType = FormType.Switch,inserted = true)
+    @TableTitle(value = "可链接",formType = FormType.Boolean,inserted = true)
     private Boolean link;
     
     @TableField("link_table")

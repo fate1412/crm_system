@@ -6,11 +6,8 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fate1412.crmSystem.annotations.TableTitle;
 import com.fate1412.crmSystem.annotations.TableTitle.FormType;
-import com.fate1412.crmSystem.module.customTable.dto.child.TableColumnChild;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.util.List;
 
 /**
  * <p>
@@ -52,14 +49,11 @@ public class TableColumnInsertDTO {
     private String columnTypeR;
 
     @TableField("disabled")
-    @TableTitle(value = "不可修改",formType = FormType.Switch,inserted = true)
+    @TableTitle(value = "不可修改",formType = FormType.Boolean,inserted = true)
     private Boolean disabled;
-    
-    @TableField("fixed")
-    private Boolean fixed;
 
     @TableField("link")
-    @TableTitle(value = "可链接(非主键)",formType = FormType.Switch,inserted = true)
+    @TableTitle(value = "可链接",formType = FormType.Boolean,inserted = true)
     private Boolean link;
     
     @TableField(value = "link_table",updateStrategy = FieldStrategy.IGNORED)
