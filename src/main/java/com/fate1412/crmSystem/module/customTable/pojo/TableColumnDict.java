@@ -46,7 +46,10 @@ public class TableColumnDict implements Serializable {
 
     @TableField("link")
     private Boolean link;
-
+    
+    @TableField("inserted")
+    private Boolean inserted;
+    
     @TableField("show_name")
     private String showName;
 

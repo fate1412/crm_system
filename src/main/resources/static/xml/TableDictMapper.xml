@@ -31,16 +31,16 @@
             ${factor.field} &lt;= #{factor.value}
         </if>
         <if test="factor.factor == 'LIKE'">
-            ${factor.field} like '%'#{factor.value}'%'
+            ${factor.field} like CONCAT('%',#{factor.value},'%')
         </if>
         <if test="factor.factor == 'LEFT_LIKE'">
-            ${factor.field} like #{factor.value}'%'
+            ${factor.field} like CONCAT(#{factor.value},'%')
         </if>
         <if test="factor.factor == 'RIGHT_LIKE'">
-            ${factor.field} like '%'#{factor.value}
+            ${factor.field} like CONCAT('%',#{factor.value})
         </if>
         <if test="factor.factor == 'NOT_LIKE'">
-            ${factor.field} not like #{factor.value}
+            ${factor.field} not like CONCAT('%',#{factor.value},'%')
         </if>
         <if test="factor.factor == 'BETWEEN'">
             ${factor.field} between #{factor.value} and #{factor.value2}

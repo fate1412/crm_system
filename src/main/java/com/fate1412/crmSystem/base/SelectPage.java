@@ -7,6 +7,7 @@ public class SelectPage<T> {
     Long page = 1L;
     Long pageSize = 10L;
     T like;
+    String tableName;
     
     
 }

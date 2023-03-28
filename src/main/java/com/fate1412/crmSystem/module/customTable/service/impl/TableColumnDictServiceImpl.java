@@ -51,7 +51,9 @@ public class TableColumnDictServiceImpl extends ServiceImpl<TableColumnDictMappe
     @Override
     public List<TableColumnDict> listByTableName(String tableName) {
         QueryWrapper<TableColumnDict> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().eq(TableColumnDict::getTableName, tableName);
+        queryWrapper.lambda()
+                .eq(TableColumnDict::getTableName, tableName)
+                .orderByAsc(TableColumnDict::getColumnIndex);
         return mapper.selectList(queryWrapper);
     }
     

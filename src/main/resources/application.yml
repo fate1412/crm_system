@@ -28,3 +28,9 @@ mybatis-plus:
   mapper-locations: classpath:/static/xml/*.xml
 
 
+#pagehelper分页插件配置
+pagehelper:
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
+  helper-dialect: mysql

@@ -3,7 +3,6 @@ package com.fate1412.crmSystem.module.customTable.dto.select;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.fate1412.crmSystem.annotations.TableTitle;
 import com.fate1412.crmSystem.annotations.TableTitle.FormType;
 import com.fate1412.crmSystem.module.mainTable.constant.TableNames;
@@ -11,7 +10,6 @@ import com.fate1412.crmSystem.utils.IdToName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,7 +22,7 @@ import java.util.List;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class TableColumnSelectDTO {
+public class CustomTableColumnSelectDTO {
 
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
@@ -32,6 +30,7 @@ public class TableColumnSelectDTO {
     @TableField("show_name")
     @TableTitle(value = "字段名称",inserted = true)
     private String showName;
+    private String label;
     
     @TableField("column_index")
     @TableTitle(value = "展示顺序",inserted = true)
@@ -39,6 +38,7 @@ public class TableColumnSelectDTO {
 
     @TableField("table_name")
     private String tableName;
+    private String prop;
 
     @TableField("column_name")
     @TableTitle(value = "columnName",inserted = true,disabled = true)
@@ -52,7 +52,7 @@ public class TableColumnSelectDTO {
     @TableTitle(value = "数据类型",formType = FormType.Select, inserted = true,disabled = true)
     private Integer columnType;
     
-    private String columnTypeR;
+    private String formType;
 
     @TableField("disabled")
     @TableTitle(value = "不可修改",formType = FormType.Switch,inserted = true)
@@ -77,5 +77,7 @@ public class TableColumnSelectDTO {
     
     @TableField("custom")
     private Boolean custom;
+    
+    private List<OptionDTO> options;
 
 }
