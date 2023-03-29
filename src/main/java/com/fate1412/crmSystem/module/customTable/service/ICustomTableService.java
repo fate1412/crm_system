@@ -25,4 +25,6 @@ public interface ICustomTableService {
     JsonResult<?> addDTO(JSONObject jsonObject);
     
     JsonResult<?> updateDTO(JSONObject jsonObject);
+    
+    boolean delById(String tableName, Long id);
 }

@@ -20,17 +20,19 @@ import java.util.List;
  */
 @Mapper
 public interface TableDictMapper extends BaseMapper<TableDict> {
-    List<JSONObject> select(@Param("tableName") String tableName , @Param("factors") List<SQLFactor<Object>> factors);
+    List<JSONObject> select(@Param("tableName") String tableName, @Param("factors") List<SQLFactor<Object>> factors);
     
-    Integer insertList(@Param("tableName") String tableName , @Param("dataList") List<List<SQLFactor<Object>>> dataList);
+    Integer insertList(@Param("tableName") String tableName, @Param("dataList") List<List<SQLFactor<Object>>> dataList);
     
-    Integer updateList(@Param("tableName") String tableName , @Param("dataList") List<List<SQLFactor<Object>>> dataList);
+    Integer updateList(@Param("tableName") String tableName, @Param("dataList") List<List<SQLFactor<Object>>> dataList);
+    
+    Integer deleteList(@Param("tableName") String tableName, @Param("factors") List<SQLFactor<Object>> factors);
     
     Integer createTable(@Param("tableDict") TableDict tableDict);
     
-    Integer createColumn(@Param("tableName") String tableName,@Param("columnDict")TableColumnDict columnDict);
+    Integer createColumn(@Param("tableName") String tableName, @Param("columnDict") TableColumnDict columnDict);
     
-    Integer delColumn(@Param("tableName") String tableName,@Param("columnName") String columnName);
+    Integer delColumn(@Param("tableName") String tableName, @Param("columnName") String columnName);
     
     Integer delTable(@Param("tableName") String tableName);
 }

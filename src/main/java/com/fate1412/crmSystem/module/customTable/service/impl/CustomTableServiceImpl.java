@@ -226,6 +226,17 @@ public class CustomTableServiceImpl implements ICustomTableService {
         }
     }
     
+    @Override
+    public boolean delById(String tableName, Long id) {
+        TableDict tableDict = tableDictService.getCustomByTableName(tableName);
+        if (tableDict == null) {
+            return false;
+        }
+        SQLFactors sqlFactors = new SQLFactors();
+        sqlFactors.eq("id",id);
+        return mapper.deleteList(tableDict.getRealTableName(), sqlFactors.getSqlFactors()) > 0;
+    }
+    
     private MyPage listByPage(int thisPage, int pageSize, String tableName, List<SQLFactor<Object>> sqlFactors, List<CustomTableColumnSelectDTO> columnList) {
         MyPage myPage = new MyPage(thisPage, pageSize);
         //获取/判断是否为定制表

@@ -118,6 +118,19 @@
         </foreach>
     </update>
 
+    <delete id="deleteList">
+        delete from ${tableName}
+        <if test="factors != null and factors.size() > 0">
+            where
+            <foreach collection="factors" item="factor" index="index">
+                <if test="(index != 0) and (factor.factor != 'OR') and (factors.get(index-1).factor != 'OR')">
+                    and
+                </if>
+                <include refid="whereType"/>
+            </foreach>
+        </if>
+    </delete>
+
     <update id="createTable">
         create table if not exists ${tableDict.realTableName}
         (

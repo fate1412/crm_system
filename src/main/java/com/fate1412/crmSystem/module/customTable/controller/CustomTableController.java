@@ -63,13 +63,15 @@ public class CustomTableController {
     public JsonResult<?> update(@RequestBody JSONObject jsonObject) {
         return service.updateDTO(jsonObject);
     }
-//
-//    @PreAuthorize("hasAnyAuthority('Invoice_Delete')")
-//    @DeleteMapping("/delete")
-//    public JsonResult<?> delete(@RequestBody Long id) {
-//        boolean b = service.delById(id);
-//        return ResultTool.create(b);
-//    }
+
+    @PreAuthorize("hasAnyAuthority('Invoice_Delete')")
+    @DeleteMapping("/delete")
+    public JsonResult<?> delete(@RequestBody JSONObject jsonObject) {
+        String tableName = jsonObject.getString("tableName");
+        Long id = jsonObject.getLong("id");
+        boolean b = service.delById(tableName, id);
+        return ResultTool.create(b);
+    }
 //
 //    @PreAuthorize("isAuthenticated()")
 //    @GetMapping("/getOptions")
