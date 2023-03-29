@@ -122,6 +122,7 @@
         create table if not exists ${tableDict.realTableName}
         (
             `id` bigint NOT NULL,
+            `name` varchar(100) unique NOT NULL COMMENT 'name',
             `create_time` datetime NOT NULL COMMENT '创建时间',
             `update_time` datetime NOT NULL COMMENT '更新时间',
             `creater` bigint NOT NULL COMMENT '创建人',

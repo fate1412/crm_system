@@ -306,7 +306,8 @@ public class CustomTableServiceImpl implements ICustomTableService {
                 SQLFactors sqlFactors = new SQLFactors();
                 sqlFactors.in("id", ids);
                 List<JSONObject> select = mapper.select(realTableMap.get(column.getLinkTable()), sqlFactors.getSqlFactors());
-                Map<Long, String> map = MyCollections.list2MapL(select, (k) -> k.getLong("id"), (v) -> v.getString("name"));
+                Map<Long, String> map = MyCollections.list2MapL(select, (k) -> k.getLong("id"),
+                        (v) -> v.getString("name") == null? v.getString("id") : v.getString("name"));
                 jsonObjectList.forEach(object -> {
                     String columnName = column.getColumnName();
                     String columnNameR = column.getColumnName() + "R";
