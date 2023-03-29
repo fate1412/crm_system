@@ -22,6 +22,10 @@ import java.util.List;
 public interface TableDictMapper extends BaseMapper<TableDict> {
     List<JSONObject> select(@Param("tableName") String tableName , @Param("factors") List<SQLFactor<Object>> factors);
     
+    Integer insertList(@Param("tableName") String tableName , @Param("dataList") List<List<SQLFactor<Object>>> dataList);
+    
+    Integer updateList(@Param("tableName") String tableName , @Param("dataList") List<List<SQLFactor<Object>>> dataList);
+    
     Integer createTable(@Param("tableDict") TableDict tableDict);
     
     Integer createColumn(@Param("tableName") String tableName,@Param("columnDict")TableColumnDict columnDict);

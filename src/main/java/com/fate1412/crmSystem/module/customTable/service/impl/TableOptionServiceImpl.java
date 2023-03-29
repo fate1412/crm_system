@@ -79,6 +79,8 @@ public class TableOptionServiceImpl extends ServiceImpl<TableOptionMapper, Table
     public boolean delAllOption(String tableName) {
         QueryWrapper<TableOption> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(TableOption::getTableName,tableName);
-        return remove(queryWrapper);
+        remove(queryWrapper);
+        List<TableOption> list = list(queryWrapper);
+        return MyCollections.isEmpty(list);
     }
 }

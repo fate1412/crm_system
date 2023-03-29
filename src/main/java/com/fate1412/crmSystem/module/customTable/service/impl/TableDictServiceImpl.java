@@ -56,6 +56,15 @@ public class TableDictServiceImpl extends ServiceImpl<TableDictMapper, TableDict
     }
     
     @Override
+    public TableDict getCustomByTableName(String tableName) {
+        QueryWrapper<TableDict> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda()
+                .eq(TableDict::getTableName, tableName)
+                .eq(TableDict::getCustom,true);
+        return mapper.selectOne(queryWrapper);
+    }
+    
+    @Override
     public TableDict getByRealName(String realNames) {
         QueryWrapper<TableDict> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().in(TableDict::getRealTableName, realNames);
@@ -179,19 +188,25 @@ public class TableDictServiceImpl extends ServiceImpl<TableDictMapper, TableDict
                 .setInserted(false)
                 .setCustom(false));
         list.add(TableColumnDict.create(tableName, "creater", "creater", "创建人", 23)
-                .setColumnType(1)
+                .setColumnType(9)
                 .setDisabled(true)
                 .setInserted(false)
                 .setLink(true)
                 .setCustom(false)
                 .setLinkTable(9L));
         list.add(TableColumnDict.create(tableName, "updater", "updater", "修改人", 24)
-                .setColumnType(1)
+                .setColumnType(9)
                 .setDisabled(true)
                 .setInserted(false)
                 .setLink(true)
                 .setCustom(false)
                 .setLinkTable(9L));
+        list.add(TableColumnDict.create(tableName, "pass", "pass", "是否审批", 25)
+                .setColumnType(4)
+                .setDisabled(true)
+                .setInserted(false)
+                .setLink(false)
+                .setCustom(false));
         boolean b= tableColumnDictMapper.insertList(list) > 0;
         if (!b) {
             throw new DataCheckingException(ResultCode.COMMON_FAIL);

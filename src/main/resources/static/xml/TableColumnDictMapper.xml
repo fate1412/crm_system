@@ -9,7 +9,6 @@
         <result column="column_name" property="columnName" />
         <result column="real_column_name" property="realColumnName" />
         <result column="column_type" property="columnType" />
-        <result column="fixed" property="fixed" />
         <result column="disabled" property="disabled" />
         <result column="link" property="link" />
         <result column="show_name" property="showName" />
@@ -17,15 +16,16 @@
     </resultMap>
     <insert id="insertList">
         insert into table_column_dict (
-        table_name, column_name,
-        real_column_name, column_type,
-        fixed, disabled, link,
-        show_name, column_index,custom, link_table)
+        table_name, column_name,real_column_name,
+        column_type,disabled, link,
+        show_name, column_index,custom,
+        link_table, inserted)
         values
         <foreach collection="list" item="entity" index="index" separator=",">
             (#{entity.tableName},#{entity.columnName},#{entity.realColumnName},
-             #{entity.columnType},#{entity.fixed},#{entity.disabled},#{entity.link},
-             #{entity.showName},#{entity.columnIndex},#{entity.custom},#{entity.linkTable}
+             #{entity.columnType},#{entity.disabled},#{entity.link},
+             #{entity.showName},#{entity.columnIndex},#{entity.custom},
+             #{entity.linkTable},#{entity.inserted}
             )
         </foreach>
     </insert>

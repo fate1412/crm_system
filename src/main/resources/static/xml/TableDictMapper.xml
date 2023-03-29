@@ -70,6 +70,7 @@
             or
         </if>
     </sql>
+
     <update id="delColumn">
         alter table ${tableName} drop column ${columnName};
     </update>
@@ -90,6 +91,33 @@
             </foreach>
         </if>
     </select>
+
+    <insert id="insertList">
+        insert into ${tableName} 
+        <foreach collection="dataList.get(0)" item="column" open="(" separator="," close=")">
+            ${column.field}
+        </foreach>
+        values
+        <foreach collection="dataList" item="data" separator=",">
+            <foreach collection="data" item="factor" open="(" separator="," close=")">
+                #{factor.value}
+            </foreach>
+        </foreach>
+    </insert>
+
+    <update id="updateList">
+        replace into ${tableName}
+        <foreach collection="dataList.get(0)" item="column" open="(" separator="," close=")">
+            ${column.field}
+        </foreach>
+        values
+        <foreach collection="dataList" item="data" separator=",">
+            <foreach collection="data" item="factor" open="(" separator="," close=")">
+                #{factor.value}
+            </foreach>
+        </foreach>
+    </update>
+
     <update id="createTable">
         create table if not exists ${tableDict.realTableName}
         (
@@ -98,6 +126,7 @@
             `update_time` datetime NOT NULL COMMENT '更新时间',
             `creater` bigint NOT NULL COMMENT '创建人',
             `updater` bigint NOT NULL COMMENT '修改人',
+            `pass` tinyint(1) NOT NULL COMMENT '是否审批',
             `del_flag` tinyint(1) NOT NULL DEFAULT '0',
             PRIMARY KEY (`id`)
         ) COMMENT= #{tableDict.showName}
@@ -137,5 +166,6 @@
         </if>
         COMMENT #{columnDict.showName}
     </update>
+
 
 </mapper>

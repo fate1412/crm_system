@@ -5,6 +5,11 @@ import com.fate1412.crmSystem.base.MyPage;
 import com.fate1412.crmSystem.base.SelectPage;
 import com.fate1412.crmSystem.module.customTable.dto.select.TableDictSelectDTO;
 import com.fate1412.crmSystem.module.customTable.service.ICustomTableService;
+import com.fate1412.crmSystem.module.mainTable.dto.child.InvoiceChild;
+import com.fate1412.crmSystem.module.mainTable.dto.insert.InvoiceInsertDTO;
+import com.fate1412.crmSystem.module.mainTable.dto.select.InvoiceProductSelectDTO;
+import com.fate1412.crmSystem.module.mainTable.dto.select.InvoiceSelectDTO;
+import com.fate1412.crmSystem.module.mainTable.dto.update.InvoiceUpdateDTO;
 import com.fate1412.crmSystem.utils.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,4 +51,30 @@ public class CustomTableController {
         CustomTableResultData tableResultData = service.getDTOListById(tableName, MyCollections.toList(id));
         return ResultTool.success(tableResultData);
     }
+    
+    @PreAuthorize("hasAnyAuthority('Invoice_Insert')")
+    @PutMapping("/add")
+    public JsonResult<?> add(@RequestBody JSONObject jsonObject) {
+        return service.addDTO(jsonObject);
+    }
+
+    @PreAuthorize("hasAnyAuthority('Invoice_Edit')")
+    @PostMapping("/update")
+    public JsonResult<?> update(@RequestBody JSONObject jsonObject) {
+        return service.updateDTO(jsonObject);
+    }
+//
+//    @PreAuthorize("hasAnyAuthority('Invoice_Delete')")
+//    @DeleteMapping("/delete")
+//    public JsonResult<?> delete(@RequestBody Long id) {
+//        boolean b = service.delById(id);
+//        return ResultTool.create(b);
+//    }
+//
+//    @PreAuthorize("isAuthenticated()")
+//    @GetMapping("/getOptions")
+//    public JsonResult<?> getOptions(@Param("nameLike") String tableName, @Param("nameLike") String nameLike, @Param("page") Integer page) {
+//        List<IdToName> options = service.getOptions(tableName, nameLike, page);
+//        return ResultTool.success(options);
+//    }
 }

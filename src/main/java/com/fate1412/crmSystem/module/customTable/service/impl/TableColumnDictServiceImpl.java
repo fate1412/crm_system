@@ -2,6 +2,7 @@ package com.fate1412.crmSystem.module.customTable.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.fate1412.crmSystem.annotations.TableTitle.FormType;
 import com.fate1412.crmSystem.base.MyPage;
 import com.fate1412.crmSystem.base.SelectPage;
 import com.fate1412.crmSystem.exception.DataCheckingException;
@@ -208,6 +209,7 @@ public class TableColumnDictServiceImpl extends ServiceImpl<TableColumnDictMappe
         if (columnDictList == null) {
             TableColumnDict columnDict = mapper.selectById(id);
             columnDictList = listByTableName(columnDict.getTableName());
+            tableColumnDict.setColumnType(columnDict.getColumnType());
         }
         //字段展示名
         if (StringUtils.isBlank(tableColumnDict.getShowName())) {
@@ -227,7 +229,7 @@ public class TableColumnDictServiceImpl extends ServiceImpl<TableColumnDictMappe
                 }
             }
         }
-        if (tableColumnDict.getLink()) {
+        if (tableColumnDict.getLink() && tableColumnDict.getColumnType().equals(FormType.Select.getIndex())) {
             if (tableColumnDict.getLinkTable()== null) {
                 return ResultCode.PARAM_IS_BLANK;
             }
@@ -239,6 +241,7 @@ public class TableColumnDictServiceImpl extends ServiceImpl<TableColumnDictMappe
             }
         } else {
             tableColumnDict.setLinkTable(null);
+            tableColumnDict.setLink(false);
         }
         return ResultCode.SUCCESS;
     }

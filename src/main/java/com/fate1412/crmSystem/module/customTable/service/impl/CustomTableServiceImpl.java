@@ -2,12 +2,14 @@ package com.fate1412.crmSystem.module.customTable.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.fate1412.crmSystem.annotations.TableTitle.FormType;
 import com.fate1412.crmSystem.base.MyPage;
 import com.fate1412.crmSystem.base.SelectPage;
-import com.fate1412.crmSystem.module.customTable.dto.select.*;
+import com.fate1412.crmSystem.exception.DataCheckingException;
+import com.fate1412.crmSystem.module.customTable.dto.select.CustomTableColumnSelectDTO;
+import com.fate1412.crmSystem.module.customTable.dto.select.CustomTableSelectDTO;
+import com.fate1412.crmSystem.module.customTable.dto.select.OptionDTO;
 import com.fate1412.crmSystem.module.customTable.mapper.TableDictMapper;
 import com.fate1412.crmSystem.module.customTable.pojo.TableColumnDict;
 import com.fate1412.crmSystem.module.customTable.pojo.TableDict;
@@ -16,7 +18,6 @@ import com.fate1412.crmSystem.module.customTable.service.ITableColumnDictService
 import com.fate1412.crmSystem.module.customTable.service.ITableDictService;
 import com.fate1412.crmSystem.module.customTable.service.ITableOptionService;
 import com.fate1412.crmSystem.module.mainTable.constant.TableNames;
-import com.fate1412.crmSystem.module.mainTable.pojo.InvoiceProduct;
 import com.fate1412.crmSystem.module.security.pojo.SysUser;
 import com.fate1412.crmSystem.module.security.service.ISysUserService;
 import com.fate1412.crmSystem.utils.*;
@@ -25,11 +26,14 @@ import com.github.pagehelper.ISelect;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -130,6 +134,98 @@ public class CustomTableServiceImpl implements ICustomTableService {
         return tableResultData;
     }
     
+    @Override
+    @Transactional
+    public JsonResult<?> addDTO(JSONObject jsonObject) {
+        //获取对应的表
+        String tableName = jsonObject.getString("tableName");
+        if (StringUtils.isBlank(tableName)) {
+            throw new DataCheckingException(ResultCode.INSERT_ERROR);
+        }
+        TableDict tableDict = tableDictService.getCustomByTableName(tableName);
+        if (tableDict == null) {
+            throw new DataCheckingException(ResultCode.INSERT_ERROR);
+        }
+        //查询表字段
+        List<TableColumnDict> columnDictList = tableColumnDictService.listByTableName(tableDict.getTableName());
+        //获取当前用户
+        SysUser thisUser = sysUserService.thisUser();
+        SQLFactors sqlFactors = new SQLFactors();
+        //设置在新增时可填写的数据
+        columnDictList.forEach(column -> {
+            if (column.getInserted()) {
+                //设置字段名和值，用于新增
+                sqlFactors.eq(column.getRealColumnName(),getColumnData(column,jsonObject));
+            }
+        });
+        //设置必备字段数据
+        sqlFactors.eq("id",IdWorker.getId());
+        sqlFactors.eq("create_time",new Date());
+        sqlFactors.eq("update_time",new Date());
+        sqlFactors.eq("creater",thisUser.getUserId());
+        sqlFactors.eq("updater",thisUser.getUserId());
+        sqlFactors.eq("pass",true);
+        
+        //插入
+        if (mapper.insertList(tableDict.getRealTableName(),MyCollections.toList(sqlFactors.getSqlFactors())) > 0) {
+            return ResultTool.success();
+        } else {
+            throw new DataCheckingException(ResultCode.INSERT_ERROR);
+        }
+    }
+    
+    @Override
+    @Transactional
+    public JsonResult<?> updateDTO(JSONObject jsonObject) {
+        //获取对应的表
+        String tableName = jsonObject.getString("tableName");
+        if (StringUtils.isBlank(tableName)) {
+            throw new DataCheckingException(ResultCode.UPDATE_ERROR);
+        }
+        TableDict tableDict = tableDictService.getCustomByTableName(tableName);
+        if (tableDict == null) {
+            throw new DataCheckingException(ResultCode.UPDATE_ERROR);
+        }
+        //查询表字段
+        List<TableColumnDict> columnDictList = tableColumnDictService.listByTableName(tableDict.getTableName());
+        //获取当前用户
+        SysUser thisUser = sysUserService.thisUser();
+        SQLFactors sqlFactors = new SQLFactors();
+        //获取当前数据
+        SQLFactors dataFactors = new SQLFactors();
+        dataFactors
+                .eq("id",jsonObject.getLong("id"))
+                .eq("del_flag",false);
+        List<JSONObject> jsonObjectList = mapper.select(tableDict.getRealTableName(), dataFactors.getSqlFactors());
+        if (MyCollections.isEmpty(jsonObjectList)) {
+            throw new DataCheckingException(ResultCode.COMMON_FAIL);
+        }
+        JSONObject object = jsonObjectList.get(0);
+        //设置在编辑时可修改的数据
+        columnDictList.forEach(column -> {
+            if (!column.getDisabled()) {
+                //设置字段名和值，用于编辑
+                sqlFactors.eq(column.getRealColumnName(),getColumnData(column,jsonObject));
+            } else {
+                if (column.getColumnName().equals("updateTime")) {
+                    sqlFactors.eq("update_time",new Date());
+                } else if (column.getColumnName().equals("updater")) {
+                    sqlFactors.eq("updater",thisUser.getUserId());
+                } else {
+                    //不更新的属性
+                    sqlFactors.eq(column.getRealColumnName(), object.get(column.getRealColumnName()));
+                }
+            }
+        });
+    
+        //更新
+        if (mapper.updateList(tableDict.getRealTableName(),MyCollections.toList(sqlFactors.getSqlFactors())) > 0) {
+            return ResultTool.success();
+        } else {
+            throw new DataCheckingException(ResultCode.UPDATE_ERROR);
+        }
+    }
+    
     private MyPage listByPage(int thisPage, int pageSize, String tableName, List<SQLFactor<Object>> sqlFactors, List<CustomTableColumnSelectDTO> columnList) {
         MyPage myPage = new MyPage(thisPage, pageSize);
         //获取/判断是否为定制表
@@ -195,6 +291,13 @@ public class CustomTableServiceImpl implements ICustomTableService {
         Map<Long, String> tableMap = MyCollections.list2MapL(tableDictList, TableDict::getId, TableDict::getTableName);
         
         columnList.forEach(column -> {
+            //时间格式化
+            if(column.getColumnType().equals(FormType.DateTime.getIndex()) || column.getColumnType().equals(FormType.Date.getIndex())) {
+                //Date类型默认使用yyyy-MM-dd hh:mm:ss格式
+                jsonObjectList.forEach(object -> {
+                    object.put(column.getColumnName(),object.getDate(column.getColumnName()));
+                });
+            }
             
             //可链接的定制属性
             if (column.getLink() && column.getCustom()) {
@@ -219,5 +322,28 @@ public class CustomTableServiceImpl implements ICustomTableService {
             
         });
         return jsonObjectList;
+    }
+    
+    private Object getColumnData(TableColumnDict column, JSONObject jsonObject) {
+        Integer columnType = column.getColumnType();
+        if (columnType.equals(FormType.Select.getIndex())) {
+            return jsonObject.getString(column.getColumnName());
+        } else if (columnType.equals(FormType.Date.getIndex()) || columnType.equals(FormType.DateTime.getIndex())) {
+            return jsonObject.getDate(column.getColumnName());
+        } else if (columnType.equals(FormType.Boolean.getIndex())) {
+            return jsonObject.getBoolean(column.getColumnName());
+        } else if (columnType.equals(FormType.String.getIndex())) {
+            return jsonObject.getString(column.getColumnName());
+        } else if (columnType.equals(FormType.Integer.getIndex())) {
+            return jsonObject.getInteger(column.getColumnName());
+        } else if (columnType.equals(FormType.Double.getIndex())) {
+            return jsonObject.getDouble(column.getColumnName());
+        } else if (columnType.equals(FormType.Number.getIndex())) {
+            return jsonObject.getString(column.getColumnName());
+        } else if (columnType.equals(FormType.Long.getIndex())) {
+            return jsonObject.getLong(column.getColumnName());
+        } else {
+            throw new DataCheckingException(ResultCode.PARAM_TYPE_ERROR);
+        }
     }
 }
