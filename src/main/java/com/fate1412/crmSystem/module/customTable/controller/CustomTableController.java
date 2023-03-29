@@ -72,11 +72,11 @@ public class CustomTableController {
         boolean b = service.delById(tableName, id);
         return ResultTool.create(b);
     }
-//
-//    @PreAuthorize("isAuthenticated()")
-//    @GetMapping("/getOptions")
-//    public JsonResult<?> getOptions(@Param("nameLike") String tableName, @Param("nameLike") String nameLike, @Param("page") Integer page) {
-//        List<IdToName> options = service.getOptions(tableName, nameLike, page);
-//        return ResultTool.success(options);
-//    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/getOptions")
+    public JsonResult<?> getOptions(@Param("nameLike") String tableName, @Param("nameLike") String nameLike, @Param("page") Integer page) {
+        List<IdToName> options = service.getOptions(tableName, nameLike, page);
+        return ResultTool.success(options);
+    }
 }

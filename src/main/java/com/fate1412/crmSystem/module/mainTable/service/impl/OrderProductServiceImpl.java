@@ -223,7 +223,7 @@ public class OrderProductServiceImpl extends ServiceImpl<OrderProductMapper, Ord
         QueryWrapper<OrderProduct> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda()
                 .select(OrderProduct::getId)
-                .like(OrderProduct::getId,nameLike);
+                .like(OrderProduct::getId,nameLike.trim());
         IPage<OrderProduct> iPage = new Page<>(page,10);
         orderProductMapper.selectPage(iPage,queryWrapper);
         return IdToName.createList2(iPage.getRecords(), OrderProduct::getId, OrderProduct::getId);

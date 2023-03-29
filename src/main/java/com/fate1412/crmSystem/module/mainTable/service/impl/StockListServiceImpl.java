@@ -182,7 +182,7 @@ public class StockListServiceImpl extends ServiceImpl<StockListMapper, StockList
         QueryWrapper<StockList> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda()
                 .select(StockList::getId)
-                .like(StockList::getId,nameLike);
+                .like(StockList::getId,nameLike.trim());
         IPage<StockList> iPage = new Page<>(page,10);
         stockListMapper.selectPage(iPage,queryWrapper);
         return IdToName.createList2(iPage.getRecords(), StockList::getId, StockList::getId);

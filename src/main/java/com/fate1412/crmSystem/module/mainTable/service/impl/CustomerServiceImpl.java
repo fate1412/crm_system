@@ -193,7 +193,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         QueryWrapper<Customer> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda()
                 .select(Customer::getId, Customer::getName)
-                .like(Customer::getName, nameLike);
+                .like(Customer::getName, nameLike.trim());
         IPage<Customer> iPage = new Page<>(page, 10);
         customerMapper.selectPage(iPage, queryWrapper);
         return IdToName.createList(iPage.getRecords(), Customer::getId, Customer::getName);

@@ -122,6 +122,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
                 SysUser sysUser = sysUserService.thisUser();
                 product
                         .setIsShelf()
+                        .setRealStock(product.getStock())
                         .setCreateTime(new Date())
                         .setUpdateTime(new Date())
                         .setUpdater(sysUser.getUserId())
@@ -157,7 +158,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda()
                 .select(Product::getId, Product::getName)
-                .like(Product::getName,nameLike);
+                .like(Product::getName,nameLike.trim());
         IPage<Product> iPage = new Page<>(page,10);
         productMapper.selectPage(iPage,queryWrapper);
         return IdToName.createList(iPage.getRecords(), Product::getId, Product::getName);

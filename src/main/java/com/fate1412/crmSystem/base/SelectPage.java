@@ -9,5 +9,7 @@ public class SelectPage<T> {
     T like;
     String tableName;
     
-    
+    public void setTableName(String tableName) {
+        this.tableName = tableName.trim();
+    }
 }

@@ -7,6 +7,7 @@ import com.fate1412.crmSystem.module.customTable.dto.select.CustomTableSelectDTO
 import com.fate1412.crmSystem.module.customTable.dto.select.TableColumnSelectDTO;
 import com.fate1412.crmSystem.module.customTable.dto.select.TableDictSelectDTO;
 import com.fate1412.crmSystem.utils.CustomTableResultData;
+import com.fate1412.crmSystem.utils.IdToName;
 import com.fate1412.crmSystem.utils.JsonResult;
 import com.fate1412.crmSystem.utils.TableResultData;
 
@@ -27,4 +28,6 @@ public interface ICustomTableService {
     JsonResult<?> updateDTO(JSONObject jsonObject);
     
     boolean delById(String tableName, Long id);
+    
+    List<IdToName> getOptions(String tableName, String nameLike, Integer page);
 }

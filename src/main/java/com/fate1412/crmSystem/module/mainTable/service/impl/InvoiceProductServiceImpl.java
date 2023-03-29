@@ -245,7 +245,7 @@ public class InvoiceProductServiceImpl extends ServiceImpl<InvoiceProductMapper,
         QueryWrapper<InvoiceProduct> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda()
                 .select(InvoiceProduct::getId)
-                .like(InvoiceProduct::getId, nameLike);
+                .like(InvoiceProduct::getId, nameLike.trim());
         IPage<InvoiceProduct> iPage = new Page<>(page, 10);
         invoiceProductMapper.selectPage(iPage, queryWrapper);
         return IdToName.createList2(iPage.getRecords(), InvoiceProduct::getId, InvoiceProduct::getId);

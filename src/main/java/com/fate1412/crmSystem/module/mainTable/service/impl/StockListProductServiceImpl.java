@@ -222,7 +222,7 @@ public class StockListProductServiceImpl extends ServiceImpl<StockListProductMap
         QueryWrapper<StockListProduct> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda()
                 .select(StockListProduct::getId)
-                .like(StockListProduct::getId, nameLike);
+                .like(StockListProduct::getId, nameLike.trim());
         IPage<StockListProduct> iPage = new Page<>(page, 10);
         stockListProductMapper.selectPage(iPage, queryWrapper);
         return IdToName.createList2(iPage.getRecords(), StockListProduct::getId, StockListProduct::getId);

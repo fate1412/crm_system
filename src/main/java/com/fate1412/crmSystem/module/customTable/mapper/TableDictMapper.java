@@ -26,6 +26,8 @@ public interface TableDictMapper extends BaseMapper<TableDict> {
     
     Integer updateList(@Param("tableName") String tableName, @Param("dataList") List<List<SQLFactor<Object>>> dataList);
     
+    Integer realDeleteList(@Param("tableName") String tableName, @Param("factors") List<SQLFactor<Object>> factors);
+    
     Integer deleteList(@Param("tableName") String tableName, @Param("factors") List<SQLFactor<Object>> factors);
     
     Integer createTable(@Param("tableDict") TableDict tableDict);

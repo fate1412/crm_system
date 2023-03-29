@@ -201,7 +201,7 @@ public class SalesOrderServiceImpl extends ServiceImpl<SalesOrderMapper, SalesOr
         QueryWrapper<SalesOrder> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda()
                 .select(SalesOrder::getId)
-                .like(SalesOrder::getId, nameLike);
+                .like(SalesOrder::getId, nameLike.trim());
         IPage<SalesOrder> iPage = new Page<>(page, 10);
         salesOrderMapper.selectPage(iPage, queryWrapper);
         return IdToName.createList2(iPage.getRecords(), SalesOrder::getId, SalesOrder::getId);

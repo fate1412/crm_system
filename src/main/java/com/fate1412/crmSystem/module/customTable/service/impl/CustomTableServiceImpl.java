@@ -107,7 +107,15 @@ public class CustomTableServiceImpl implements ICustomTableService {
     public CustomTableResultData listByPage(SelectPage<JSONObject> selectPage) {
         SQLFactors sqlFactors = new SQLFactors();
         JSONObject like = selectPage.getLike();
-        like.forEach(sqlFactors::like);
+        String id = like.getString("id");
+        String name = like.getString("name");
+        if (StringUtils.isNotBlank(id)) {
+            sqlFactors.eq("id",id);
+        }
+        if (StringUtils.isNotBlank(name)) {
+            sqlFactors.eq("name",name.trim());
+        }
+        sqlFactors.eq("del_flag",false);
         
         CustomTableResultData tableResultData = getTableColumns(selectPage.getTableName());
         MyPage page = listByPage(selectPage.getPage().intValue(), selectPage.getPageSize().intValue(), selectPage.getTableName(), sqlFactors.getSqlFactors(), tableResultData.getTableColumns());
@@ -235,6 +243,21 @@ public class CustomTableServiceImpl implements ICustomTableService {
         SQLFactors sqlFactors = new SQLFactors();
         sqlFactors.eq("id",id);
         return mapper.deleteList(tableDict.getRealTableName(), sqlFactors.getSqlFactors()) > 0;
+    }
+    
+    @Override
+    public List<IdToName> getOptions(String tableName, String nameLike, Integer page) {
+        TableDict tableDict = tableDictService.getCustomByTableName(tableName.trim());
+        if (tableDict == null) {
+            return new ArrayList<>();
+        }
+        SQLFactors sqlFactors = new SQLFactors();
+        sqlFactors
+                .like("name",nameLike.trim())
+                .eq("del_flag",false);
+        PageHelper.startPage(page,10);
+        List<JSONObject> jsonObjectList = mapper.select(tableDict.getRealTableName(), sqlFactors.getSqlFactors());
+        return IdToName.createList(jsonObjectList,k -> k.getLong("id"), v -> v.getString("name"));
     }
     
     private MyPage listByPage(int thisPage, int pageSize, String tableName, List<SQLFactor<Object>> sqlFactors, List<CustomTableColumnSelectDTO> columnList) {

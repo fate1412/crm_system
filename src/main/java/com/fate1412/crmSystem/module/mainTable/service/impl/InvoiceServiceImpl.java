@@ -212,7 +212,7 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
         QueryWrapper<Invoice> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda()
                 .select(Invoice::getId)
-                .like(Invoice::getId,nameLike);
+                .like(Invoice::getId,nameLike.trim());
         IPage<Invoice> iPage = new Page<>(page,10);
         invoiceMapper.selectPage(iPage,queryWrapper);
         return IdToName.createList2(iPage.getRecords(), Invoice::getId, Invoice::getId);
