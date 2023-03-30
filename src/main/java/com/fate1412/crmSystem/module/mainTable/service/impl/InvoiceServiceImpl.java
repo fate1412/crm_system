@@ -22,6 +22,7 @@ import com.fate1412.crmSystem.module.mainTable.service.IOrderProductService;
 import com.fate1412.crmSystem.module.security.pojo.SysUser;
 import com.fate1412.crmSystem.module.security.service.ISysUserService;
 import com.fate1412.crmSystem.utils.*;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -232,20 +233,19 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
             return ResultCode.PARAM_NOT_VALID;
         }
         //物流单号
-        if (invoice.getLogisticsId() != null && "".equals(invoice.getLogisticsId().trim())) {
-            return ResultCode.PARAM_NOT_VALID;
+        if (StringUtils.isBlank(invoice.getLogisticsId())) {
+            return ResultCode.PARAM_IS_BLANK;
         }
+        invoice.setLogisticsId(invoice.getLogisticsId().trim());
         //计划发货日期
         if (invoice.getPlanInvoiceDate() == null) {
             return ResultCode.PARAM_IS_BLANK;
         }
         //收货地址
-        if (invoice.getAddress() == null) {
+        if (StringUtils.isBlank(invoice.getAddress())) {
             return ResultCode.PARAM_IS_BLANK;
         }
-        if ("".equals(invoice.getAddress().trim())) {
-            return ResultCode.PARAM_NOT_VALID;
-        }
+        invoice.setAddress(invoice.getAddress().trim());
         //收货日期
         if (old == null) {
             if (invoice.getIsInvoice() == null && invoice.getReceiptTime() != null) {

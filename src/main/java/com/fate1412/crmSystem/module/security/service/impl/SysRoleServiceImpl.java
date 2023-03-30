@@ -21,6 +21,7 @@ import com.fate1412.crmSystem.module.security.service.ISysRolePermissionService;
 import com.fate1412.crmSystem.module.security.service.ISysRoleService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fate1412.crmSystem.utils.*;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -186,19 +187,15 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     
     private ResultCode isRight(SysRole sysRole) {
         //角色名称
-        if (sysRole.getRoleName() == null) {
+        if (StringUtils.isBlank(sysRole.getRoleName())) {
             return ResultCode.PARAM_IS_BLANK;
         }
-        if (sysRole.getRoleName().trim().equals("")) {
-            return ResultCode.PARAM_NOT_VALID;
-        }
+        sysRole.setRoleName(sysRole.getRoleName().trim());
         //角色编码
-        if (sysRole.getRoleCode() == null) {
+        if (StringUtils.isBlank(sysRole.getRoleCode())) {
             return ResultCode.PARAM_IS_BLANK;
         }
-        if (sysRole.getRoleCode().trim().equals("")) {
-            return ResultCode.PARAM_NOT_VALID;
-        }
+        sysRole.setRoleCode(sysRole.getRoleCode().trim());
         return ResultCode.SUCCESS;
     }
 }

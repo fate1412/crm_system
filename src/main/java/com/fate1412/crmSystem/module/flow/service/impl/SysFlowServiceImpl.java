@@ -264,6 +264,7 @@ public class SysFlowServiceImpl extends ServiceImpl<SysFlowMapper, SysFlow> impl
         if (StringUtils.isBlank(sysFlow.getName())) {
             return ResultCode.PARAM_IS_BLANK;
         }
+        sysFlow.setName(sysFlow.getName().trim());
         //关联表
         if (sysFlow.getRelevanceTable() == null) {
             return ResultCode.PARAM_IS_BLANK;

@@ -158,7 +158,7 @@ public class CustomTableServiceImpl implements ICustomTableService {
     @Transactional
     public JsonResult<?> addDTO(JSONObject jsonObject) {
         //获取对应的表
-        String tableName = jsonObject.getString("tableName");
+        String tableName = jsonObject.getString("tableName").trim();
         if (StringUtils.isBlank(tableName)) {
             throw new DataCheckingException(ResultCode.INSERT_ERROR);
         }
@@ -199,7 +199,7 @@ public class CustomTableServiceImpl implements ICustomTableService {
     @Transactional
     public JsonResult<?> updateDTO(JSONObject jsonObject) {
         //获取对应的表
-        String tableName = jsonObject.getString("tableName");
+        String tableName = jsonObject.getString("tableName").trim();
         if (StringUtils.isBlank(tableName)) {
             throw new DataCheckingException(ResultCode.UPDATE_ERROR);
         }
@@ -249,7 +249,7 @@ public class CustomTableServiceImpl implements ICustomTableService {
     
     @Override
     public boolean delById(String tableName, Long id) {
-        TableDict tableDict = tableDictService.getCustomByTableName(tableName);
+        TableDict tableDict = tableDictService.getCustomByTableName(tableName.trim());
         if (tableDict == null) {
             return false;
         }
@@ -276,7 +276,7 @@ public class CustomTableServiceImpl implements ICustomTableService {
     private MyPage listByPage(int thisPage, int pageSize, String tableName, List<SQLFactor<Object>> sqlFactors, List<CustomTableColumnSelectDTO> columnList) {
         MyPage myPage = new MyPage(thisPage, pageSize);
         //获取/判断是否为定制表
-        List<TableDict> tableDictList = tableDictService.getByTableName(MyCollections.toList(tableName));
+        List<TableDict> tableDictList = tableDictService.getByTableName(MyCollections.toList(tableName.trim()));
         if (MyCollections.isEmpty(tableDictList) || !tableDictList.get(0).getCustom()) {
             return myPage;
         }
@@ -284,11 +284,11 @@ public class CustomTableServiceImpl implements ICustomTableService {
         PageInfo<JSONObject> pageInfo = PageHelper.startPage(thisPage, pageSize).doSelectPageInfo(new ISelect() {
             @Override
             public void doSelect() {
-                mapper.select(tableName, sqlFactors);
+                mapper.select(tableName.trim(), sqlFactors);
             }
         });
         
-        List<JSONObject> dtoList = getDTOList(tableName, pageInfo.getList(), columnList, false);
+        List<JSONObject> dtoList = getDTOList(tableName.trim(), pageInfo.getList(), columnList, false);
         
         myPage.setRecords(dtoList);
         myPage.setCurrent(pageInfo.getPageNum());
@@ -321,7 +321,7 @@ public class CustomTableServiceImpl implements ICustomTableService {
     
         //审批
         List<Long> dataIds = MyCollections.objects2List(jsonObjectList, (jsonObject -> jsonObject.getLong("id")));
-        Map<Long, Integer> passMap = flowSessionService.getPass(tableName, dataIds);
+        Map<Long, Integer> passMap = flowSessionService.getPass(tableName.trim(), dataIds);
         
         jsonObjectList.forEach(object -> {
             Long creater = object.getLong("creater");
@@ -386,19 +386,19 @@ public class CustomTableServiceImpl implements ICustomTableService {
     private Object getColumnData(TableColumnDict column, JSONObject jsonObject) {
         Integer columnType = column.getColumnType();
         if (columnType.equals(FormType.Select.getIndex())) {
-            return jsonObject.getString(column.getColumnName());
+            return jsonObject.getString(column.getColumnName().trim());
         } else if (columnType.equals(FormType.Date.getIndex()) || columnType.equals(FormType.DateTime.getIndex())) {
             return jsonObject.getDate(column.getColumnName());
         } else if (columnType.equals(FormType.Boolean.getIndex())) {
             return jsonObject.getBoolean(column.getColumnName());
         } else if (columnType.equals(FormType.String.getIndex())) {
-            return jsonObject.getString(column.getColumnName());
+            return jsonObject.getString(column.getColumnName().trim());
         } else if (columnType.equals(FormType.Integer.getIndex())) {
             return jsonObject.getInteger(column.getColumnName());
         } else if (columnType.equals(FormType.Double.getIndex())) {
             return jsonObject.getDouble(column.getColumnName());
         } else if (columnType.equals(FormType.Number.getIndex())) {
-            return jsonObject.getString(column.getColumnName());
+            return jsonObject.getString(column.getColumnName().trim());
         } else if (columnType.equals(FormType.Long.getIndex())) {
             return jsonObject.getLong(column.getColumnName());
         } else {

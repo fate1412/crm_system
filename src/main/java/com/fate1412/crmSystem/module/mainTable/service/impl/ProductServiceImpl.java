@@ -20,6 +20,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fate1412.crmSystem.module.security.pojo.SysUser;
 import com.fate1412.crmSystem.module.security.service.ISysUserService;
 import com.fate1412.crmSystem.utils.*;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -166,9 +167,10 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     
     private ResultCode isRight(Product product) {
         //产品名称
-        if (product.getName().isEmpty()) {
+        if (StringUtils.isBlank(product.getName())) {
             return ResultCode.PARAM_IS_BLANK;
         }
+        product.setName(product.getName().trim());
         //单价
         if (product.getPrice() <= 0) {
             return ResultCode.PARAM_NOT_VALID;

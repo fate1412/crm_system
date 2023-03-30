@@ -275,27 +275,25 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     
     private ResultCode isRight(SysUser sysUser) {
         //用户名
-        if (sysUser.getUsername() == null) {
+        if (StringUtils.isBlank(sysUser.getUsername())) {
             return ResultCode.PARAM_IS_BLANK;
         }
-        if (sysUser.getUsername().trim().equals("")) {
-            return ResultCode.PARAM_NOT_VALID;
-        }
+        sysUser.setUsername(sysUser.getUsername().trim());
         //真实姓名
-        if (sysUser.getRealName() == null) {
+        if (StringUtils.isBlank(sysUser.getRealName())) {
             return ResultCode.PARAM_IS_BLANK;
         }
-        if (sysUser.getRealName().trim().equals("")) {
-            return ResultCode.PARAM_NOT_VALID;
-        }
+        sysUser.setRealName(sysUser.getRealName().trim());
         //密码(不小于6位)
-        if (sysUser.getPassword() != null && sysUser.getRealName().trim().equals("") && sysUser.getRealName().trim().length() < 6) {
+        if (StringUtils.isBlank(sysUser.getPassword()) && sysUser.getRealName().trim().length() < 6) {
             return ResultCode.PARAM_NOT_VALID;
         }
+        sysUser.setPassword(sysUser.getPassword().trim());
         //手机号
         if (sysUser.getPhone() != null && !Pattern.matches("\\d{11}", sysUser.getPhone().trim())) {
             return ResultCode.PARAM_NOT_VALID;
         }
+        sysUser.setPhone(sysUser.getPhone().trim());
         return ResultCode.SUCCESS;
     }
     
