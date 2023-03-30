@@ -32,7 +32,7 @@ public class SysFlowSessionController {
     @Autowired
     private ISysFlowSessionService service;
     
-    @PreAuthorize("hasAnyAuthority('SysFlow_Select')")
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/page/select")
     public JsonResult<Object> selectByPage(@RequestBody SelectPage<SysFlowSessionSelectDTO> selectPage) {
         MyPage page = service.listByPage(selectPage);
