@@ -268,7 +268,7 @@ public class SysFlowServiceImpl extends ServiceImpl<SysFlowMapper, SysFlow> impl
         if (sysFlow.getRelevanceTable() == null) {
             return ResultCode.PARAM_IS_BLANK;
         }
-        TableDict tableDict = tableDictService.getById(sysFlow.getId());
+        TableDict tableDict = tableDictService.getById(sysFlow.getRelevanceTable());
         if (tableDict == null) {
             return ResultCode.PARAM_NOT_VALID;
         }

@@ -75,6 +75,8 @@ public class CustomTableColumnSelectDTO {
     @TableField("custom")
     private Boolean custom;
     
+    private Boolean pass = false;
+    
     private List<OptionDTO> options;
 
 }

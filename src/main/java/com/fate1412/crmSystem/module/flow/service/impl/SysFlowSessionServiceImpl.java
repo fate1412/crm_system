@@ -200,7 +200,7 @@ public class SysFlowSessionServiceImpl extends ServiceImpl<SysFlowSessionMapper,
         } else {
             //设置新节点
             sysFlowSession.setPointId(pointMap.get(oldSession.getPointId()).getNextPoint());
-            sysFlowSession.setApprover(pointMap.get(oldSession.getPointId()).getApprover());
+            sysFlowSession.setApprover(pointMap.get(sysFlowSession.getPointId()).getApprover());
             //获取新节点的下一个节点
             Long nextPoint = pointMap.get(sysFlowSession.getPointId()).getNextPoint();
             //设置下一个审批人

@@ -17,7 +17,9 @@ import com.fate1412.crmSystem.module.customTable.service.ICustomTableService;
 import com.fate1412.crmSystem.module.customTable.service.ITableColumnDictService;
 import com.fate1412.crmSystem.module.customTable.service.ITableDictService;
 import com.fate1412.crmSystem.module.customTable.service.ITableOptionService;
+import com.fate1412.crmSystem.module.flow.service.ISysFlowSessionService;
 import com.fate1412.crmSystem.module.mainTable.constant.TableNames;
+import com.fate1412.crmSystem.module.mainTable.pojo.Customer;
 import com.fate1412.crmSystem.module.security.pojo.SysUser;
 import com.fate1412.crmSystem.module.security.service.ISysUserService;
 import com.fate1412.crmSystem.utils.*;
@@ -50,6 +52,8 @@ public class CustomTableServiceImpl implements ICustomTableService {
     private ITableOptionService tableOptionService;
     @Autowired
     private ISysUserService sysUserService;
+    @Autowired
+    private ISysFlowSessionService flowSessionService;
     
     @Override
     public List<CustomTableSelectDTO> getTables() {
@@ -80,6 +84,11 @@ public class CustomTableServiceImpl implements ICustomTableService {
         
         List<CustomTableColumnSelectDTO> dtoList = new ArrayList<>();
         JSONObject jsonObject = new JSONObject();
+        
+        //加入审批状态
+        TableColumnDict pass = TableColumnDict.create(tableName,"pass","","是否通过",1000).setDisabled(true).setCustom(false).setColumnType(4);
+        
+        tableColumnDictList.add(pass);
         tableColumnDictList.forEach(tableColumnDict -> {
             CustomTableColumnSelectDTO dto = new CustomTableColumnSelectDTO();
             BeanUtils.copyProperties(tableColumnDict, dto);
@@ -94,6 +103,9 @@ public class CustomTableServiceImpl implements ICustomTableService {
             dto.setLabel(dto.getShowName());
             dto.setProp(dto.getColumnName());
             dto.setFormType(columnTypeMap.get(dto.getColumnType()));
+            if (dto.getColumnName().equals("pass")) {
+                dto.setPass(true);
+            }
             dtoList.add(dto);
         });
         
@@ -137,7 +149,7 @@ public class CustomTableServiceImpl implements ICustomTableService {
         SQLFactors sqlFactors = new SQLFactors();
         sqlFactors.in("id",idList);
         List<JSONObject> jsonObjectList = mapper.select(tableDict.getRealTableName(), sqlFactors.getSqlFactors());
-        List<JSONObject> dtoList = getDTOList(jsonObjectList, tableResultData.getTableColumns(), true);
+        List<JSONObject> dtoList = getDTOList(tableDict.getTableName(), jsonObjectList, tableResultData.getTableColumns(), true);
         tableResultData.setTableDataList(dtoList);
         return tableResultData;
     }
@@ -167,15 +179,16 @@ public class CustomTableServiceImpl implements ICustomTableService {
             }
         });
         //设置必备字段数据
-        sqlFactors.eq("id",IdWorker.getId());
+        Long id = IdWorker.getId();
+        sqlFactors.eq("id",id);
         sqlFactors.eq("create_time",new Date());
         sqlFactors.eq("update_time",new Date());
         sqlFactors.eq("creater",thisUser.getUserId());
         sqlFactors.eq("updater",thisUser.getUserId());
-        sqlFactors.eq("pass",true);
         
         //插入
         if (mapper.insertList(tableDict.getRealTableName(),MyCollections.toList(sqlFactors.getSqlFactors())) > 0) {
+            flowSessionService.addFlowSession(tableDict.getTableName(), id);
             return ResultTool.success();
         } else {
             throw new DataCheckingException(ResultCode.INSERT_ERROR);
@@ -275,7 +288,7 @@ public class CustomTableServiceImpl implements ICustomTableService {
             }
         });
         
-        List<JSONObject> dtoList = getDTOList(pageInfo.getList(), columnList, false);
+        List<JSONObject> dtoList = getDTOList(tableName, pageInfo.getList(), columnList, false);
         
         myPage.setRecords(dtoList);
         myPage.setCurrent(pageInfo.getPageNum());
@@ -283,7 +296,7 @@ public class CustomTableServiceImpl implements ICustomTableService {
         return myPage;
     }
     
-    private List<JSONObject> getDTOList(List<JSONObject> jsonList, List<CustomTableColumnSelectDTO> columnList, boolean one) {
+    private List<JSONObject> getDTOList(String tableName, List<JSONObject> jsonList, List<CustomTableColumnSelectDTO> columnList, boolean one) {
         if (MyCollections.isEmpty(jsonList)) {
             return new ArrayList<>();
         }
@@ -305,10 +318,15 @@ public class CustomTableServiceImpl implements ICustomTableService {
         
         List<SysUser> sysUserList = sysUserService.listByIds(userIdList);
         Map<Long, String> userMap = MyCollections.list2MapL(sysUserList, SysUser::getUserId, SysUser::getRealName);
+    
+        //审批
+        List<Long> dataIds = MyCollections.objects2List(jsonObjectList, (jsonObject -> jsonObject.getLong("id")));
+        Map<Long, Integer> passMap = flowSessionService.getPass(tableName, dataIds);
         
         jsonObjectList.forEach(object -> {
             Long creater = object.getLong("creater");
             Long updater = object.getLong("updater");
+            Long id = object.getLong("id");
             //多条查询时覆盖原值
             if (one) {
                 object.put("createrR", new IdToName(creater, userMap.get(creater), TableNames.sysUser));
@@ -316,6 +334,12 @@ public class CustomTableServiceImpl implements ICustomTableService {
             } else {
                 object.put("creater", new IdToName(creater, userMap.get(creater), TableNames.sysUser));
                 object.put("updater", new IdToName(updater, userMap.get(updater), TableNames.sysUser));
+            }
+            Integer pass = passMap.get(id);
+            switch (pass) {
+                case 0: object.put("pass","未审批");break;
+                case 1: object.put("pass","已通过");break;
+                default: object.put("pass","已拒绝");
             }
         });
         //获取可链接的相关表

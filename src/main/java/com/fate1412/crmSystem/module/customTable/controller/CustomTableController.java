@@ -52,19 +52,19 @@ public class CustomTableController {
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("hasAnyAuthority('Invoice_Insert')")
+    @PreAuthorize("hasAnyAuthority('Custom_Insert')")
     @PutMapping("/add")
     public JsonResult<?> add(@RequestBody JSONObject jsonObject) {
         return service.addDTO(jsonObject);
     }
 
-    @PreAuthorize("hasAnyAuthority('Invoice_Edit')")
+    @PreAuthorize("hasAnyAuthority('Custom_Edit')")
     @PostMapping("/update")
     public JsonResult<?> update(@RequestBody JSONObject jsonObject) {
         return service.updateDTO(jsonObject);
     }
 
-    @PreAuthorize("hasAnyAuthority('Invoice_Delete')")
+    @PreAuthorize("hasAnyAuthority('Custom_Delete')")
     @DeleteMapping("/delete")
     public JsonResult<?> delete(@RequestBody JSONObject jsonObject) {
         String tableName = jsonObject.getString("tableName");

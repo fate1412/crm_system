@@ -206,12 +206,6 @@ public class TableDictServiceImpl extends ServiceImpl<TableDictMapper, TableDict
                 .setLink(true)
                 .setCustom(false)
                 .setLinkTable(9L));
-        list.add(TableColumnDict.create(tableName, "pass", "pass", "是否审批", 25)
-                .setColumnType(4)
-                .setDisabled(true)
-                .setInserted(false)
-                .setLink(false)
-                .setCustom(false));
         boolean b= tableColumnDictMapper.insertList(list) > 0;
         if (!b) {
             throw new DataCheckingException(ResultCode.COMMON_FAIL);

@@ -71,7 +71,7 @@ public class SysFlowController {
         return ResultTool.success(tableResultData);
     }
     
-    @PreAuthorize("hasAnyAuthority('SysFlowr_Edit')")
+    @PreAuthorize("hasAnyAuthority('SysFlow_Edit')")
     @PostMapping("/update")
     public JsonResult<?> update(@RequestBody SysFlowUpdateDTO sysFlowUpdateDTO) {
         return service.updateByDTO(sysFlowUpdateDTO);
@@ -91,7 +91,7 @@ public class SysFlowController {
         return ResultTool.success(flowPoints);
     }
     
-    @PreAuthorize("hasAnyAuthority('SysFlowr_Edit')")
+    @PreAuthorize("hasAnyAuthority('SysFlow_Edit')")
     @PostMapping("/updateFlowPoints")
     public JsonResult<?> updateFlowPoints(@RequestBody JSONObject jsonObject) {
         Long flowId = jsonObject.getLong("flowId");
