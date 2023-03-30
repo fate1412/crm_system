@@ -54,35 +54,35 @@ public class OrderProductSelectDTO implements Serializable {
      * 购买数量
      */
     @TableField("product_num")
-    @TableTitle(value = "购买数量",inserted = true)
+    @TableTitle(value = "购买数量",inserted = true,formType = FormType.Integer)
     private Integer productNum;
 
     /**
      * 已发货数量
      */
     @TableField("invoice_num")
-    @TableTitle(value = "已发货数量")
+    @TableTitle(value = "已发货数量",formType = FormType.Integer)
     private Integer invoiceNum;
 
     /**
      * 原总价
      */
     @TableField("original_prices")
-    @TableTitle(value = "原总价")
+    @TableTitle(value = "原总价",formType = FormType.Double)
     private Double originalPrices;
     
     /**
      * 折扣(0-100)
      */
     @TableField("discount")
-    @TableTitle(value = "折扣/%",inserted = true)
+    @TableTitle(value = "折扣/%",inserted = true,formType = FormType.Integer)
     private Integer discount;
 
     /**
      * 折后总价
      */
     @TableField("discount_prices")
-    @TableTitle(value = "折后总价")
+    @TableTitle(value = "折后总价",formType = FormType.Double)
     private Double discountPrices;
 
     /**

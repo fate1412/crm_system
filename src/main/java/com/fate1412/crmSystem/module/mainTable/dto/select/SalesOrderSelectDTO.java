@@ -40,13 +40,13 @@ public class SalesOrderSelectDTO implements Serializable {
     /**
      * 原价
      */
-    @TableTitle(value = "原价/元", disabled = true)
+    @TableTitle(value = "原价/元", disabled = true,formType = FormType.Double)
     private Double originalPrice;
     
     /**
      * 折后价格
      */
-    @TableTitle(value = "折后价格/元", disabled = true)
+    @TableTitle(value = "折后价格/元", disabled = true,formType = FormType.Double)
     private Double discountPrice;
     
     /**

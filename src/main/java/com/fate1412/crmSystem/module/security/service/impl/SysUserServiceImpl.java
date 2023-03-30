@@ -1,5 +1,6 @@
 package com.fate1412.crmSystem.module.security.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -234,10 +235,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
     
     @Override
-    public List<SysRolePermissionDTO> getThisUserPermissions() {
+    public JSONObject getThisUserPermissions() {
+        JSONObject jsonObject = new JSONObject();
         SysUser sysUser = thisUser();
         List<SysPermission> permissionList = getPermissionById(sysUser.getUserId());
-        return MyCollections.copyListProperties(permissionList, SysRolePermissionDTO::new);
+        List<SysRolePermissionDTO> rolePermissionDTOS = MyCollections.copyListProperties(permissionList, SysRolePermissionDTO::new);
+        jsonObject.put("permissions",rolePermissionDTOS);
+        jsonObject.put("name",sysUser.getRealName());
+        return jsonObject;
     }
     
     @Override

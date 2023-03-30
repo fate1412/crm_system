@@ -39,7 +39,7 @@ public class SysUserSelectDTO implements Serializable {
     private String realName;
 
     @TableField("phone")
-    @TableTitle(value = "手机号" ,inserted = true)
+    @TableTitle(value = "手机号" ,inserted = true,formType = FormType.Number)
     private String phone;
     
     @TableField("last_login_time")

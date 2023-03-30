@@ -54,14 +54,14 @@ public class StockListChild implements Serializable {
      * 备货数量
      */
     @TableField("stock_num")
-    @TableTitle(value = "备货数量")
+    @TableTitle(value = "备货数量",formType = FormType.Integer)
     private Integer stockNum;
     
     /**
      * 价格
      */
     @TableField("price")
-    @TableTitle(value = "单价")
+    @TableTitle(value = "单价",formType = FormType.Double)
     private Double price;
     
     private final Boolean isEditor = false;

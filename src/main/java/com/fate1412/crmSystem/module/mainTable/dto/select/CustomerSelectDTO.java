@@ -50,7 +50,7 @@ public class CustomerSelectDTO implements Serializable {
      * 手机号
      */
     @TableField("mobile")
-    @TableTitle(value = "手机号", inserted = true)
+    @TableTitle(value = "手机号", inserted = true, formType = FormType.Number)
     private String mobile;
     
     /**

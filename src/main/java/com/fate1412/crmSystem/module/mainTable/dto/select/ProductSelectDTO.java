@@ -43,35 +43,35 @@ public class ProductSelectDTO implements Serializable {
      * 产品单价
      */
     @TableField("price")
-    @TableTitle(value = "产品单价/元",inserted = true)
+    @TableTitle(value = "产品单价/元",inserted = true,formType = FormType.Double)
     private Double price;
     
     /**
      * 产品库存
      */
     @TableField("stock")
-    @TableTitle(value = "产品库存/件",inserted = true)
+    @TableTitle(value = "产品库存/件",inserted = true,formType = FormType.Integer)
     private Integer stock;
     
     /**
      * 真实库存
      */
     @TableField("real_stock")
-    @TableTitle(value = "真实库存/件")
+    @TableTitle(value = "真实库存/件",formType = FormType.Integer)
     private Integer realStock;
     
     /**
      * 销售量
      */
     @TableField("sales_volume")
-    @TableTitle(value = "销售量/件")
+    @TableTitle(value = "销售量/件",formType = FormType.Integer)
     private Integer salesVolume;
     
     /**
      * 是否上架
      */
     @TableField("is_shelf")
-    @TableTitle(value = "是否上架",disabled = true)
+    @TableTitle(value = "是否上架",disabled = true,formType = FormType.Boolean)
     private Boolean isShelf;
     
     /**

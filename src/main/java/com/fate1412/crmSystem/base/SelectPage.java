@@ -1,6 +1,7 @@
 package com.fate1412.crmSystem.base;
 
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 @Data
 public class SelectPage<T> {
@@ -10,6 +11,8 @@ public class SelectPage<T> {
     String tableName;
     
     public void setTableName(String tableName) {
-        this.tableName = tableName.trim();
+        if (StringUtils.isNotBlank(tableName)) {
+            this.tableName = tableName.trim();
+        }
     }
 }

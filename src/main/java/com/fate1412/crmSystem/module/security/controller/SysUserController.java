@@ -97,10 +97,10 @@ public class SysUserController {
     }
     
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/getThisUserPermissions")
-    public JsonResult<?> getThisUserPermissions() {
-        List<SysRolePermissionDTO> permissions = sysUserService.getThisUserPermissions();
-        return ResultTool.success(permissions);
+    @GetMapping("/getInfo")
+    public JsonResult<?> getInfo() {
+        JSONObject jsonObject = sysUserService.getThisUserPermissions();
+        return ResultTool.success(jsonObject);
     }
     
     @PreAuthorize("hasAnyAuthority('SysUser_Edit')")

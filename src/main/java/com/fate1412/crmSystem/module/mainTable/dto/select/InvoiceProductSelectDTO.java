@@ -51,7 +51,7 @@ public class InvoiceProductSelectDTO implements Serializable {
      * 发货数量
      */
     @TableField("invoice_num")
-    @TableTitle(value = "发货数量",inserted = true)
+    @TableTitle(value = "发货数量",inserted = true,formType = FormType.Integer)
     private Integer invoiceNum;
     
     /**

@@ -158,7 +158,7 @@ public class TableColumnDictServiceImpl extends ServiceImpl<TableColumnDictMappe
         QueryWrapper<TableColumnDict> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda()
                 .eq(TableColumnDict::getTableName, like.getTableName())
-                .like(like.getShowName() != null, TableColumnDict::getShowName, like.getShowName());
+                .like(like.getShowName()!=null, TableColumnDict::getShowName, like.getShowName());
         return listByPage(1, 1000, queryWrapper);
     }
     

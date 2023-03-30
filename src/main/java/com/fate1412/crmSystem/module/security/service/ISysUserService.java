@@ -1,5 +1,6 @@
 package com.fate1412.crmSystem.module.security.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.fate1412.crmSystem.base.MyBaseService;
 import com.fate1412.crmSystem.base.MyPage;
 import com.fate1412.crmSystem.base.SelectPage;
@@ -72,7 +73,7 @@ public interface ISysUserService extends IService<SysUser>, MyBaseService<SysUse
     
     boolean removeUser(Long id);
     
-    List<SysRolePermissionDTO> getThisUserPermissions();
+    JSONObject getThisUserPermissions();
     
     boolean passwdChange(Long userId, String passwd);
     

@@ -43,28 +43,28 @@ public class StockListSelectDTO implements Serializable {
      * 总价
      */
     @TableField("prices")
-    @TableTitle(value = "总价/元",disabled = true)
+    @TableTitle(value = "总价/元",disabled = true,formType = FormType.Double)
     private Double prices;
     
     /**
      * 是否完成备货
      */
     @TableField("is_stock_up")
-    @TableTitle(value = "是否完成备货",inserted = true)
+    @TableTitle(value = "是否完成备货",inserted = true,formType = FormType.Boolean)
     private Boolean isStockUp;
     
     /**
      * 是否完成受理
      */
     @TableField("is_acceptance")
-    @TableTitle(value = "是否完成受理",inserted = true)
+    @TableTitle(value = "是否完成受理",inserted = true,formType = FormType.Boolean)
     private Boolean isAcceptance;
     
     /**
      * 是否紧急
      */
     @TableField("is_pressing")
-    @TableTitle(value = "是否紧急",inserted = true)
+    @TableTitle(value = "是否紧急",inserted = true,formType = FormType.Boolean)
     private Boolean isPressing;
     
     /**

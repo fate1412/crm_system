@@ -33,7 +33,7 @@ public class CustomTableColumnSelectDTO {
     private String label;
     
     @TableField("column_index")
-    @TableTitle(value = "展示顺序",inserted = true)
+    @TableTitle(value = "展示顺序",inserted = true,formType = FormType.Integer)
     private Integer columnIndex;
 
     @TableField("table_name")

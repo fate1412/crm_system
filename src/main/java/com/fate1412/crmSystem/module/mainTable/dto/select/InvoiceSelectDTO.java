@@ -66,7 +66,7 @@ public class InvoiceSelectDTO implements Serializable {
      * 是否发货
      */
     @TableField("is_invoice")
-    @TableTitle(value = "是否发货",inserted = true)
+    @TableTitle(value = "是否发货",inserted = true,formType = FormType.Boolean)
     private Boolean isInvoice;
     
     /**

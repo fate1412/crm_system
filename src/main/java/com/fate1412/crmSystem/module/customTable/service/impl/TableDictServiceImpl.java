@@ -110,7 +110,11 @@ public class TableDictServiceImpl extends ServiceImpl<TableDictMapper, TableDict
     public MyPage listByPage(SelectPage<TableDictSelectDTO> selectPage) {
         TableDictSelectDTO like = selectPage.getLike();
         QueryWrapper<TableDict> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().like(like.getShowName() != null, TableDict::getShowName, like.getShowName());
+        if (StringUtils.isNotBlank(like.getShowName())) {
+            like.setShowName(like.getShowName().trim());
+        }
+        queryWrapper.lambda()
+                .like(StringUtils.isNotBlank(like.getShowName()), TableDict::getShowName, like.getShowName());
         return listByPage(1, 1000, queryWrapper);
     }
     

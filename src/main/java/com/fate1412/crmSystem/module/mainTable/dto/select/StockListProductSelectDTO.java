@@ -56,14 +56,14 @@ public class StockListProductSelectDTO implements Serializable {
      * 备货数量
      */
     @TableField("stock_num")
-    @TableTitle(value = "备货数量",inserted = true)
+    @TableTitle(value = "备货数量",inserted = true,formType = FormType.Integer)
     private Integer stockNum;
     
     /**
      * 价格
      */
     @TableField("price")
-    @TableTitle(value = "价格",inserted = true)
+    @TableTitle(value = "价格",inserted = true,formType = FormType.Double)
     private Double price;
     
     /**

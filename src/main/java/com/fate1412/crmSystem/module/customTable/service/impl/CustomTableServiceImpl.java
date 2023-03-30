@@ -122,10 +122,10 @@ public class CustomTableServiceImpl implements ICustomTableService {
         String id = like.getString("id");
         String name = like.getString("name");
         if (StringUtils.isNotBlank(id)) {
-            sqlFactors.eq("id",id);
+            sqlFactors.like("id",id);
         }
         if (StringUtils.isNotBlank(name)) {
-            sqlFactors.eq("name",name.trim());
+            sqlFactors.like("name",name.trim());
         }
         sqlFactors.eq("del_flag",false);
         
