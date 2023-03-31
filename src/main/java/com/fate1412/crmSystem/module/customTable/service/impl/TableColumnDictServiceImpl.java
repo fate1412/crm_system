@@ -79,15 +79,6 @@ public class TableColumnDictServiceImpl extends ServiceImpl<TableColumnDictMappe
     @Transactional
     public JsonResult<?> addDTO(TableColumnInsertDTO tableColumnInsertDTO) {
         TableColumnDict tableColumnDict = new TableColumnDict();
-        //只允许定制表新增字段
-        QueryWrapper<TableDict> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda()
-                .eq(TableDict::getTableName,tableColumnInsertDTO.getTableName())
-                .eq(TableDict::getCustom,true);
-        List<TableDict> tableDictList = tableDictMapper.selectList(queryWrapper);
-        if (MyCollections.isEmpty(tableDictList)) {
-            throw new DataCheckingException(ResultCode.PARAM_NOT_VALID);
-        }
         BeanUtils.copyProperties(tableColumnInsertDTO, tableColumnDict);
         return add(new MyEntity<TableColumnDict>(tableColumnDict) {
             @Override
@@ -187,6 +178,10 @@ public class TableColumnDictServiceImpl extends ServiceImpl<TableColumnDictMappe
                 return ResultCode.PARAM_NOT_VALID;
             }
             columnDictList = listByTableName(tableDict.getTableName());
+            //判断是否定制表(新增情况)
+            if (!tableDict.getCustom()) {
+                return ResultCode.PARAM_NOT_VALID;
+            }
             //字段名
             if (StringUtils.isBlank(tableColumnDict.getColumnName())) {
                 return ResultCode.PARAM_IS_BLANK;
@@ -219,6 +214,18 @@ public class TableColumnDictServiceImpl extends ServiceImpl<TableColumnDictMappe
             TableColumnDict columnDict = mapper.selectById(id);
             columnDictList = listByTableName(columnDict.getTableName());
             tableColumnDict.setColumnType(columnDict.getColumnType());
+            //表
+            QueryWrapper<TableDict> queryWrapper = new QueryWrapper<>();
+            queryWrapper.lambda().eq(TableDict::getTableName, tableColumnDict.getTableName());
+            TableDict tableDict = tableDictMapper.selectOne(queryWrapper);
+            if (tableDict == null) {
+                return ResultCode.PARAM_NOT_VALID;
+            }
+            //是否定制表
+            if (!tableDict.getCustom()) {
+                //非定制表不修改
+                tableColumnDict = columnDict;
+            }
         }
         //字段展示名
         if (StringUtils.isBlank(tableColumnDict.getShowName())) {
