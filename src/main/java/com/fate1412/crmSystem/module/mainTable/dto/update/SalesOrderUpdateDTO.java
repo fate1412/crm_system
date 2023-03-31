@@ -26,12 +26,6 @@ public class SalesOrderUpdateDTO implements Serializable {
     private Long id;
 
     /**
-     * 是否通过
-     */
-    @TableTitle("是否通过")
-    private Boolean isPass;
-
-    /**
      * 客户id
      */
     @TableTitle("客户id")

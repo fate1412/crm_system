@@ -79,6 +79,15 @@ public class TableColumnDictServiceImpl extends ServiceImpl<TableColumnDictMappe
     @Transactional
     public JsonResult<?> addDTO(TableColumnInsertDTO tableColumnInsertDTO) {
         TableColumnDict tableColumnDict = new TableColumnDict();
+        //只允许定制表新增字段
+        QueryWrapper<TableDict> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda()
+                .eq(TableDict::getTableName,tableColumnInsertDTO.getTableName())
+                .eq(TableDict::getCustom,true);
+        List<TableDict> tableDictList = tableDictMapper.selectList(queryWrapper);
+        if (MyCollections.isEmpty(tableDictList)) {
+            throw new DataCheckingException(ResultCode.PARAM_NOT_VALID);
+        }
         BeanUtils.copyProperties(tableColumnInsertDTO, tableColumnDict);
         return add(new MyEntity<TableColumnDict>(tableColumnDict) {
             @Override

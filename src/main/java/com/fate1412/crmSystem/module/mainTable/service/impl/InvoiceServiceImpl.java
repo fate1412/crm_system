@@ -233,10 +233,11 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
             return ResultCode.PARAM_NOT_VALID;
         }
         //物流单号
-        if (StringUtils.isBlank(invoice.getLogisticsId())) {
+        if (invoice.getLogisticsId()!= null && StringUtils.isBlank(invoice.getLogisticsId())) {
             return ResultCode.PARAM_IS_BLANK;
+        } else if (invoice.getLogisticsId()!= null) {
+            invoice.setLogisticsId(invoice.getLogisticsId().trim());
         }
-        invoice.setLogisticsId(invoice.getLogisticsId().trim());
         //计划发货日期
         if (invoice.getPlanInvoiceDate() == null) {
             return ResultCode.PARAM_IS_BLANK;

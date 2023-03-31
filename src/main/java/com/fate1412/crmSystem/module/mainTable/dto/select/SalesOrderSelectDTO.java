@@ -34,7 +34,7 @@ public class SalesOrderSelectDTO implements Serializable {
      */
     private IdToName customerIdR = new IdToName(TableNames.customer);
     
-    @TableTitle(value = "客户id", link = true, disabled = true, formType = FormType.Select,inserted = true)
+    @TableTitle(value = "客户名称", link = true, disabled = true, formType = FormType.Select,inserted = true)
     private Long customerId;
     
     /**
@@ -48,12 +48,6 @@ public class SalesOrderSelectDTO implements Serializable {
      */
     @TableTitle(value = "折后价格/元", disabled = true,formType = FormType.Double)
     private Double discountPrice;
-    
-    /**
-     * 是否通过
-     */
-    @TableTitle(value = "是否通过", inserted = true, formType = FormType.Boolean)
-    private Boolean isPass;
     
     /**
      * 发货状态

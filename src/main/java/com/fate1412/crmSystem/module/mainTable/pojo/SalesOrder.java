@@ -43,12 +43,6 @@ public class SalesOrder implements Serializable {
     private Double discountPrice;
 
     /**
-     * 是否通过
-     */
-    @TableField("is_pass")
-    private Boolean isPass;
-
-    /**
      * 客户id
      */
     @TableField("customer_id")
