@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
@@ -15,7 +16,6 @@ import java.util.List;
 @Slf4j
 @Data
 public class SQLFactor<T> {
-    private String TableName;
     private String field;
     private String factor;
     private T value;
@@ -148,9 +148,20 @@ public class SQLFactor<T> {
     
     
     @Data
+    @NoArgsConstructor
     public static class SQLFactors {
+        private String tableName;
         private final List<SQLFactor<Object>> sqlFactors = new ArrayList<>();
         
+        public SQLFactors(String tableName) {
+            this.tableName = tableName.trim();
+        }
+        
+        public SQLFactors setTableName(String tableName) {
+            this.tableName = tableName.trim();
+            return this;
+        }
+    
         public SQLFactors eq(String field, Object value) {
             return create(field,"EQ",value);
         }
