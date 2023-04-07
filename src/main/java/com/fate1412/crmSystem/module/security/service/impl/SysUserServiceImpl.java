@@ -222,6 +222,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public SysUser thisUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userName = authentication.getName();
+        //匿名用户返回null
+        if ("anonymousUser".equals(userName)) {
+            return null;
+        }
         return getByUserName(userName);
     }
     
@@ -238,6 +242,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public JSONObject getThisUserPermissions() {
         JSONObject jsonObject = new JSONObject();
         SysUser sysUser = thisUser();
+        if(sysUser == null) {
+            return jsonObject;
+        }
         List<SysPermission> permissionList = getPermissionById(sysUser.getUserId());
         List<SysRolePermissionDTO> rolePermissionDTOS = MyCollections.copyListProperties(permissionList, SysRolePermissionDTO::new);
         jsonObject.put("permissions",rolePermissionDTOS);

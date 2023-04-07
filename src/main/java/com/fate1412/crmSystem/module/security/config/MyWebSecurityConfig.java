@@ -22,7 +22,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
-public class MyWebSecurityConfig extends WebSecurityConfigurerAdapter  {
+public class MyWebSecurityConfig extends WebSecurityConfigurerAdapter {
     
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -34,21 +34,12 @@ public class MyWebSecurityConfig extends WebSecurityConfigurerAdapter  {
         http.csrf().disable()
                 .cors(Customizer.withDefaults())
                 .authorizeRequests()
-//                .antMatchers("/static/**").permitAll()
-//                .antMatchers("/user/login").hasAnyAuthority("TEST_R1")
-//                .antMatchers("/user/login").permitAll()
-//                .anyRequest().authenticated()// 用户访问其它URL都必须认证后访问（登录后访问）
                 //登录
                 .and().formLogin()
-//                .permitAll()//允许所有用户
-                //记住我
-//                .and().rememberMe()
-//                .tokenValiditySeconds(60*60)
                 //异常处理(权限拒绝、登录失效等)
                 .and().exceptionHandling()
                 .authenticationEntryPoint(authenticationEntryPoint)
                 .accessDeniedHandler(accessDeniedHandler)
-                
                 //登出
                 .and().logout()
                 .permitAll()//允许所有用户
@@ -59,10 +50,9 @@ public class MyWebSecurityConfig extends WebSecurityConfigurerAdapter  {
                 .maximumSessions(1)
                 .expiredSessionStrategy(sessionInformationExpiredStrategy);
         
-        http.addFilterBefore(usernamePasswordAuthenticationFilter(),UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(usernamePasswordAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
     
-
     
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {

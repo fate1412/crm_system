@@ -37,18 +37,6 @@ public class SysPermission implements Serializable {
     @TableField("permission_code")
     private String permissionCode;
 
-    /**
-     * 创建时间
-     */
-    @TableField("create_time")
-    private Date createTime;
-
-    /**
-     * 更新时间
-     */
-    @TableField("update_time")
-    private Date updateTime;
-
     @TableField("del_flag")
     private Boolean delFlag;
 

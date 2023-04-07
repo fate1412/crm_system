@@ -96,7 +96,7 @@ public class SysUserController {
         return b ? ResultTool.success() : ResultTool.fail();
     }
     
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("permitAll()")
     @GetMapping("/getInfo")
     public JsonResult<?> getInfo() {
         JSONObject jsonObject = sysUserService.getThisUserPermissions();
