@@ -34,6 +34,8 @@ public class TableColumnUpdateDTO {
     @TableTitle(value = "展示顺序",inserted = true)
     private Integer columnIndex;
     
+    @TableField("table_name")
+    private String tableName;
 
     @TableField("disabled")
     @TableTitle(value = "不可修改",formType = FormType.Boolean,inserted = true)

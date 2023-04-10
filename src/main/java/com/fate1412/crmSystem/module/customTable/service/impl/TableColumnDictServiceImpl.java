@@ -85,7 +85,7 @@ public class TableColumnDictServiceImpl extends ServiceImpl<TableColumnDictMappe
             public ResultCode verification(TableColumnDict tableColumnDict) {
                 return isRight(tableColumnDict);
             }
-    
+            
             @Override
             public boolean after(TableColumnDict tableColumnDict) {
                 return afterInsert(tableColumnDict);
@@ -104,11 +104,11 @@ public class TableColumnDictServiceImpl extends ServiceImpl<TableColumnDictMappe
             public ResultCode verification(TableColumnDict tableColumnDict) {
                 return isRight(tableColumnDict);
             }
-    
+            
             @Override
             public boolean after(TableColumnDict tableColumnDict) {
                 TableColumnDict columnDict = mapper.selectById(tableColumnDict.getId());
-                return afterUpdate(columnDict,childList);
+                return afterUpdate(columnDict, childList);
             }
         });
     }
@@ -121,9 +121,9 @@ public class TableColumnDictServiceImpl extends ServiceImpl<TableColumnDictMappe
             throw new DataCheckingException(ResultCode.COMMON_FAIL);
         }
         QueryWrapper<TableDict> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().eq(TableDict::getTableName,tableColumnDict.getTableName());
+        queryWrapper.lambda().eq(TableDict::getTableName, tableColumnDict.getTableName());
         TableDict tableDict = tableDictMapper.selectOne(queryWrapper);
-        tableDictMapper.delColumn(tableDict.getRealTableName(),tableColumnDict.getRealColumnName());
+        tableDictMapper.delColumn(tableDict.getRealTableName(), tableColumnDict.getRealColumnName());
         return true;
     }
     
@@ -131,17 +131,17 @@ public class TableColumnDictServiceImpl extends ServiceImpl<TableColumnDictMappe
     public List<?> getDTOList(List<TableColumnDict> tableColumnDictList) {
         List<OptionDTO> columnType = tableOptionService.getOptions(TableNames.tableColumnDict, "columnType");
         Map<Integer, String> optionMap = MyCollections.list2MapL(columnType, OptionDTO::getOptionKey, OptionDTO::getOption);
-    
+        
         List<TableDict> tableDictList = tableDictMapper.selectList(null);
         Map<Long, String> tableMap = MyCollections.list2MapL(tableDictList, TableDict::getId, TableDict::getShowName);
-    
+        
         List<TableColumnSelectDTO> dtoList = MyCollections.copyListProperties(tableColumnDictList, TableColumnSelectDTO::new);
         dtoList.sort(Comparator.comparingInt(TableColumnSelectDTO::getColumnIndex));
         dtoList.forEach(dto -> {
             Long linkTable = dto.getLinkTable();
             dto.setColumnTypeR(optionMap.get(dto.getColumnType()));
             if (linkTable != null) {
-                dto.setLinkTableR(new IdToName(linkTable,tableMap.get(linkTable),TableNames.tableDict));
+                dto.setLinkTableR(new IdToName(linkTable, tableMap.get(linkTable), TableNames.tableDict));
             }
         });
         return dtoList;
@@ -158,7 +158,7 @@ public class TableColumnDictServiceImpl extends ServiceImpl<TableColumnDictMappe
         QueryWrapper<TableColumnDict> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda()
                 .eq(TableColumnDict::getTableName, like.getTableName())
-                .like(like.getShowName()!=null, TableColumnDict::getShowName, like.getShowName());
+                .like(like.getShowName() != null, TableColumnDict::getShowName, like.getShowName());
         return listByPage(1, 1000, queryWrapper);
     }
     
@@ -246,11 +246,11 @@ public class TableColumnDictServiceImpl extends ServiceImpl<TableColumnDictMappe
             }
         }
         if (tableColumnDict.getLink() && tableColumnDict.getColumnType().equals(FormType.Select.getIndex())) {
-            if (tableColumnDict.getLinkTable()== null) {
+            if (tableColumnDict.getLinkTable() == null) {
                 return ResultCode.PARAM_IS_BLANK;
             }
             QueryWrapper<TableDict> queryWrapper = new QueryWrapper<>();
-            queryWrapper.lambda().eq(TableDict::getId,tableColumnDict.getLinkTable());
+            queryWrapper.lambda().eq(TableDict::getId, tableColumnDict.getLinkTable());
             TableDict tableDict = tableDictMapper.selectOne(queryWrapper);
             if (tableDict == null) {
                 return ResultCode.PARAM_NOT_VALID;
@@ -264,9 +264,9 @@ public class TableColumnDictServiceImpl extends ServiceImpl<TableColumnDictMappe
     
     private Boolean afterInsert(TableColumnDict tableColumnDict) {
         QueryWrapper<TableDict> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().eq(TableDict::getTableName,tableColumnDict.getTableName());
+        queryWrapper.lambda().eq(TableDict::getTableName, tableColumnDict.getTableName());
         TableDict tableDict = tableDictMapper.selectOne(queryWrapper);
-        tableDictMapper.createColumn(tableDict.getRealTableName(),tableColumnDict);
+        tableDictMapper.createColumn(tableDict.getRealTableName(), tableColumnDict);
         return true;
     }
     
