@@ -194,6 +194,10 @@ public class StockListProductServiceImpl extends ServiceImpl<StockListProductMap
     public boolean delByStockListId(Long id) {
         QueryWrapper<StockListProduct> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(StockListProduct::getStockListId, id);
+        List<StockListProduct> stockListProducts = list(queryWrapper);
+        if (MyCollections.isEmpty(stockListProducts)) {
+            return true;
+        }
         return remove(queryWrapper);
     }
     

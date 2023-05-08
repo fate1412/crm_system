@@ -49,20 +49,6 @@ public class StockListInsertDTO implements Serializable {
     private Double prices;
     
     /**
-     * 是否完成备货
-     */
-    @TableField("is_stock_up")
-    @TableTitle("是否完成备货")
-    private Boolean isStockUp;
-    
-    /**
-     * 是否完成受理
-     */
-    @TableField("is_acceptance")
-    @TableTitle("是否完成受理")
-    private Boolean isAcceptance;
-    
-    /**
      * 是否紧急
      */
     @TableField("is_pressing")

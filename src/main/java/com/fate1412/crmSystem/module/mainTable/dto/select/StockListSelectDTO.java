@@ -29,49 +29,49 @@ public class StockListSelectDTO implements Serializable {
     private static final long serialVersionUID = 1L;
     
     @TableId("id")
-    @TableTitle(value = "备货单Id",fixed = true, disabled = true)
+    @TableTitle(value = "备货单Id", fixed = true, disabled = true)
     private Long id;
     
     /**
      * 备货日期
      */
     @TableField("stock_up_date")
-    @TableTitle(value = "备货日期", formType = FormType.Date,inserted = true)
+    @TableTitle(value = "备货日期", formType = FormType.Date, inserted = true)
     private Date stockUpDate;
     
     /**
      * 总价
      */
     @TableField("prices")
-    @TableTitle(value = "总价/元",disabled = true,formType = FormType.Double)
+    @TableTitle(value = "总价/元", disabled = true, formType = FormType.Double)
     private Double prices;
     
     /**
      * 是否完成备货
      */
     @TableField("is_stock_up")
-    @TableTitle(value = "是否完成备货",inserted = true,formType = FormType.Boolean)
+    @TableTitle(value = "是否完成备货", formType = FormType.Boolean, disabled = true)
     private Boolean isStockUp;
     
     /**
      * 是否完成受理
      */
     @TableField("is_acceptance")
-    @TableTitle(value = "是否完成受理",inserted = true,formType = FormType.Boolean)
+    @TableTitle(value = "是否完成受理", formType = FormType.Boolean)
     private Boolean isAcceptance;
     
     /**
      * 是否紧急
      */
     @TableField("is_pressing")
-    @TableTitle(value = "是否紧急",inserted = true,formType = FormType.Boolean)
+    @TableTitle(value = "是否紧急", inserted = true, formType = FormType.Boolean, disabled = true)
     private Boolean isPressing;
     
     /**
      * 负责人
      */
     @TableField("owner")
-    @TableTitle(value = "负责人", link = true, disabled = true, formType = FormType.Select,inserted = true)
+    @TableTitle(value = "负责人", link = true, disabled = true, formType = FormType.Select, inserted = true)
     private Long owner;
     
     private IdToName ownerR = new IdToName(TableNames.sysUser);

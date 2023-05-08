@@ -40,32 +40,11 @@ public class StockListUpdateDTO implements Serializable {
     private Date stockUpDate;
 
     /**
-     * 总价
-     */
-    @TableField("prices")
-    @TableTitle("总价/元")
-    private Double prices;
-
-    /**
-     * 是否完成备货
-     */
-    @TableField("is_stock_up")
-    @TableTitle("是否完成备货")
-    private Boolean isStockUp;
-
-    /**
      * 是否完成受理
      */
     @TableField("is_acceptance")
     @TableTitle("是否完成受理")
     private Boolean isAcceptance;
-
-    /**
-     * 是否紧急
-     */
-    @TableField("is_pressing")
-    @TableTitle("是否紧急")
-    private Boolean isPressing;
 
     /**
      * 负责人

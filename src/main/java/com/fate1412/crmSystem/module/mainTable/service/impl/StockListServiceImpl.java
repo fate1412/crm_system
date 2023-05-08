@@ -26,6 +26,7 @@ import com.fate1412.crmSystem.utils.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -65,28 +66,28 @@ public class StockListServiceImpl extends ServiceImpl<StockListMapper, StockList
         List<Long> updateMemberIds = MyCollections.objects2List(stockLists, StockList::getUpdater);
         List<Long> ownerList = MyCollections.objects2List(stockLists, StockList::getOwner);
         List<Long> userIdList = MyCollections.addList(true, createIds, updateMemberIds, ownerList);
-    
+        
         //用户
         List<SysUser> sysUserList = sysUserService.listByIds(userIdList);
         Map<Long, String> userMap = MyCollections.list2MapL(sysUserList, SysUser::getUserId, SysUser::getRealName);
-    
+        
         //审批
         List<Long> stockListIds = MyCollections.objects2List(stockLists, StockList::getId);
         Map<Long, Integer> passMap = flowSessionService.getPass(TableNames.stockList, stockListIds);
         
-    
+        
         List<StockListSelectDTO> stockListSelectDTOList = MyCollections.copyListProperties(stockLists, StockListSelectDTO::new);
         stockListSelectDTOList.forEach(dto -> {
             Long createId = dto.getCreater();
             Long updater = dto.getUpdater();
             Long owner = dto.getOwner();
-            dto.setCreaterR(new IdToName(createId,userMap.get(createId), TableNames.sysUser));
-            dto.setUpdaterR(new IdToName(updater,userMap.get(updater),TableNames.sysUser));
-            dto.setOwnerR(new IdToName(owner,userMap.get(owner),TableNames.sysUser));
+            dto.setCreaterR(new IdToName(createId, userMap.get(createId), TableNames.sysUser));
+            dto.setUpdaterR(new IdToName(updater, userMap.get(updater), TableNames.sysUser));
+            dto.setOwnerR(new IdToName(owner, userMap.get(owner), TableNames.sysUser));
             Integer pass = passMap.get(dto.getId());
             switch (pass) {
-                case 0: dto.setPass("未审批");break;
-                case 1: dto.setPass("已通过");break;
+                case 0: dto.setPass("未审批"); break;
+                case 1: dto.setPass("已通过"); break;
                 default: dto.setPass("已拒绝");
             }
         });
@@ -99,9 +100,10 @@ public class StockListServiceImpl extends ServiceImpl<StockListMapper, StockList
     }
     
     @Override
+    @Transactional
     public JsonResult<?> updateByDTO(StockListUpdateDTO stockListUpdateDTO) {
         StockList stockList = new StockList();
-        BeanUtils.copyProperties(stockListUpdateDTO,stockList);
+        BeanUtils.copyProperties(stockListUpdateDTO, stockList);
         List<StockListChild> childList = stockListUpdateDTO.getChildList();
         return update(new MyEntity<StockList>(stockList) {
             @Override
@@ -112,12 +114,12 @@ public class StockListServiceImpl extends ServiceImpl<StockListMapper, StockList
                         .setUpdater(sysUser.getUserId());
                 return stockList;
             }
-    
+            
             @Override
             public ResultCode verification(StockList stockList) {
                 return isRight(stockList);
             }
-    
+            
             @Override
             public boolean after(StockList stockList) {
                 return afterUpdateChild(stockList, childList);
@@ -126,9 +128,10 @@ public class StockListServiceImpl extends ServiceImpl<StockListMapper, StockList
     }
     
     @Override
+    @Transactional
     public JsonResult<?> addDTO(StockListInsertDTO stockListInsertDTO) {
         StockList stockList = new StockList();
-        BeanUtils.copyProperties(stockListInsertDTO,stockList);
+        BeanUtils.copyProperties(stockListInsertDTO, stockList);
         List<StockListChild> childList = stockListInsertDTO.getChildList();
         return add(new MyEntity<StockList>(stockList) {
             @Override
@@ -141,12 +144,12 @@ public class StockListServiceImpl extends ServiceImpl<StockListMapper, StockList
                         .setUpdater(sysUser.getUserId());
                 return stockList;
             }
-    
+            
             @Override
             public ResultCode verification(StockList stockList) {
                 return isRight(stockList);
             }
-    
+            
             @Override
             public boolean after(StockList stockList) {
                 flowSessionService.addFlowSession(TableNames.stockList, stockList.getId());
@@ -156,6 +159,7 @@ public class StockListServiceImpl extends ServiceImpl<StockListMapper, StockList
     }
     
     @Override
+    @Transactional
     public boolean delById(Long id) {
         if (stockListProductService.delByStockListId(id)) {
             return removeById(id);
@@ -168,13 +172,13 @@ public class StockListServiceImpl extends ServiceImpl<StockListMapper, StockList
         StockListSelectDTO like = selectPage.getLike();
         QueryWrapper<StockList> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda()
-                .like(like.getId() != null, StockList::getId,like.getId());
-        return listByPage(selectPage.getPage(),selectPage.getPageSize(),queryWrapper);
+                .like(like.getId() != null, StockList::getId, like.getId());
+        return listByPage(selectPage.getPage(), selectPage.getPageSize(), queryWrapper);
     }
     
     @Override
     public TableResultData getColumns() {
-        return getColumns(TableNames.stockList, new StockListSelectDTO(),tableOptionService);
+        return getColumns(TableNames.stockList, new StockListSelectDTO(), tableOptionService);
     }
     
     @Override
@@ -182,18 +186,17 @@ public class StockListServiceImpl extends ServiceImpl<StockListMapper, StockList
         QueryWrapper<StockList> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda()
                 .select(StockList::getId)
-                .like(StockList::getId,nameLike.trim());
-        IPage<StockList> iPage = new Page<>(page,10);
-        stockListMapper.selectPage(iPage,queryWrapper);
+                .like(StockList::getId, nameLike.trim());
+        IPage<StockList> iPage = new Page<>(page, 10);
+        stockListMapper.selectPage(iPage, queryWrapper);
         return IdToName.createList2(iPage.getRecords(), StockList::getId, StockList::getId);
     }
     
     private ResultCode isRight(StockList stockList) {
-        //总价
-        if (stockList.getPrices() != null && stockList.getPrices() <0) {
-            return ResultCode.PARAM_NOT_VALID;
-        }
-        if (stockList.getOwner() != null) {
+        //负责人
+        if (stockList.getOwner() == null) {
+            return ResultCode.PARAM_IS_BLANK;
+        } else {
             SysUser user = sysUserService.getById(stockList.getOwner());
             if (user == null) {
                 return ResultCode.PARAM_NOT_VALID;
@@ -211,22 +214,22 @@ public class StockListServiceImpl extends ServiceImpl<StockListMapper, StockList
             }
             return false;
         }
-    
+        
         childList = childList.stream().peek(t -> t.setStockListId(stockList.getId())).collect(Collectors.toList());
         
         QueryWrapper<StockListProduct> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(StockListProduct::getStockListId, stockList.getId());
         List<StockListProduct> list = stockListProductService.list(queryWrapper);
-    
+        
         List<StockListProduct> children = MyCollections.copyListProperties(childList, StockListProduct::new);
-    
+        
         //删除
         List<StockListProduct> delDifference = MyCollections.difference(list, children, StockListProduct::getId);
         //更新
         List<StockListProduct> intersection = MyCollections.intersection(children, list, StockListProduct::getId);
         //新增
         List<StockListProduct> addDifference = MyCollections.removeAll(children, intersection);
-    
+        
         //删除备货单产品
         List<Long> ids = MyCollections.objects2List(delDifference, StockListProduct::getId);
         stockListProductService.delByIds(ids);
