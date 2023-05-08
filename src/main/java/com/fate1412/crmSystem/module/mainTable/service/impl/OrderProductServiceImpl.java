@@ -56,7 +56,7 @@ public class OrderProductServiceImpl extends ServiceImpl<OrderProductMapper, Ord
     @Transactional
     public JsonResult<?> updateByDTO(OrderProductUpdateDTO orderProductUpdateDTO) {
         OrderProduct orderProduct = new OrderProduct();
-        BeanUtils.copyProperties(orderProductUpdateDTO,orderProduct);
+        BeanUtils.copyProperties(orderProductUpdateDTO, orderProduct);
         return updateByEntity(orderProduct);
     }
     
@@ -66,6 +66,8 @@ public class OrderProductServiceImpl extends ServiceImpl<OrderProductMapper, Ord
         SysUser sysUser = sysUserService.thisUser();
         //查询产品
         Product product = productMapper.selectById(orderProduct.getProductId());
+        //查询旧的订单产品
+        OrderProduct oldOrderProduct = orderProductMapper.selectById(orderProduct.getId());
         return update(new MyEntity<OrderProduct>(orderProduct) {
             @Override
             public OrderProduct set(OrderProduct orderProduct) {
@@ -76,14 +78,15 @@ public class OrderProductServiceImpl extends ServiceImpl<OrderProductMapper, Ord
                         .setUpdater(sysUser.getUserId());
                 return orderProduct;
             }
-    
+            
             @Override
             public ResultCode verification(OrderProduct orderProduct) {
                 return isRight(orderProduct);
             }
-    
+            
             @Override
             public boolean after(OrderProduct orderProduct) {
+                afterUpdateProduct(oldOrderProduct, orderProduct);
                 return afterUpdateSalesOrder(orderProduct.getSalesOrderId());
             }
         });
@@ -93,7 +96,7 @@ public class OrderProductServiceImpl extends ServiceImpl<OrderProductMapper, Ord
     @Transactional
     public JsonResult<?> addDTO(OrderProductInsertDTO orderProductInsertDTO) {
         OrderProduct orderProduct = new OrderProduct();
-        BeanUtils.copyProperties(orderProductInsertDTO,orderProduct);
+        BeanUtils.copyProperties(orderProductInsertDTO, orderProduct);
         return addEntity(orderProduct);
     }
     
@@ -115,14 +118,15 @@ public class OrderProductServiceImpl extends ServiceImpl<OrderProductMapper, Ord
                         .setUpdater(sysUser.getUserId());
                 return orderProduct;
             }
-    
+            
             @Override
             public ResultCode verification(OrderProduct orderProduct) {
                 return isRight(orderProduct);
             }
-    
+            
             @Override
             public boolean after(OrderProduct orderProduct) {
+                afterUpdateProduct(null, orderProduct);
                 return afterUpdateSalesOrder(orderProduct.getSalesOrderId());
             }
         });
@@ -132,6 +136,7 @@ public class OrderProductServiceImpl extends ServiceImpl<OrderProductMapper, Ord
     public boolean delById(Long id) {
         OrderProduct orderProduct = getById(id);
         if (removeById(id)) {
+            afterUpdateProduct(orderProduct, null);
             return afterUpdateSalesOrder(orderProduct.getSalesOrderId());
         }
         return false;
@@ -144,6 +149,9 @@ public class OrderProductServiceImpl extends ServiceImpl<OrderProductMapper, Ord
         }
         List<OrderProduct> orderProductList = listByIds(ids);
         if (removeByIds(ids)) {
+            orderProductList.forEach(orderProduct -> {
+                afterUpdateProduct(orderProduct, null);
+            });
             return afterUpdateSalesOrder(orderProductList.get(0).getSalesOrderId());
         }
         return false;
@@ -152,8 +160,12 @@ public class OrderProductServiceImpl extends ServiceImpl<OrderProductMapper, Ord
     @Override
     public boolean delBySalesOrderId(Long id) {
         QueryWrapper<OrderProduct> queryWrapper = new QueryWrapper<>();
-        queryWrapper.lambda().eq(OrderProduct::getSalesOrderId,id);
+        queryWrapper.lambda().eq(OrderProduct::getSalesOrderId, id);
+        List<OrderProduct> orderProductList = list(queryWrapper);
         remove(queryWrapper);
+        orderProductList.forEach(orderProduct -> {
+            afterUpdateProduct(orderProduct, null);
+        });
         return afterUpdateSalesOrder(id);
     }
     
@@ -162,10 +174,10 @@ public class OrderProductServiceImpl extends ServiceImpl<OrderProductMapper, Ord
         OrderProductSelectDTO like = selectPage.getLike();
         QueryWrapper<OrderProduct> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda()
-                .like(like.getId() != null, OrderProduct::getId,like.getId())
-                .like(like.getSalesOrderId() != null, OrderProduct::getSalesOrderId,like.getSalesOrderId())
-                .like(like.getProductId() != null, OrderProduct::getProductId,like.getProductId());
-        return listByPage(selectPage.getPage(),selectPage.getPageSize(),queryWrapper);
+                .like(like.getId() != null, OrderProduct::getId, like.getId())
+                .like(like.getSalesOrderId() != null, OrderProduct::getSalesOrderId, like.getSalesOrderId())
+                .like(like.getProductId() != null, OrderProduct::getProductId, like.getProductId());
+        return listByPage(selectPage.getPage(), selectPage.getPageSize(), queryWrapper);
     }
     
     @Override
@@ -177,28 +189,28 @@ public class OrderProductServiceImpl extends ServiceImpl<OrderProductMapper, Ord
         List<Long> createIds = MyCollections.objects2List(orderProductList, OrderProduct::getCreater);
         List<Long> updateMemberIds = MyCollections.objects2List(orderProductList, OrderProduct::getUpdater);
         List<Long> userIdList = MyCollections.addList(true, createIds, updateMemberIds);
-    
+        
         List<SysUser> sysUserList = sysUserService.listByIds(userIdList);
         Map<Long, String> userMap = MyCollections.list2MapL(sysUserList, SysUser::getUserId, SysUser::getRealName);
-    
+        
         //产品
         List<Long> ProductIdList = MyCollections.objects2List(orderProductList, OrderProduct::getProductId);
-    
+        
         List<Product> productList = productMapper.selectBatchIds(ProductIdList);
         Map<Long, String> productMap = MyCollections.list2MapL(productList, Product::getId, Product::getName);
-    
-    
+        
+        
         List<OrderProductSelectDTO> orderProductSelectDTOList = MyCollections.copyListProperties(orderProductList, OrderProductSelectDTO::new);
         orderProductSelectDTOList.forEach(dto -> {
             Long createId = dto.getCreater();
             Long updateMemberId = dto.getUpdater();
             Long productId = dto.getProductId();
             Long salesOrderId = dto.getSalesOrderId();
-            dto.setCreaterR(new IdToName(createId,userMap.get(createId), TableNames.sysUser));
-            dto.setUpdaterR(new IdToName(updateMemberId,userMap.get(updateMemberId),TableNames.sysUser));
-            dto.setSalesOrderIdR(new IdToName(salesOrderId, salesOrderId.toString(),"salesOrder"));
-            dto.setProductIdR(new IdToName(productId,productMap.get(productId),"product"));
-        
+            dto.setCreaterR(new IdToName(createId, userMap.get(createId), TableNames.sysUser));
+            dto.setUpdaterR(new IdToName(updateMemberId, userMap.get(updateMemberId), TableNames.sysUser));
+            dto.setSalesOrderIdR(new IdToName(salesOrderId, salesOrderId.toString(), "salesOrder"));
+            dto.setProductIdR(new IdToName(productId, productMap.get(productId), "product"));
+            
         });
         return orderProductSelectDTOList;
     }
@@ -210,12 +222,12 @@ public class OrderProductServiceImpl extends ServiceImpl<OrderProductMapper, Ord
     
     @Override
     public TableResultData getColumns() {
-        return getColumns(TableNames.orderProduct, new OrderProductSelectDTO(),tableOptionService);
+        return getColumns(TableNames.orderProduct, new OrderProductSelectDTO(), tableOptionService);
     }
     
     @Override
     public <D> TableResultData getColumns(D dto) {
-        return getColumns(TableNames.orderProduct, dto,tableOptionService);
+        return getColumns(TableNames.orderProduct, dto, tableOptionService);
     }
     
     @Override
@@ -223,9 +235,9 @@ public class OrderProductServiceImpl extends ServiceImpl<OrderProductMapper, Ord
         QueryWrapper<OrderProduct> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda()
                 .select(OrderProduct::getId)
-                .like(OrderProduct::getId,nameLike.trim());
-        IPage<OrderProduct> iPage = new Page<>(page,10);
-        orderProductMapper.selectPage(iPage,queryWrapper);
+                .like(OrderProduct::getId, nameLike.trim());
+        IPage<OrderProduct> iPage = new Page<>(page, 10);
+        orderProductMapper.selectPage(iPage, queryWrapper);
         return IdToName.createList2(iPage.getRecords(), OrderProduct::getId, OrderProduct::getId);
     }
     
@@ -266,6 +278,10 @@ public class OrderProductServiceImpl extends ServiceImpl<OrderProductMapper, Ord
         if (orderProduct.getProductNum() <= 0 || orderProduct.getProductNum() > stock) {
             return ResultCode.PARAM_NOT_VALID;
         }
+        //折扣
+        if (orderProduct.getDiscount() <= 0 || orderProduct.getDiscount() > 100) {
+            return ResultCode.PARAM_NOT_VALID;
+        }
         //发货数量
         if (orderProduct.getInvoiceNum() != null && (orderProduct.getInvoiceNum() < 0 || orderProduct.getInvoiceNum() > orderProduct.getProductNum())) {
             return ResultCode.PARAM_NOT_VALID;
@@ -273,7 +289,7 @@ public class OrderProductServiceImpl extends ServiceImpl<OrderProductMapper, Ord
         return ResultCode.SUCCESS;
     }
     
-    private boolean  afterUpdateSalesOrder(Long salesOrderId) {
+    private boolean afterUpdateSalesOrder(Long salesOrderId) {
         List<OrderProductSelectDTO> salesOrderDTOList = getDTOBySalesOrderId(salesOrderId);
         if (MyCollections.isEmpty(salesOrderDTOList)) {
             SalesOrder salesOrder = new SalesOrder();
@@ -296,5 +312,30 @@ public class OrderProductServiceImpl extends ServiceImpl<OrderProductMapper, Ord
                 .setOriginalPrice(originalPrice)
                 .setDiscountPrice(discountPrice);
         return salesOrderMapper.updateById(salesOrder) > 0;
+    }
+    
+    private boolean afterUpdateProduct(OrderProduct oldOrderProduct, OrderProduct orderProduct) {
+        Integer newStock;
+        Long id;
+        Product oldProduct;
+        if (oldOrderProduct == null && orderProduct == null) {
+            return false;
+        } else {
+            id = oldOrderProduct == null ? orderProduct.getProductId() : oldOrderProduct.getProductId();
+            oldProduct = productMapper.selectById(id);
+        }
+        if (oldOrderProduct == null) {
+            newStock = orderProduct.getProductNum();
+        } else if (orderProduct == null) {
+            newStock = -oldOrderProduct.getProductNum();
+        } else {
+            newStock = orderProduct.getProductNum() - oldOrderProduct.getProductNum();
+        }
+        newStock = oldProduct.getStock() - newStock;
+        Product product = new Product();
+        product
+                .setId(id)
+                .setStock(newStock);
+        return productMapper.updateById(product) > 0;
     }
 }

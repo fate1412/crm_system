@@ -68,7 +68,7 @@ public class OrderProductSelectDTO implements Serializable {
      * 原总价
      */
     @TableField("original_prices")
-    @TableTitle(value = "原总价",formType = FormType.Double)
+    @TableTitle(value = "原总价",formType = FormType.Double, disabled = true)
     private Double originalPrices;
     
     /**
@@ -82,7 +82,7 @@ public class OrderProductSelectDTO implements Serializable {
      * 折后总价
      */
     @TableField("discount_prices")
-    @TableTitle(value = "折后总价",formType = FormType.Double)
+    @TableTitle(value = "折后总价",formType = FormType.Double, disabled = true)
     private Double discountPrices;
 
     /**

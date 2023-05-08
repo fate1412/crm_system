@@ -247,7 +247,7 @@ public class SalesOrderServiceImpl extends ServiceImpl<SalesOrderMapper, SalesOr
         if (salesOrder.getInvoiceStatus() == null) {
             return ResultCode.PARAM_IS_BLANK;
         }
-        if (tableOptionService.selectOptions(TableNames.salesOrder,"'invoiceStatus'",salesOrder.getInvoiceStatus())) {
+        if (tableOptionService.selectOptions(TableNames.salesOrder,"invoiceStatus'",salesOrder.getInvoiceStatus())) {
             return ResultCode.PARAM_NOT_VALID;
         }
         return ResultCode.SUCCESS;
