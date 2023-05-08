@@ -56,13 +56,6 @@ public class InvoiceInsertDTO implements Serializable {
     private Date invoiceDate;
     
     /**
-     * 是否发货
-     */
-    @TableField("is_invoice")
-    @TableTitle("是否发货")
-    private Boolean isInvoice;
-    
-    /**
      * 物流单号
      */
     @TableField("logistics_id")

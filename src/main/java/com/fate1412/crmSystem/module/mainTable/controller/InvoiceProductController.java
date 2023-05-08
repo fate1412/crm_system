@@ -70,7 +70,7 @@ public class InvoiceProductController {
     @PreAuthorize("hasAnyAuthority('InvoiceProduct_Delete')")
     @DeleteMapping("/delete")
     public JsonResult<?> delete(@RequestBody InvoiceProductSelectDTO invoiceProductSelectDTO) {
-        boolean b = invoiceProductService.removeById(invoiceProductSelectDTO.getId());
+        boolean b = invoiceProductService.delById(invoiceProductSelectDTO.getId());
         return ResultTool.create(b);
     }
     

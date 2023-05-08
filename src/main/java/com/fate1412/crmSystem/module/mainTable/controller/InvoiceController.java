@@ -99,5 +99,12 @@ public class InvoiceController {
         List<IdToName> options = invoiceService.getOptions(nameLike, page);
         return ResultTool.success(options);
     }
+    
+    @PreAuthorize("hasAnyAuthority('Invoice_Edit')")
+    @GetMapping("/invoice")
+    public JsonResult<?> invoice(@Param("id") Long id) {
+        boolean b = invoiceService.invoiceById(id);
+        return ResultTool.create(b);
+    }
 }
 

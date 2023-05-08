@@ -43,7 +43,7 @@ public class InvoiceSelectDTO implements Serializable {
      * 客户id
      */
     @TableField("customer_id")
-    @TableTitle(value = "客户名称", link = true, disabled = true, formType = FormType.Select,inserted = true)
+    @TableTitle(value = "客户名称", link = true, disabled = true, formType = FormType.Select)
     private Long customerId;
     
     private IdToName customerIdR = new IdToName(TableNames.customer);
@@ -66,7 +66,7 @@ public class InvoiceSelectDTO implements Serializable {
      * 是否发货
      */
     @TableField("is_invoice")
-    @TableTitle(value = "是否发货",inserted = true,formType = FormType.Boolean)
+    @TableTitle(value = "是否发货",formType = FormType.Boolean, disabled = true)
     private Boolean isInvoice;
     
     /**

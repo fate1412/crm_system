@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fate1412.crmSystem.base.MyPage;
 import com.fate1412.crmSystem.base.SelectPage;
+import com.fate1412.crmSystem.exception.DataCheckingException;
 import com.fate1412.crmSystem.module.customTable.service.ITableOptionService;
 import com.fate1412.crmSystem.module.mainTable.constant.TableNames;
 import com.fate1412.crmSystem.module.mainTable.dto.select.InvoiceProductSelectDTO;
@@ -20,6 +21,7 @@ import com.fate1412.crmSystem.module.mainTable.pojo.Product;
 import com.fate1412.crmSystem.module.mainTable.service.IInvoiceProductService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fate1412.crmSystem.module.mainTable.service.IOrderProductService;
+import com.fate1412.crmSystem.module.mainTable.service.IProductService;
 import com.fate1412.crmSystem.module.security.pojo.SysUser;
 import com.fate1412.crmSystem.module.security.service.ISysUserService;
 import com.fate1412.crmSystem.utils.*;
@@ -48,6 +50,8 @@ public class InvoiceProductServiceImpl extends ServiceImpl<InvoiceProductMapper,
     @Autowired
     private ProductMapper productMapper;
     @Autowired
+    private IProductService productService;
+    @Autowired
     private ITableOptionService tableOptionService;
     @Autowired
     private ISysUserService sysUserService;
@@ -63,6 +67,10 @@ public class InvoiceProductServiceImpl extends ServiceImpl<InvoiceProductMapper,
     
     @Override
     public JsonResult<?> updateByEntity(InvoiceProduct invoiceProduct) {
+        Invoice invoice = invoiceMapper.selectById(invoiceProduct.getInvoiceId());
+        if (invoice.getIsInvoice()) {
+            throw new DataCheckingException(ResultCode.INVOICE_ERROR1);
+        }
         InvoiceProduct old = getById(invoiceProduct.getId());
         return update(new MyEntity<InvoiceProduct>(invoiceProduct) {
             @Override
@@ -95,6 +103,10 @@ public class InvoiceProductServiceImpl extends ServiceImpl<InvoiceProductMapper,
     
     @Override
     public JsonResult<?> addEntity(InvoiceProduct invoiceProduct) {
+        Invoice invoice = invoiceMapper.selectById(invoiceProduct.getInvoiceId());
+        if (invoice.getIsInvoice()) {
+            throw new DataCheckingException(ResultCode.INVOICE_ERROR1);
+        }
         return add(new MyEntity<InvoiceProduct>(invoiceProduct) {
             @Override
             public InvoiceProduct set(InvoiceProduct invoiceProduct) {
@@ -136,6 +148,13 @@ public class InvoiceProductServiceImpl extends ServiceImpl<InvoiceProductMapper,
     
     @Override
     public boolean delById(Long id) {
+        InvoiceProduct invoiceProduct = getById(id);
+        Invoice invoice = invoiceMapper.selectById(invoiceProduct.getInvoiceId());
+        if (invoice.getIsInvoice()) {
+            Map<Long,Integer> map = new HashMap<>();
+            map.put(invoiceProduct.getProductId(),-invoiceProduct.getInvoiceNum());
+            productService.invoice(map);
+        }
         return delByIds(MyCollections.toList(id));
     }
     
@@ -153,10 +172,18 @@ public class InvoiceProductServiceImpl extends ServiceImpl<InvoiceProductMapper,
     
     @Override
     public boolean delByInvoiceId(Invoice invoice) {
+        invoice = invoiceMapper.selectById(invoice.getId());
         QueryWrapper<InvoiceProduct> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(InvoiceProduct::getInvoiceId, invoice.getId());
         List<InvoiceProduct> list = list(queryWrapper);
         remove(queryWrapper);
+        if (invoice.getIsInvoice()) {
+            Map<Long,Integer> map = new HashMap<>();
+            list.forEach(invoiceProduct -> {
+                map.put(invoiceProduct.getProductId(),-invoiceProduct.getInvoiceNum());
+            });
+            productService.invoice(map);
+        }
         Map<Long, Integer> map = MyCollections.list2MapL(list, InvoiceProduct::getProductId, InvoiceProduct::getInvoiceNum);
         return updateOrderProduct(map, invoice);
     }

@@ -29,5 +29,10 @@ public interface IInvoiceService extends IService<Invoice>, MyBaseService<Invoic
     
     boolean delById(Long id);
     
+    /**
+     * 发货
+     */
+    boolean invoiceById(Long id);
+    
     MyPage listByPage(SelectPage<InvoiceSelectDTO> selectPage);
 }

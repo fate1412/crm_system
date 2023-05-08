@@ -12,7 +12,6 @@ import com.fate1412.crmSystem.module.mainTable.constant.TableNames;
 import com.fate1412.crmSystem.module.mainTable.dto.insert.ProductInsertDTO;
 import com.fate1412.crmSystem.module.mainTable.dto.select.ProductSelectDTO;
 import com.fate1412.crmSystem.module.mainTable.dto.update.ProductUpdateDTO;
-import com.fate1412.crmSystem.module.mainTable.pojo.Invoice;
 import com.fate1412.crmSystem.module.mainTable.pojo.Product;
 import com.fate1412.crmSystem.module.mainTable.mapper.ProductMapper;
 import com.fate1412.crmSystem.module.mainTable.service.IProductService;
@@ -147,6 +146,23 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
                 .like(like.getId() != null, Product::getId,like.getId())
                 .like(like.getName() != null, Product::getName,like.getName());
         return listByPage(selectPage.getPage(),selectPage.getPageSize(),queryWrapper);
+    }
+    
+    @Override
+    @Transactional
+    public boolean invoice(Map<Long, Integer> map) {
+        List<Long> ids = MyCollections.map2listK(map);
+        if (MyCollections.isEmpty(ids)) {
+            return true;
+        }
+        List<Product> productList = productMapper.selectBatchIds(ids);
+        productList.forEach(product -> {
+            Integer realStock = product.getRealStock();
+            Integer salesVolume = product.getSalesVolume();
+            product.setRealStock(realStock - map.get(product.getId()));
+            product.setSalesVolume(salesVolume + map.get(product.getId()));
+        });
+        return updateBatchById(productList);
     }
     
     @Override

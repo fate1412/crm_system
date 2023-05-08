@@ -10,6 +10,9 @@ import com.fate1412.crmSystem.module.mainTable.pojo.Product;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.fate1412.crmSystem.utils.JsonResult;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * <p>
  * 产品 服务类
@@ -25,4 +28,6 @@ public interface IProductService extends IService<Product>, MyBaseService<Produc
     JsonResult<?> addDTO(ProductInsertDTO productInsertDTO);
     
     MyPage listByPage(SelectPage<ProductSelectDTO> selectPage);
+    
+    boolean invoice(Map<Long,Integer> map);
 }

@@ -29,7 +29,10 @@ public enum ResultCode {
     NO_PERMISSION(3001, "没有权限"),
     UPDATE_ERROR(3002,"更新失败"),
     INSERT_ERROR(3003,"新增失败"),
-    APPROVE(3004,"已审批");
+    APPROVE(3004,"已审批"),
+    INVOICE_ERROR1(3005,"已发货，不可修改！"),
+    INVOICE_ERROR2(3006,"未填写必备参数！"),
+    INVOICE_ERROR3(3007,"该订单无需再发货！");
     
     private Integer code;
     private String message;

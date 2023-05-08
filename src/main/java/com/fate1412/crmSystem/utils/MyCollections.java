@@ -100,10 +100,21 @@ public class MyCollections {
     /**
      * map转List集合
      */
-    public static <K,V> List<V> map2list(Map<K,V> map) {
+    public static <K,V> List<V> map2listV(Map<K,V> map) {
         List<V> list = new ArrayList<>();
         map.forEach((k,v)-> {
             list.add(v);
+        });
+        return list;
+    }
+    
+    /**
+     * map转List集合
+     */
+    public static <K,V> List<K> map2listK(Map<K,V> map) {
+        List<K> list = new ArrayList<>();
+        map.forEach((k,v)-> {
+            list.add(k);
         });
         return list;
     }
