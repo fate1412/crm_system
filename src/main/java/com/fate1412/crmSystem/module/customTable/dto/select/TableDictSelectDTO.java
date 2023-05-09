@@ -28,19 +28,21 @@ public class TableDictSelectDTO implements Serializable {
 
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
-
+    
+    @TableField("show_name")
+    @TableTitle(value = "表名称",inserted = true)
+    private String showName;
+    
+    @TableField("table_name")
+    @TableTitle(value = "tableName",inserted = true)
+    private String tableName;
+    
     @TableField("real_table_name")
     @NotBlank
     @TableTitle(value = "真实表名",disabled = true,inserted = true)
     private String realTableName;
 
-    @TableField("table_name")
-    @TableTitle(value = "tableName",inserted = true)
-    private String tableName;
-
-    @TableField("show_name")
-    @TableTitle(value = "表名",inserted = true)
-    private String showName;
+    
     
     @TableField("custom")
     private Boolean custom;

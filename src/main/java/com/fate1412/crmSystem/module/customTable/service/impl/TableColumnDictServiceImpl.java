@@ -245,6 +245,7 @@ public class TableColumnDictServiceImpl extends ServiceImpl<TableColumnDictMappe
                 }
             }
         }
+        //可链接
         if (tableColumnDict.getLink() && tableColumnDict.getColumnType().equals(FormType.Select.getIndex())) {
             if (tableColumnDict.getLinkTable() == null) {
                 return ResultCode.PARAM_IS_BLANK;

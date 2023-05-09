@@ -16,6 +16,14 @@ import com.fate1412.crmSystem.module.customTable.mapper.TableDictMapper;
 import com.fate1412.crmSystem.module.customTable.service.ITableDictService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fate1412.crmSystem.module.customTable.service.ITableOptionService;
+import com.fate1412.crmSystem.module.flow.mapper.SysFlowMapper;
+import com.fate1412.crmSystem.module.flow.mapper.SysFlowPointMapper;
+import com.fate1412.crmSystem.module.flow.mapper.SysFlowSessionMapper;
+import com.fate1412.crmSystem.module.flow.pojo.SysFlow;
+import com.fate1412.crmSystem.module.flow.pojo.SysFlowPoint;
+import com.fate1412.crmSystem.module.flow.pojo.SysFlowSession;
+import com.fate1412.crmSystem.module.flow.service.ISysFlowService;
+import com.fate1412.crmSystem.module.flow.service.ISysFlowSessionService;
 import com.fate1412.crmSystem.module.mainTable.constant.TableNames;
 import com.fate1412.crmSystem.utils.*;
 import org.apache.commons.lang3.StringUtils;
@@ -43,6 +51,12 @@ public class TableDictServiceImpl extends ServiceImpl<TableDictMapper, TableDict
     private TableColumnDictMapper tableColumnDictMapper;
     @Autowired
     private ITableOptionService tableOptionService;
+    @Autowired
+    private SysFlowMapper flowMapper;
+    @Autowired
+    private SysFlowSessionMapper flowSessionMapper;
+    @Autowired
+    private SysFlowPointMapper flowPointMapper;
     
     
     @Override
@@ -93,6 +107,28 @@ public class TableDictServiceImpl extends ServiceImpl<TableDictMapper, TableDict
     @Transactional
     public boolean delById(Long id) {
         TableDict tableDict = mapper.selectById(id);
+        //查询该表的审批流程
+        QueryWrapper<SysFlow> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(SysFlow::getRelevanceTable, id);
+        SysFlow sysFlow = flowMapper.selectOne(queryWrapper);
+        //删除该表相关所有流程
+        if (sysFlow != null) {
+            //查询该表下所有流程
+            QueryWrapper<SysFlowSession> sessionWrapper = new QueryWrapper<>();
+            sessionWrapper.lambda().eq(SysFlowSession::getFlowId, sysFlow.getId());
+            List<SysFlowSession> list = flowSessionMapper.selectList(sessionWrapper);
+            //有流程
+            if (!MyCollections.isEmpty(list)) {
+                //删除该流程下的所有流程节点
+                QueryWrapper<SysFlowPoint> pointWrapper = new QueryWrapper<>();
+                pointWrapper.lambda().eq(SysFlowPoint::getFlowId, sysFlow.getId());
+                flowPointMapper.delete(pointWrapper);
+                //删除所有流程
+                flowSessionMapper.delete(sessionWrapper);
+            }
+            //删除审批流程
+            flowMapper.delete(queryWrapper);
+        }
         if (removeById(id)) {
             QueryWrapper<TableColumnDict> columnDictQueryWrapper = new QueryWrapper<>();
             columnDictQueryWrapper.lambda().eq(TableColumnDict::getTableName, tableDict.getTableName());

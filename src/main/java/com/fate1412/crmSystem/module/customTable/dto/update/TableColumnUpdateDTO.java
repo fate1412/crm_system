@@ -40,14 +40,6 @@ public class TableColumnUpdateDTO {
     @TableField("disabled")
     @TableTitle(value = "不可修改",formType = FormType.Boolean,inserted = true)
     private Boolean disabled;
-
-    @TableField("link")
-    @TableTitle(value = "可链接(非主键)",formType = FormType.Boolean,inserted = true)
-    private Boolean link;
-    
-    @TableField("link_table")
-    @TableTitle(value = "链接关联表",inserted = true)
-    private Long linkTable;
     
     private List<TableColumnChild> childList;
 

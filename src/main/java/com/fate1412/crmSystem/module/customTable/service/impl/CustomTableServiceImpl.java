@@ -385,24 +385,28 @@ public class CustomTableServiceImpl implements ICustomTableService {
     
     private Object getColumnData(TableColumnDict column, JSONObject jsonObject) {
         Integer columnType = column.getColumnType();
-        if (columnType.equals(FormType.Select.getIndex())) {
-            return jsonObject.getString(column.getColumnName().trim());
-        } else if (columnType.equals(FormType.Date.getIndex()) || columnType.equals(FormType.DateTime.getIndex())) {
-            return jsonObject.getDate(column.getColumnName());
-        } else if (columnType.equals(FormType.Boolean.getIndex())) {
-            return jsonObject.getBoolean(column.getColumnName());
-        } else if (columnType.equals(FormType.String.getIndex())) {
-            return jsonObject.getString(column.getColumnName().trim());
-        } else if (columnType.equals(FormType.Integer.getIndex())) {
-            return jsonObject.getInteger(column.getColumnName());
-        } else if (columnType.equals(FormType.Double.getIndex())) {
-            return jsonObject.getDouble(column.getColumnName());
-        } else if (columnType.equals(FormType.Number.getIndex())) {
-            return jsonObject.getString(column.getColumnName().trim());
-        } else if (columnType.equals(FormType.Long.getIndex())) {
-            return jsonObject.getLong(column.getColumnName());
-        } else {
-            throw new DataCheckingException(ResultCode.PARAM_TYPE_ERROR);
+        try {
+            if (columnType.equals(FormType.Select.getIndex())) {
+                return jsonObject.getString(column.getColumnName().trim());
+            } else if (columnType.equals(FormType.Date.getIndex()) || columnType.equals(FormType.DateTime.getIndex())) {
+                return jsonObject.getDate(column.getColumnName());
+            } else if (columnType.equals(FormType.Boolean.getIndex())) {
+                return jsonObject.getBoolean(column.getColumnName());
+            } else if (columnType.equals(FormType.String.getIndex())) {
+                return jsonObject.getString(column.getColumnName().trim());
+            } else if (columnType.equals(FormType.Integer.getIndex())) {
+                return jsonObject.getInteger(column.getColumnName());
+            } else if (columnType.equals(FormType.Double.getIndex())) {
+                return jsonObject.getDouble(column.getColumnName());
+            } else if (columnType.equals(FormType.Number.getIndex())) {
+                return jsonObject.getString(column.getColumnName().trim());
+            } else if (columnType.equals(FormType.Long.getIndex())) {
+                return jsonObject.getLong(column.getColumnName());
+            } else {
+                throw new DataCheckingException(ResultCode.PARAM_TYPE_ERROR);
+            }
+        } catch (Exception e) {
+            throw new DataCheckingException(ResultCode.PARAM_NOT_VALID);
         }
     }
 }

@@ -59,11 +59,11 @@ public class TableColumnSelectDTO {
     private Boolean inserted;
 
     @TableField("link")
-    @TableTitle(value = "可链接",formType = FormType.Boolean,inserted = true)
+    @TableTitle(value = "可链接",formType = FormType.Boolean,inserted = true, disabled = true)
     private Boolean link;
     
     @TableField("link_table")
-    @TableTitle(value = "链接关联表",inserted = true,formType = FormType.Select, link = true)
+    @TableTitle(value = "链接关联表",inserted = true,formType = FormType.Select, link = true, disabled = true)
     private Long linkTable;
     
     private IdToName linkTableR = new IdToName(TableNames.tableDict);
