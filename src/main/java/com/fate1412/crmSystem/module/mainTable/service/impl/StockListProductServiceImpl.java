@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fate1412.crmSystem.base.MyPage;
 import com.fate1412.crmSystem.base.SelectPage;
+import com.fate1412.crmSystem.exception.DataCheckingException;
 import com.fate1412.crmSystem.module.customTable.service.ITableOptionService;
 import com.fate1412.crmSystem.module.mainTable.constant.TableNames;
 import com.fate1412.crmSystem.module.mainTable.dto.insert.StockListProductInsertDTO;
@@ -15,6 +16,7 @@ import com.fate1412.crmSystem.module.mainTable.mapper.ProductMapper;
 import com.fate1412.crmSystem.module.mainTable.mapper.StockListMapper;
 import com.fate1412.crmSystem.module.mainTable.pojo.*;
 import com.fate1412.crmSystem.module.mainTable.mapper.StockListProductMapper;
+import com.fate1412.crmSystem.module.mainTable.service.IProductService;
 import com.fate1412.crmSystem.module.mainTable.service.IStockListProductService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fate1412.crmSystem.module.security.pojo.SysUser;
@@ -50,6 +52,8 @@ public class StockListProductServiceImpl extends ServiceImpl<StockListProductMap
     private ProductMapper productMapper;
     @Autowired
     private ITableOptionService tableOptionService;
+    @Autowired
+    private IProductService productService;
     
     @Override
     public List<?> getDTOList(List<StockListProduct> stockListProductList) {
@@ -108,6 +112,10 @@ public class StockListProductServiceImpl extends ServiceImpl<StockListProductMap
     @Override
     @Transactional
     public JsonResult<?> updateByEntity(StockListProduct stockListProduct) {
+        StockList oldStock = stockListMapper.selectById(stockListProduct.getStockListId());
+        if (oldStock.getIsStockUp()) {
+            throw new DataCheckingException(ResultCode.STOCK_LIST_ERROR1);
+        }
         StockListProduct old = getById(stockListProduct.getId());
         return update(new MyEntity<StockListProduct>(stockListProduct) {
             @Override
@@ -134,6 +142,10 @@ public class StockListProductServiceImpl extends ServiceImpl<StockListProductMap
     @Override
     @Transactional
     public JsonResult<?> addEntity(StockListProduct stockListProduct) {
+        StockList oldStock = stockListMapper.selectById(stockListProduct.getStockListId());
+        if (oldStock.getIsStockUp()) {
+            throw new DataCheckingException(ResultCode.STOCK_LIST_ERROR1);
+        }
         return add(new MyEntity<StockListProduct>(stockListProduct) {
             @Override
             public StockListProduct set(StockListProduct stockListProduct) {
@@ -170,6 +182,11 @@ public class StockListProductServiceImpl extends ServiceImpl<StockListProductMap
     @Override
     @Transactional
     public boolean delById(Long id) {
+        StockListProduct stockListProduct = getById(id);
+        StockList stockList = stockListMapper.selectById(stockListProduct.getStockListId());
+        if (stockList.getIsStockUp()) {
+            throw new DataCheckingException(ResultCode.STOCK_LIST_ERROR1);
+        }
         return delByIds(MyCollections.toList(id));
     }
     

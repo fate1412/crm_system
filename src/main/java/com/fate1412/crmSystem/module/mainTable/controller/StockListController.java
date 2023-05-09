@@ -98,5 +98,12 @@ public class StockListController {
         List<IdToName> options = stockListService.getOptions(nameLike, page);
         return ResultTool.success(options);
     }
+    
+    @PreAuthorize("hasAnyAuthority('StockList_Edit')")
+    @GetMapping("/stockUp")
+    public JsonResult<?> stockUp(@Param("id") Long id) {
+        boolean b = stockListService.stockUp(id);
+        return ResultTool.create(b);
+    }
 }
 

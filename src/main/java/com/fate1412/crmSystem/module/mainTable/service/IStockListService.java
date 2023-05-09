@@ -26,4 +26,6 @@ public interface IStockListService extends IService<StockList>, MyBaseService<St
     boolean delById(Long id);
     
     MyPage listByPage(SelectPage<StockListSelectDTO> selectPage);
+    
+    boolean stockUp(Long id);
 }

@@ -166,6 +166,20 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     }
     
     @Override
+    public boolean stockUp(Map<Long, Integer> map) {
+        List<Long> ids = MyCollections.map2listK(map);
+        if (MyCollections.isEmpty(ids)) {
+            return true;
+        }
+        List<Product> productList = productMapper.selectBatchIds(ids);
+        productList.forEach(product -> {
+            Integer realStock = product.getRealStock();
+            product.setRealStock(realStock - map.get(product.getId()));
+        });
+        return updateBatchById(productList);
+    }
+    
+    @Override
     public TableResultData getColumns() {
         return getColumns(TableNames.product, new ProductSelectDTO(),tableOptionService);
     }

@@ -6,17 +6,20 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fate1412.crmSystem.base.MyPage;
 import com.fate1412.crmSystem.base.SelectPage;
+import com.fate1412.crmSystem.exception.DataCheckingException;
 import com.fate1412.crmSystem.module.customTable.service.ITableOptionService;
 import com.fate1412.crmSystem.module.flow.service.ISysFlowSessionService;
 import com.fate1412.crmSystem.module.mainTable.constant.TableNames;
 import com.fate1412.crmSystem.module.mainTable.dto.child.StockListChild;
 import com.fate1412.crmSystem.module.mainTable.dto.insert.StockListInsertDTO;
+import com.fate1412.crmSystem.module.mainTable.dto.select.StockListProductSelectDTO;
 import com.fate1412.crmSystem.module.mainTable.dto.select.StockListSelectDTO;
 import com.fate1412.crmSystem.module.mainTable.dto.update.StockListUpdateDTO;
 import com.fate1412.crmSystem.module.mainTable.pojo.Invoice;
 import com.fate1412.crmSystem.module.mainTable.pojo.StockList;
 import com.fate1412.crmSystem.module.mainTable.mapper.StockListMapper;
 import com.fate1412.crmSystem.module.mainTable.pojo.StockListProduct;
+import com.fate1412.crmSystem.module.mainTable.service.IProductService;
 import com.fate1412.crmSystem.module.mainTable.service.IStockListProductService;
 import com.fate1412.crmSystem.module.mainTable.service.IStockListService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -28,10 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -54,6 +54,8 @@ public class StockListServiceImpl extends ServiceImpl<StockListMapper, StockList
     private IStockListProductService stockListProductService;
     @Autowired
     private ISysFlowSessionService flowSessionService;
+    @Autowired
+    private IProductService productService;
     
     
     @Override
@@ -105,6 +107,10 @@ public class StockListServiceImpl extends ServiceImpl<StockListMapper, StockList
         StockList stockList = new StockList();
         BeanUtils.copyProperties(stockListUpdateDTO, stockList);
         List<StockListChild> childList = stockListUpdateDTO.getChildList();
+        StockList oldStock = getById(stockListUpdateDTO.getId());
+        if (oldStock.getIsStockUp()) {
+            throw new DataCheckingException(ResultCode.STOCK_LIST_ERROR1);
+        }
         return update(new MyEntity<StockList>(stockList) {
             @Override
             public StockList set(StockList stockList) {
@@ -161,6 +167,18 @@ public class StockListServiceImpl extends ServiceImpl<StockListMapper, StockList
     @Override
     @Transactional
     public boolean delById(Long id) {
+        StockList stockList = getById(id);
+        List<StockListProductSelectDTO> stockProductList = stockListProductService.getDTOByStockListId(id);
+        if (stockList == null) {
+            return false;
+        }
+        if (stockList.getIsStockUp()) {
+            Map<Long,Integer> map = MyCollections.list2Map(stockProductList,StockListProductSelectDTO::getProductId, StockListProductSelectDTO::getStockNum, Integer::sum);
+            map.forEach((k,v) -> map.put(k,-v));
+            if (!productService.stockUp(map)) {
+                throw new DataCheckingException(ResultCode.UPDATE_ERROR);
+            }
+        }
         if (stockListProductService.delByStockListId(id)) {
             return removeById(id);
         }
@@ -174,6 +192,35 @@ public class StockListServiceImpl extends ServiceImpl<StockListMapper, StockList
         queryWrapper.lambda()
                 .like(like.getId() != null, StockList::getId, like.getId());
         return listByPage(selectPage.getPage(), selectPage.getPageSize(), queryWrapper);
+    }
+    
+    @Override
+    @Transactional
+    public boolean stockUp(Long id) {
+        StockList stockList = getById(id);
+        List<StockListProductSelectDTO> stockProductList = stockListProductService.getDTOByStockListId(id);
+        if (stockList == null) {
+            return false;
+        }
+        if (stockList.getIsStockUp()) {
+            throw new DataCheckingException(ResultCode.STOCK_LIST_ERROR1);
+        }
+        if (stockList.getStockUpDate() == null || MyCollections.isEmpty(stockProductList)) {
+            throw new DataCheckingException(ResultCode.PARAM_MUST_ISNULL);
+        }
+        if (!stockList.getIsAcceptance()) {
+            throw new DataCheckingException(ResultCode.STOCK_LIST_ERROR2);
+        }
+        
+        stockList.setIsStockUp(true);
+        updateById(stockList);
+        
+        Map<Long,Integer> map = MyCollections.list2Map(stockProductList,StockListProductSelectDTO::getProductId, StockListProductSelectDTO::getStockNum, Integer::sum);
+        
+        if (!productService.stockUp(map)) {
+            throw new DataCheckingException(ResultCode.UPDATE_ERROR);
+        }
+        return true;
     }
     
     @Override

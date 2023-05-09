@@ -12,6 +12,7 @@ import com.fate1412.crmSystem.module.flow.service.ISysFlowSessionService;
 import com.fate1412.crmSystem.module.mainTable.constant.TableNames;
 import com.fate1412.crmSystem.module.mainTable.dto.child.InvoiceChild;
 import com.fate1412.crmSystem.module.mainTable.dto.insert.InvoiceInsertDTO;
+import com.fate1412.crmSystem.module.mainTable.dto.select.InvoiceProductSelectDTO;
 import com.fate1412.crmSystem.module.mainTable.dto.select.InvoiceSelectDTO;
 import com.fate1412.crmSystem.module.mainTable.dto.update.InvoiceUpdateDTO;
 import com.fate1412.crmSystem.module.mainTable.mapper.*;
@@ -30,10 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -201,6 +199,14 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
     @Transactional
     public boolean delById(Long id) {
         Invoice invoice = getById(id);
+        if (invoice.getIsInvoice()) {
+            List<InvoiceProductSelectDTO> invoiceProductList = invoiceProductService.getDTOByInvoiceId(id);
+            Map<Long,Integer> map = new HashMap<>();
+            invoiceProductList.forEach(invoiceProduct-> {
+                map.put(invoiceProduct.getProductId(),-invoiceProduct.getInvoiceNum());
+            });
+            productService.invoice(map);
+        }
         if (invoiceProductService.delByInvoiceId(invoice)) {
             return removeById(invoice.getId());
         }
@@ -217,7 +223,7 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
         }
         //未填写发货日期、物流单号、收货日期
         if (invoice.getInvoiceDate() == null || StringUtils.isBlank(invoice.getLogisticsId()) || invoice.getReceiptTime() == null) {
-            throw new DataCheckingException(ResultCode.INVOICE_ERROR2);
+            throw new DataCheckingException(ResultCode.PARAM_MUST_ISNULL);
         }
         invoice.setIsInvoice(true);
         //已完成发货，减少产品真实库存
@@ -316,7 +322,7 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
                 invoiceProductService.addEntity(invoiceProduct);
             });
             if (!f.get()) {
-                throw new DataCheckingException(ResultCode.INVOICE_ERROR3);
+                throw new DataCheckingException(ResultCode.INVOICE_ERROR2);
             }
             return true;
         }

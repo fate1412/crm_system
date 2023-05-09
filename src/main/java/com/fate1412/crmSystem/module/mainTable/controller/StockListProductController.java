@@ -71,7 +71,7 @@ public class StockListProductController {
     @PreAuthorize("hasAnyAuthority('StockListProduct_Delete')")
     @DeleteMapping("/delete")
     public JsonResult<?> delete(@RequestBody StockListProductSelectDTO stockListProductSelectDTO) {
-        boolean b = stockListProductService.removeById(stockListProductSelectDTO.getId());
+        boolean b = stockListProductService.delById(stockListProductSelectDTO.getId());
         return ResultTool.create(b);
     }
     

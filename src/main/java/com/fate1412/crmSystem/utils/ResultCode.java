@@ -13,6 +13,7 @@ public enum ResultCode {
     PARAM_TYPE_ERROR(1003, "参数类型错误"),
     PARAM_NOT_COMPLETE(1004, "参数缺失"),
     PARAM_REPEAT(1005, "参数重复"),
+    PARAM_MUST_ISNULL(3006,"未填写必备参数！"),
     
     /* 用户错误 */
     USER_NOT_LOGIN(2001, "用户未登录"),
@@ -31,8 +32,9 @@ public enum ResultCode {
     INSERT_ERROR(3003,"新增失败"),
     APPROVE(3004,"已审批"),
     INVOICE_ERROR1(3005,"已发货，不可修改！"),
-    INVOICE_ERROR2(3006,"未填写必备参数！"),
-    INVOICE_ERROR3(3007,"该订单无需再发货！");
+    INVOICE_ERROR2(3006,"该订单无需再发货！"),
+    STOCK_LIST_ERROR1(3007,"已备货，不可修改！"),
+    STOCK_LIST_ERROR2(3008,"未完成受理，不可备货！");
     
     private Integer code;
     private String message;

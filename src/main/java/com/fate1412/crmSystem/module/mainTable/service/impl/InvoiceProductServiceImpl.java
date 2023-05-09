@@ -151,9 +151,7 @@ public class InvoiceProductServiceImpl extends ServiceImpl<InvoiceProductMapper,
         InvoiceProduct invoiceProduct = getById(id);
         Invoice invoice = invoiceMapper.selectById(invoiceProduct.getInvoiceId());
         if (invoice.getIsInvoice()) {
-            Map<Long,Integer> map = new HashMap<>();
-            map.put(invoiceProduct.getProductId(),-invoiceProduct.getInvoiceNum());
-            productService.invoice(map);
+            throw new DataCheckingException(ResultCode.INVOICE_ERROR1);
         }
         return delByIds(MyCollections.toList(id));
     }

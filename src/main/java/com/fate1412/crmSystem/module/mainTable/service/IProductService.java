@@ -30,4 +30,6 @@ public interface IProductService extends IService<Product>, MyBaseService<Produc
     MyPage listByPage(SelectPage<ProductSelectDTO> selectPage);
     
     boolean invoice(Map<Long,Integer> map);
+    
+    boolean stockUp(Map<Long,Integer> map);
 }
