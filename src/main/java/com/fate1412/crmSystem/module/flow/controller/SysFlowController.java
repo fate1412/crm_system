@@ -10,10 +10,7 @@ import com.fate1412.crmSystem.module.flow.dto.select.SysFlowPointSelectDTO;
 import com.fate1412.crmSystem.module.flow.dto.select.SysFlowSelectDTO;
 import com.fate1412.crmSystem.module.flow.dto.update.SysFlowUpdateDTO;
 import com.fate1412.crmSystem.module.flow.service.ISysFlowService;
-import com.fate1412.crmSystem.utils.JsonResult;
-import com.fate1412.crmSystem.utils.MyCollections;
-import com.fate1412.crmSystem.utils.ResultTool;
-import com.fate1412.crmSystem.utils.TableResultData;
+import com.fate1412.crmSystem.utils.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -66,6 +63,9 @@ public class SysFlowController {
     @GetMapping("/select")
     public JsonResult<Object> select(@Param("id") Long id) {
         List<?> dtoList = service.getDTOListById(MyCollections.toList(id));
+        if (MyCollections.isEmpty(dtoList)) {
+            return ResultTool.fail(ResultCode.DATA_NOT_FOUND);
+        }
         TableResultData tableResultData = service.getColumns();
         tableResultData.setTableDataList(dtoList);
         return ResultTool.success(tableResultData);

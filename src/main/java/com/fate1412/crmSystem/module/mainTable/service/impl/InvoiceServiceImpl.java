@@ -74,13 +74,16 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
         Invoice invoice = new Invoice();
         BeanUtils.copyProperties(invoiceUpdateDTO, invoice);
         Invoice oldInvoice = getById(invoice.getId());
+        if (oldInvoice.getIsInvoice()) {
+            throw new DataCheckingException(ResultCode.INVOICE_ERROR1);
+        }
         invoice.setSalesOrderId(oldInvoice.getSalesOrderId());
         if (invoice.getCustomerId() == null) {
             SalesOrder salesOrder = salesOrderMapper.selectById(invoice.getSalesOrderId());
+            if (salesOrder == null) {
+                throw new DataCheckingException(ResultCode.DATA_NOT_FOUND);
+            }
             invoice.setCustomerId(salesOrder.getCustomerId());
-        }
-        if (oldInvoice.getIsInvoice()) {
-            throw new DataCheckingException(ResultCode.INVOICE_ERROR1);
         }
         return update(new MyEntity<Invoice>(invoice) {
             @Override

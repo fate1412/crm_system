@@ -56,6 +56,9 @@ public class InvoiceProductController {
     @GetMapping("/select")
     public JsonResult<Object> select(@Param("id") Long id) {
         List<?> invoiceProductSelectDTOList = invoiceProductService.getDTOListById(MyCollections.toList(id));
+        if (MyCollections.isEmpty(invoiceProductSelectDTOList)) {
+            return ResultTool.fail(ResultCode.DATA_NOT_FOUND);
+        }
         TableResultData tableResultData = invoiceProductService.getColumns();
         tableResultData.setTableDataList(invoiceProductSelectDTOList);
         return ResultTool.success(tableResultData);

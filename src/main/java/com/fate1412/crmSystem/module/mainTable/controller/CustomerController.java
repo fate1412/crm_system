@@ -59,6 +59,9 @@ public class CustomerController {
     @GetMapping("/select")
     public JsonResult<Object> select(@Param("id") Long id) {
         List<?> customerSelectDTOList = customerService.getDTOListById(MyCollections.toList(id));
+        if (MyCollections.isEmpty(customerSelectDTOList)) {
+            return ResultTool.fail(ResultCode.DATA_NOT_FOUND);
+        }
         TableResultData tableResultData = customerService.getColumns();
         tableResultData.setTableDataList(customerSelectDTOList);
         return ResultTool.success(tableResultData);

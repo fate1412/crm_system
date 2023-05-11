@@ -57,6 +57,9 @@ public class StockListProductController {
     @GetMapping("/select")
     public JsonResult<Object> select(@Param("id") Long id) {
         List<?> dtoListById = stockListProductService.getDTOListById(MyCollections.toList(id));
+        if (MyCollections.isEmpty(dtoListById)) {
+            return ResultTool.fail(ResultCode.DATA_NOT_FOUND);
+        }
         TableResultData tableResultData = stockListProductService.getColumns();
         tableResultData.setTableDataList(dtoListById);
         return ResultTool.success(tableResultData);

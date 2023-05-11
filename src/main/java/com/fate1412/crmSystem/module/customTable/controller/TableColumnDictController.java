@@ -16,10 +16,7 @@ import com.fate1412.crmSystem.module.mainTable.dto.child.SalesOrderChild;
 import com.fate1412.crmSystem.module.mainTable.dto.select.OrderProductSelectDTO;
 import com.fate1412.crmSystem.module.mainTable.dto.select.SalesOrderSelectDTO;
 import com.fate1412.crmSystem.module.mainTable.dto.update.SalesOrderUpdateDTO;
-import com.fate1412.crmSystem.utils.JsonResult;
-import com.fate1412.crmSystem.utils.MyCollections;
-import com.fate1412.crmSystem.utils.ResultTool;
-import com.fate1412.crmSystem.utils.TableResultData;
+import com.fate1412.crmSystem.utils.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -65,6 +62,9 @@ public class TableColumnDictController {
     @GetMapping("/select")
     public JsonResult<Object> select(@Param("id") Long id) {
         List<?> dtoList = service.getDTOListById(MyCollections.toList(id));
+        if (MyCollections.isEmpty(dtoList)) {
+            return ResultTool.fail(ResultCode.DATA_NOT_FOUND);
+        }
         TableResultData tableResultData = service.getColumns();
         tableResultData.setTableDataList(dtoList);
         if (!MyCollections.isEmpty(dtoList)) {

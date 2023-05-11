@@ -66,7 +66,7 @@ public class SalesOrderController {
         TableResultData tableResultData = salesOrderService.getColumns();
         tableResultData.setTableDataList(dtoList);
         if (MyCollections.isEmpty(dtoList)) {
-            tableResultData.setChild(new TableResultData());
+            return ResultTool.fail(ResultCode.DATA_NOT_FOUND);
         } else {
             SalesOrderSelectDTO dto = (SalesOrderSelectDTO) dtoList.get(0);
             List<OrderProductSelectDTO> orderProductSelectDTOS = orderProductService.getDTOBySalesOrderId(dto.getId());

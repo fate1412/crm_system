@@ -174,14 +174,10 @@ public class InvoiceProductServiceImpl extends ServiceImpl<InvoiceProductMapper,
         QueryWrapper<InvoiceProduct> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(InvoiceProduct::getInvoiceId, invoice.getId());
         List<InvoiceProduct> list = list(queryWrapper);
-        remove(queryWrapper);
-        if (invoice.getIsInvoice()) {
-            Map<Long,Integer> map = new HashMap<>();
-            list.forEach(invoiceProduct -> {
-                map.put(invoiceProduct.getProductId(),-invoiceProduct.getInvoiceNum());
-            });
-            productService.invoice(map);
+        if (MyCollections.isEmpty(list)) {
+            return true;
         }
+        remove(queryWrapper);
         Map<Long, Integer> map = MyCollections.list2MapL(list, InvoiceProduct::getProductId, InvoiceProduct::getInvoiceNum);
         return updateOrderProduct(map, invoice);
     }

@@ -34,7 +34,8 @@ public enum ResultCode {
     INVOICE_ERROR1(3005,"已发货，不可修改！"),
     INVOICE_ERROR2(3006,"该订单无需再发货！"),
     STOCK_LIST_ERROR1(3007,"已备货，不可修改！"),
-    STOCK_LIST_ERROR2(3008,"未完成受理，不可备货！");
+    STOCK_LIST_ERROR2(3008,"未完成受理，不可备货！"),
+    DATA_NOT_FOUND(3009,"数据不存在！");
     
     private Integer code;
     private String message;

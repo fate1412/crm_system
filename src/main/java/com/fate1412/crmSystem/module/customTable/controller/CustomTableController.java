@@ -49,6 +49,9 @@ public class CustomTableController {
     @GetMapping("/select")
     public JsonResult<Object> select(@Param("id") Long id, @Param("tableName") String tableName) {
         CustomTableResultData tableResultData = service.getDTOListById(tableName, MyCollections.toList(id));
+        if (MyCollections.isEmpty(tableResultData.getTableDataList())) {
+            return ResultTool.fail(ResultCode.DATA_NOT_FOUND);
+        }
         return ResultTool.success(tableResultData);
     }
     

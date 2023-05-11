@@ -30,6 +30,9 @@ public class SysUserController {
     @GetMapping("/select")
     public JsonResult<Object> select(@Param("id") Long id) {
         List<?> dtoListById = sysUserService.getDTOListById(MyCollections.toList(id));
+        if (MyCollections.isEmpty(dtoListById)) {
+            return ResultTool.fail(ResultCode.DATA_NOT_FOUND);
+        }
         TableResultData tableResultData = sysUserService.getColumns();
         tableResultData.setTableDataList(dtoListById);
         return ResultTool.success(tableResultData);

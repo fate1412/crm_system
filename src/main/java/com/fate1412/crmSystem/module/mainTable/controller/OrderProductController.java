@@ -57,6 +57,9 @@ public class OrderProductController {
     @GetMapping("/select")
     public JsonResult<Object> select(@Param("id") Long id) {
         List<?> orderProductSelectDTOList = orderProductService.getDTOListById(MyCollections.toList(id));
+        if (MyCollections.isEmpty(orderProductSelectDTOList)) {
+            return ResultTool.fail(ResultCode.DATA_NOT_FOUND);
+        }
         TableResultData tableResultData = orderProductService.getColumns();
         tableResultData.setTableDataList(orderProductSelectDTOList);
         return ResultTool.success(tableResultData);

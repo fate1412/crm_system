@@ -28,6 +28,9 @@ public class SysRoleController {
     @GetMapping("/select")
     public JsonResult<Object> select(@Param("id") Long id) {
         List<?> dtoListById = sysRoleService.getDTOListById(MyCollections.toList(id));
+        if (MyCollections.isEmpty(dtoListById)) {
+            return ResultTool.fail(ResultCode.DATA_NOT_FOUND);
+        }
         TableResultData tableResultData = sysRoleService.getColumns();
         tableResultData.setTableDataList(dtoListById);
         return ResultTool.success(tableResultData);

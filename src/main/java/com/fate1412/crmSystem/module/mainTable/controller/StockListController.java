@@ -65,7 +65,7 @@ public class StockListController {
         TableResultData tableResultData = stockListService.getColumns();
         tableResultData.setTableDataList(dtoList);
         if (MyCollections.isEmpty(dtoList)) {
-            tableResultData.setChild(new TableResultData());
+            return ResultTool.fail(ResultCode.DATA_NOT_FOUND);
         } else {
             StockListSelectDTO dto = (StockListSelectDTO) dtoList.get(0);
             List<StockListProductSelectDTO> stockListProductSelectDTOList = stockListProductService.getDTOByStockListId(dto.getId());

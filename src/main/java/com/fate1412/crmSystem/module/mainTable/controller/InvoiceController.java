@@ -66,7 +66,7 @@ public class InvoiceController {
         TableResultData tableResultData = invoiceService.getColumns();
         tableResultData.setTableDataList(dtoList);
         if (MyCollections.isEmpty(dtoList)) {
-            tableResultData.setChild(new TableResultData());
+            return ResultTool.fail(ResultCode.DATA_NOT_FOUND);
         } else {
             InvoiceSelectDTO dto = (InvoiceSelectDTO) dtoList.get(0);
             List<InvoiceProductSelectDTO> invoiceProductSelectDTOS = invoiceProductService.getDTOByInvoiceId(dto.getId());
