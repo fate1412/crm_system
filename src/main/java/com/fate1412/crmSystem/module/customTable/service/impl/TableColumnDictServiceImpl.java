@@ -209,6 +209,21 @@ public class TableColumnDictServiceImpl extends ServiceImpl<TableColumnDictMappe
             if (columnTypeMap.get(tableColumnDict.getColumnType()) == null) {
                 return ResultCode.PARAM_NOT_VALID;
             }
+            //可链接
+            if (tableColumnDict.getLink() && tableColumnDict.getColumnType().equals(FormType.Select.getIndex())) {
+                if (tableColumnDict.getLinkTable() == null) {
+                    return ResultCode.PARAM_IS_BLANK;
+                }
+                QueryWrapper<TableDict> tableDictWrapper = new QueryWrapper<>();
+                queryWrapper.lambda().eq(TableDict::getId, tableColumnDict.getLinkTable());
+                TableDict linkTableDict = tableDictMapper.selectOne(tableDictWrapper);
+                if (linkTableDict == null) {
+                    return ResultCode.PARAM_NOT_VALID;
+                }
+            } else {
+                tableColumnDict.setLinkTable(null);
+                tableColumnDict.setLink(false);
+            }
         }
         if (columnDictList == null) {
             TableColumnDict columnDict = mapper.selectById(id);
@@ -246,20 +261,20 @@ public class TableColumnDictServiceImpl extends ServiceImpl<TableColumnDictMappe
             }
         }
         //可链接
-        if (tableColumnDict.getLink() && tableColumnDict.getColumnType().equals(FormType.Select.getIndex())) {
-            if (tableColumnDict.getLinkTable() == null) {
-                return ResultCode.PARAM_IS_BLANK;
-            }
-            QueryWrapper<TableDict> queryWrapper = new QueryWrapper<>();
-            queryWrapper.lambda().eq(TableDict::getId, tableColumnDict.getLinkTable());
-            TableDict tableDict = tableDictMapper.selectOne(queryWrapper);
-            if (tableDict == null) {
-                return ResultCode.PARAM_NOT_VALID;
-            }
-        } else {
-            tableColumnDict.setLinkTable(null);
-            tableColumnDict.setLink(false);
-        }
+//        if (tableColumnDict.getLink() && tableColumnDict.getColumnType().equals(FormType.Select.getIndex())) {
+//            if (tableColumnDict.getLinkTable() == null) {
+//                return ResultCode.PARAM_IS_BLANK;
+//            }
+//            QueryWrapper<TableDict> queryWrapper = new QueryWrapper<>();
+//            queryWrapper.lambda().eq(TableDict::getId, tableColumnDict.getLinkTable());
+//            TableDict tableDict = tableDictMapper.selectOne(queryWrapper);
+//            if (tableDict == null) {
+//                return ResultCode.PARAM_NOT_VALID;
+//            }
+//        } else {
+//            tableColumnDict.setLinkTable(null);
+//            tableColumnDict.setLink(false);
+//        }
         return ResultCode.SUCCESS;
     }
     
