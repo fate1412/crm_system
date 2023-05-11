@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fate1412.crmSystem.base.MyPage;
 import com.fate1412.crmSystem.base.SelectPage;
+import com.fate1412.crmSystem.exception.DataCheckingException;
 import com.fate1412.crmSystem.module.customTable.service.ITableOptionService;
 import com.fate1412.crmSystem.module.mainTable.constant.TableNames;
 import com.fate1412.crmSystem.module.security.dto.insert.SysUserInsertDTO;
@@ -201,6 +202,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             @Override
             public SysUser set(SysUser sysUser) {
                 sysUser
+                        .setPassword(new BCryptPasswordEncoder().encode("123456"))
                         .setCreateTime(new Date())
                         .setUpdateTime(new Date());
                 return sysUser;
@@ -254,12 +256,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     
     @Override
     public boolean passwdChange(Long userId, String passwd) {
-        if (userId == null || StringUtils.isBlank(passwd)) {
-            return false;
+        //密码(不小于6位)
+        if (StringUtils.isBlank(passwd) && passwd.trim().length() < 6) {
+            throw new DataCheckingException(ResultCode.PARAM_NOT_VALID);
         }
         SysUser sysUser = new SysUser();
         sysUser.setUserId(userId);
-        sysUser.setPassword(new BCryptPasswordEncoder().encode(passwd));
+        sysUser.setPassword(new BCryptPasswordEncoder().encode(passwd.trim()));
         return updateById(sysUser);
     }
     
@@ -303,11 +306,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             return ResultCode.PARAM_IS_BLANK;
         }
         sysUser.setRealName(sysUser.getRealName().trim());
-        //密码(不小于6位)
-        if (StringUtils.isBlank(sysUser.getPassword()) && sysUser.getRealName().trim().length() < 6) {
-            return ResultCode.PARAM_NOT_VALID;
-        }
-        sysUser.setPassword(sysUser.getPassword().trim());
         //手机号
         if (sysUser.getPhone() != null && !Pattern.matches("\\d{11}", sysUser.getPhone().trim())) {
             return ResultCode.PARAM_NOT_VALID;
