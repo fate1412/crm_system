@@ -34,6 +34,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.fate1412.crmSystem.module.mainTable.constant.TableNames.customer;
+
 /**
  * <p>
  * 备货单 服务实现类
@@ -180,6 +182,7 @@ public class StockListServiceImpl extends ServiceImpl<StockListMapper, StockList
             }
         }
         if (stockListProductService.delByStockListId(id)) {
+            flowSessionService.deleteFlowSession(TableNames.stockList,id);
             return removeById(id);
         }
         return false;

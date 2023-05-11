@@ -263,6 +263,7 @@ public class CustomTableServiceImpl implements ICustomTableService {
         if (tableDict == null) {
             return false;
         }
+        flowSessionService.deleteFlowSession(tableName, id);
         SQLFactors sqlFactors = new SQLFactors();
         sqlFactors.eq("id", id);
         return mapper.deleteList(tableDict.getRealTableName(), sqlFactors.getSqlFactors()) > 0;

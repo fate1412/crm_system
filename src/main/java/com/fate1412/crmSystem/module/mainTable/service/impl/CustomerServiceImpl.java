@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import static com.fate1412.crmSystem.module.mainTable.constant.TableNames.sysUser;
+import static com.fate1412.crmSystem.module.mainTable.constant.TableNames.*;
 
 /**
  * <p>
@@ -145,6 +145,13 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                 .like(like.getId() != null, Customer::getId, like.getId())
                 .like(like.getName() != null, Customer::getName, like.getName());
         return listByPage(selectPage.getPage(), selectPage.getPageSize(), queryWrapper);
+    }
+    
+    @Override
+    @Transactional
+    public boolean delById(Long id) {
+        flowSessionService.deleteFlowSession(customer,id);
+        return removeById(id);
     }
     
     @Override

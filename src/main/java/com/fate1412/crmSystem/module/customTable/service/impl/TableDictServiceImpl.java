@@ -119,13 +119,13 @@ public class TableDictServiceImpl extends ServiceImpl<TableDictMapper, TableDict
             List<SysFlowSession> list = flowSessionMapper.selectList(sessionWrapper);
             //有流程
             if (!MyCollections.isEmpty(list)) {
-                //删除该流程下的所有流程节点
-                QueryWrapper<SysFlowPoint> pointWrapper = new QueryWrapper<>();
-                pointWrapper.lambda().eq(SysFlowPoint::getFlowId, sysFlow.getId());
-                flowPointMapper.delete(pointWrapper);
                 //删除所有流程
                 flowSessionMapper.delete(sessionWrapper);
             }
+            //删除该流程下的所有流程节点
+            QueryWrapper<SysFlowPoint> pointWrapper = new QueryWrapper<>();
+            pointWrapper.lambda().eq(SysFlowPoint::getFlowId, sysFlow.getId());
+            flowPointMapper.delete(pointWrapper);
             //删除审批流程
             flowMapper.delete(queryWrapper);
         }

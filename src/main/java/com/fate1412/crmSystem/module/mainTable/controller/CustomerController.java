@@ -73,7 +73,7 @@ public class CustomerController {
     @PreAuthorize("hasAnyAuthority('Customer_Delete')")
     @DeleteMapping("/delete")
     public JsonResult<?> delete(@RequestBody CustomerSelectDTO customerSelectDTO) {
-        boolean b = customerService.removeById(customerSelectDTO.getId());
+        boolean b = customerService.delById(customerSelectDTO.getId());
         return ResultTool.create(b);
     }
     

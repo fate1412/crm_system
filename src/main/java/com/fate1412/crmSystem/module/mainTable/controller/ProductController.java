@@ -71,7 +71,7 @@ public class ProductController {
     @PreAuthorize("hasAnyAuthority('Product_Delete')")
     @DeleteMapping("/delete")
     public JsonResult<?> delete(@RequestBody ProductSelectDTO productSelectDTO) {
-        boolean b = productService.removeById(productSelectDTO.getId());
+        boolean b = productService.delById(productSelectDTO.getId());
         return ResultTool.create(b);
     }
     

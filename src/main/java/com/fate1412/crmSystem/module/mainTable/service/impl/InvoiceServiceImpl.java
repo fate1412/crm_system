@@ -35,6 +35,8 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+import static com.fate1412.crmSystem.module.mainTable.constant.TableNames.customer;
+
 /**
  * <p>
  * 发货单 服务实现类
@@ -208,6 +210,7 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
             productService.invoice(map);
         }
         if (invoiceProductService.delByInvoiceId(invoice)) {
+            flowSessionService.deleteFlowSession(TableNames.invoice,id);
             return removeById(invoice.getId());
         }
         return false;

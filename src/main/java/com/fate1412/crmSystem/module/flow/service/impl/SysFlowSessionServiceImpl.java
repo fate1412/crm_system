@@ -215,6 +215,34 @@ public class SysFlowSessionServiceImpl extends ServiceImpl<SysFlowSessionMapper,
     }
     
     @Override
+    @Transactional
+    public boolean deleteFlowSession(String tableName, Long dataId) {
+        //查询是否存在此表
+        List<TableDict> tableDictList = tableDictService.getByTableName(MyCollections.toList(tableName));
+        if (MyCollections.isEmpty(tableDictList)) {
+            return true;
+        }
+        TableDict tableDict = tableDictList.get(0);
+        //查询是否存在流程
+        QueryWrapper<SysFlow> flowQueryWrapper = new QueryWrapper<>();
+        flowQueryWrapper.lambda().eq(SysFlow::getRelevanceTable, tableDict.getId());
+        SysFlow flow = flowService.getOne(flowQueryWrapper);
+        if (flow == null) {
+            return true;
+        }
+        //查询是否存在审批流
+        QueryWrapper<SysFlowSession> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda()
+                .eq(SysFlowSession::getDataId,dataId)
+                .eq(SysFlowSession::getFlowId, flow.getId());
+        List<SysFlowSession> sessionList = list(queryWrapper);
+        if (MyCollections.isEmpty(sessionList)) {
+            return true;
+        }
+        return mapper.delete(queryWrapper) > 0;
+    }
+    
+    @Override
     public MyPage listByPage(SelectPage<SysFlowSessionSelectDTO> selectPage) {
         SysUser sysUser = sysUserService.thisUser();
         SysFlowSessionSelectDTO like = selectPage.getLike();

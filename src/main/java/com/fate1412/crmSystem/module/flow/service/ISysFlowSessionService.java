@@ -30,5 +30,7 @@ public interface ISysFlowSessionService extends IService<SysFlowSession>, MyBase
     
     boolean addFlowSession(String tableName, Long dataId);
     
+    boolean deleteFlowSession(String tableName, Long dataId);
+    
     MyPage listByPage(SelectPage<SysFlowSessionSelectDTO> selectPage);
 }

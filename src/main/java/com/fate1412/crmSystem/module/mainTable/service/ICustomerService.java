@@ -30,4 +30,5 @@ public interface ICustomerService extends IService<Customer>, MyBaseService<Cust
     
     MyPage listByPage(SelectPage<CustomerSelectDTO> selectPage);
     
+    boolean delById(Long id);
 }

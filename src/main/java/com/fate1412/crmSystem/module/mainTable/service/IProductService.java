@@ -32,4 +32,6 @@ public interface IProductService extends IService<Product>, MyBaseService<Produc
     boolean invoice(Map<Long,Integer> map);
     
     boolean stockUp(Map<Long,Integer> map);
+    
+    boolean delById(Long id);
 }

@@ -30,6 +30,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import static com.fate1412.crmSystem.module.mainTable.constant.TableNames.customer;
+import static com.fate1412.crmSystem.module.mainTable.constant.TableNames.product;
+
 /**
  * <p>
  * 产品 服务实现类
@@ -177,6 +180,12 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
             product.setRealStock(realStock - map.get(product.getId()));
         });
         return updateBatchById(productList);
+    }
+    
+    @Override
+    public boolean delById(Long id) {
+        flowSessionService.deleteFlowSession(product,id);
+        return removeById(id);
     }
     
     @Override

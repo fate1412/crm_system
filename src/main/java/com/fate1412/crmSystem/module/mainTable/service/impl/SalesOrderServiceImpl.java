@@ -35,6 +35,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.fate1412.crmSystem.module.mainTable.constant.TableNames.customer;
+import static com.fate1412.crmSystem.module.mainTable.constant.TableNames.salesOrder;
+
 /**
  * <p>
  * 销售订单 服务实现类
@@ -176,6 +179,7 @@ public class SalesOrderServiceImpl extends ServiceImpl<SalesOrderMapper, SalesOr
     @Override
     public boolean delById(Long id) {
         if (orderProductService.delBySalesOrderId(id)) {
+            flowSessionService.deleteFlowSession(salesOrder,id);
             return removeById(id);
         }
         return false;
