@@ -183,7 +183,9 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         }
         productList.forEach(product -> {
             Integer realStock = product.getRealStock();
-            product.setRealStock(realStock - map.get(product.getId()));
+            Integer stock = product.getStock();
+            product.setRealStock(realStock + map.get(product.getId()));
+            product.setStock(stock + map.get(product.getId()));
         });
         return updateBatchById(productList);
     }

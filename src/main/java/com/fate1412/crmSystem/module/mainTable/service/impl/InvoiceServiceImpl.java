@@ -292,15 +292,11 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
         }
         invoice.setAddress(invoice.getAddress().trim());
         //收货日期
-        if (old == null || old.getInvoiceDate() == null) {
-            if (invoice.getReceiptTime() != null) {
+        if (invoice.getReceiptTime() != null) {
+            if (invoice.getInvoiceDate() == null) {
+                return ResultCode.PARAM_NOT_VALID;
+            } else {
                 if (invoice.getReceiptTime().before(invoice.getInvoiceDate())) {
-                    return ResultCode.PARAM_NOT_VALID;
-                }
-            }
-        } else {
-            if (invoice.getReceiptTime() != null) {
-                if (invoice.getReceiptTime().before(old.getInvoiceDate())) {
                     return ResultCode.PARAM_NOT_VALID;
                 }
             }

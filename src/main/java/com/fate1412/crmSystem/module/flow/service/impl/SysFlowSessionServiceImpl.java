@@ -198,8 +198,14 @@ public class SysFlowSessionServiceImpl extends ServiceImpl<SysFlowSessionMapper,
                 sysFlowSession.setNextApprover(pointMap.get(nextPoint).getApprover());
             }
         } else {
+            Long newPoint = pointMap.get(oldSession.getPointId()).getNextPoint();
+            if (newPoint == -1) {
+                //新节点以被删除
+                oldSession.setPass(agree == 1 ? 1 : 2);
+                return mapper.updateById(oldSession) > 0;
+            }
             //设置新节点
-            sysFlowSession.setPointId(pointMap.get(oldSession.getPointId()).getNextPoint());
+            sysFlowSession.setPointId(newPoint);
             sysFlowSession.setApprover(pointMap.get(sysFlowSession.getPointId()).getApprover());
             //获取新节点的下一个节点
             Long nextPoint = pointMap.get(sysFlowSession.getPointId()).getNextPoint();
@@ -249,7 +255,8 @@ public class SysFlowSessionServiceImpl extends ServiceImpl<SysFlowSessionMapper,
         QueryWrapper<SysFlowSession> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda()
                 .like(like.getDataId() != null, SysFlowSession::getDataId, like.getDataId())
-                .eq(SysFlowSession::getApprover, sysUser.getUserId());
+                .eq(SysFlowSession::getApprover, sysUser.getUserId())
+                .orderByDesc(SysFlowSession::getId);
         return listByPage(selectPage.getPage(), selectPage.getPageSize(), queryWrapper);
     }
     
