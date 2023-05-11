@@ -46,7 +46,7 @@ public class SysUserSelectDTO implements Serializable {
     @TableTitle(value = "最后登录时间",formType = FormType.DateTime,disabled = true)
     private Date lastLoginTime;
     
-    @TableTitle(value = "是否锁定",formType = FormType.Boolean, inserted = true)
+    @TableTitle(value = "是否锁定",formType = FormType.Boolean, disabled = true)
     @TableField("lock_flag")
     private Boolean lockFlag;
 

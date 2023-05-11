@@ -42,8 +42,4 @@ public class SysUserUpdateDTO implements Serializable {
     @TableTitle("手机号")
     private String phone;
     
-    
-    @TableField("lock_flag")
-    private Boolean lockFlag;
-    
 }

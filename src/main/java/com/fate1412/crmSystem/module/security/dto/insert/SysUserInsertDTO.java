@@ -43,9 +43,6 @@ public class SysUserInsertDTO implements Serializable {
     @TableTitle(value = "手机号" ,inserted = true)
     private String phone;
     
-    @TableTitle(value = "是否锁定",formType = FormType.Boolean, inserted = true)
-    @TableField("lock_flag")
-    private Boolean lockFlag;
     
     
 }
