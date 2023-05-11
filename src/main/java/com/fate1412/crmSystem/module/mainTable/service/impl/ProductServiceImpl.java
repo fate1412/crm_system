@@ -159,6 +159,9 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
             return true;
         }
         List<Product> productList = productMapper.selectBatchIds(ids);
+        if (MyCollections.isEmpty(productList)) {
+            return true;
+        }
         productList.forEach(product -> {
             Integer realStock = product.getRealStock();
             Integer salesVolume = product.getSalesVolume();
@@ -175,6 +178,9 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
             return true;
         }
         List<Product> productList = productMapper.selectBatchIds(ids);
+        if (MyCollections.isEmpty(productList)) {
+            return true;
+        }
         productList.forEach(product -> {
             Integer realStock = product.getRealStock();
             product.setRealStock(realStock - map.get(product.getId()));
