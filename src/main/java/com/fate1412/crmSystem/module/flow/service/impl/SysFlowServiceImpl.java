@@ -14,10 +14,13 @@ import com.fate1412.crmSystem.module.flow.dto.select.SysFlowPointSelectDTO;
 import com.fate1412.crmSystem.module.flow.dto.select.SysFlowSelectDTO;
 import com.fate1412.crmSystem.module.flow.dto.update.SysFlowUpdateDTO;
 import com.fate1412.crmSystem.module.flow.mapper.SysFlowMapper;
+import com.fate1412.crmSystem.module.flow.mapper.SysFlowSessionMapper;
 import com.fate1412.crmSystem.module.flow.pojo.SysFlow;
 import com.fate1412.crmSystem.module.flow.pojo.SysFlowPoint;
+import com.fate1412.crmSystem.module.flow.pojo.SysFlowSession;
 import com.fate1412.crmSystem.module.flow.service.ISysFlowPointService;
 import com.fate1412.crmSystem.module.flow.service.ISysFlowService;
+import com.fate1412.crmSystem.module.flow.service.ISysFlowSessionService;
 import com.fate1412.crmSystem.module.mainTable.constant.TableNames;
 import com.fate1412.crmSystem.module.security.pojo.SysUser;
 import com.fate1412.crmSystem.module.security.service.ISysUserService;
@@ -52,6 +55,8 @@ public class SysFlowServiceImpl extends ServiceImpl<SysFlowMapper, SysFlow> impl
     private ITableDictService tableDictService;
     @Autowired
     private ISysFlowPointService sysFlowPointService;
+    @Autowired
+    private SysFlowSessionMapper flowSessionMapper;
     
     
     @Override
@@ -181,8 +186,12 @@ public class SysFlowServiceImpl extends ServiceImpl<SysFlowMapper, SysFlow> impl
         queryWrapper.lambda().eq(SysFlowPoint::getFlowId, flowId);
         sysFlowPointService.remove(queryWrapper);
     
-        //验证审批人是否存在
+        
         List<Long> userIds = MyCollections.objects2List(flowPointDTOList, SysFlowPointSelectDTO::getApprover);
+        if(MyCollections.isEmpty(userIds)) {
+            return true;
+        }
+        //验证审批人是否存在
         List<SysUser> sysUsers = sysUserService.listByIds(userIds);
         if (sysUsers.size() != flowPointDTOList.size()) {
             throw new DataCheckingException(ResultCode.PARAM_NOT_VALID);
@@ -210,6 +219,15 @@ public class SysFlowServiceImpl extends ServiceImpl<SysFlowMapper, SysFlow> impl
     @Override
     @Transactional
     public boolean delFlow(Long flowId) {
+        //查询该表下所有流程
+        QueryWrapper<SysFlowSession> sessionWrapper = new QueryWrapper<>();
+        sessionWrapper.lambda().eq(SysFlowSession::getFlowId, flowId);
+        List<SysFlowSession> list = flowSessionMapper.selectList(sessionWrapper);
+        //有流程
+        if (!MyCollections.isEmpty(list)) {
+            //删除所有流程
+            flowSessionMapper.delete(sessionWrapper);
+        }
         QueryWrapper<SysFlowPoint> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda().eq(SysFlowPoint::getFlowId, flowId);
         sysFlowPointService.remove(queryWrapper);

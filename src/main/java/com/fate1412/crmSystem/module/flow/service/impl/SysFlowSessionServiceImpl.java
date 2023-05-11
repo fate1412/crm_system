@@ -167,7 +167,7 @@ public class SysFlowSessionServiceImpl extends ServiceImpl<SysFlowSessionMapper,
                 .orderByAsc(SysFlowPoint::getPanelPoint);
         List<SysFlowPoint> flowPointList = flowPointMapper.selectList(pointQueryWrapper);
         if (MyCollections.isEmpty(flowPointList)) {
-            return false;
+            throw new DataCheckingException(ResultCode.FLOW_NOT_FOUND);
         }
         Map<Long, SysFlowPoint> pointMap = MyCollections.list2MapL(flowPointList, SysFlowPoint::getId);
         //获取需要审批的数据
@@ -198,6 +198,10 @@ public class SysFlowSessionServiceImpl extends ServiceImpl<SysFlowSessionMapper,
                 sysFlowSession.setNextApprover(pointMap.get(nextPoint).getApprover());
             }
         } else {
+            SysFlowPoint sysFlowPoint = pointMap.get(oldSession.getPointId());
+            if (sysFlowPoint == null) {
+                throw new DataCheckingException(ResultCode.FLOW_NOT_FOUND);
+            }
             Long newPoint = pointMap.get(oldSession.getPointId()).getNextPoint();
             if (newPoint == -1) {
                 //新节点以被删除

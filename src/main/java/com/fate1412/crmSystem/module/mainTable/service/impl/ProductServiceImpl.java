@@ -99,7 +99,6 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
             @Override
             public Product set(Product product) {
                 SysUser sysUser = sysUserService.thisUser();
-                Product product2 = getById(productUpdateDTO.getId());
                 product
                         .setIsShelf()
                         .setUpdateTime(new Date())
@@ -137,6 +136,12 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
             public ResultCode verification(Product product) {
                 flowSessionService.addFlowSession(TableNames.product, product.getId());
                 return isRight(product);
+            }
+    
+            @Override
+            public boolean after(Product product) {
+                flowSessionService.addFlowSession(TableNames.product, product.getId());
+                return true;
             }
         });
     }
