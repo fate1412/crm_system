@@ -275,6 +275,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
     
     @Override
+    public boolean lock(Long userId) {
+        SysUser sysUser = getById(userId);
+        sysUser.setLockFlag(!sysUser.getLockFlag());
+        return updateById(sysUser);
+    }
+    
+    @Override
     public List<IdToName> getOptions(String nameLike, Integer page) {
         QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
         queryWrapper.lambda()

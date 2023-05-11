@@ -78,4 +78,6 @@ public interface ISysUserService extends IService<SysUser>, MyBaseService<SysUse
     boolean passwdChange(Long userId, String passwd);
     
     MyPage listByPage(SelectPage<SysUserSelectDTO> selectPage);
+    
+    boolean lock(Long userId);
 }

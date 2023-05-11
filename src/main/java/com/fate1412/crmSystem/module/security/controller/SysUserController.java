@@ -110,4 +110,11 @@ public class SysUserController {
         return b ? ResultTool.success() : ResultTool.fail();
     }
     
+    @PreAuthorize("hasAnyAuthority('SysUser_Edit')")
+    @GetMapping("/lock")
+    public JsonResult<?> lock(@Param("id") Long id) {
+        boolean b = sysUserService.lock(id);
+        return b ? ResultTool.success() : ResultTool.fail();
+    }
+    
 }
