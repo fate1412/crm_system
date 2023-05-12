@@ -183,9 +183,12 @@ public class TableDictServiceImpl extends ServiceImpl<TableDictMapper, TableDict
     private ResultCode isRight(TableDict tableDict) {
         //真实表名
         if (StringUtils.isBlank(tableDict.getRealTableName())) {
-            return ResultCode.PARAM_NOT_VALID;
+            return ResultCode.PARAM_IS_BLANK;
         }
         tableDict.setRealTableName(tableDict.getRealTableName().trim());
+        if (tableDict.getRealTableName().matches(".*[^a-zA-Z0-9_].*")) {
+            return ResultCode.PARAM_NOT_VALID;
+        }
         TableDict byRealName = getByRealName(tableDict.getRealTableName());
         if (byRealName != null) {
             return ResultCode.PARAM_NOT_VALID;

@@ -88,7 +88,7 @@ public class TableColumnDictController {
         return service.addDTO(tableColumnInsertDTO);
     }
     
-    @PreAuthorize("hasAnyAuthority('Columns_Insert')")
+    @PreAuthorize("hasAnyAuthority('Columns_Edit')")
     @PostMapping("/update")
     public JsonResult<?> update(@RequestBody TableColumnUpdateDTO tableColumnUpdateDTO) {
         return service.updateByDTO(tableColumnUpdateDTO);
