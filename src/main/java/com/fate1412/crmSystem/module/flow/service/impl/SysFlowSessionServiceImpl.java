@@ -31,10 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -87,20 +84,42 @@ public class SysFlowSessionServiceImpl extends ServiceImpl<SysFlowSessionMapper,
         List<SysFlowSession> sysFlowSessionList = getSysFlowSession(tableName, dataIds);
         Map<Long, List<SysFlowSession>> sessionMap = MyCollections.list2MapList(sysFlowSessionList, SysFlowSession::getDataId);
         //审批节点
-        List<SysFlowPoint> flowPoints = flowService.getFlowPoints(TableNames.customer);
+        List<SysFlowPoint> flowPoints = flowService.getFlowPoints(tableName);
         //取最后一个的审批节点
-        SysFlowPoint LastFlowPoint = flowPoints.get(flowPoints.size() - 1);
+        SysFlowPoint lastFlowPoint;
+        if (!MyCollections.isEmpty(flowPoints)) {
+            lastFlowPoint = flowPoints.get(flowPoints.size() - 1);
+        } else {
+            lastFlowPoint = new SysFlowPoint();
+        }
         
         dataIds.forEach(id -> {
             //验证是否通过审批
             List<SysFlowSession> sysFlowSessions = sessionMap.get(id);
+            
+            //处理节点丢失
+            if (!MyCollections.isEmpty(sysFlowSessions)) {
+                sysFlowSessions.sort(new Comparator<SysFlowSession>() {
+                    @Override
+                    public int compare(SysFlowSession o1, SysFlowSession o2) {
+                        return o1.getId() - o2.getId() > 0 ? 1 : o1.getId() - o2.getId() == 0 ? 0 : -1;
+                    }
+                });
+                SysFlowSession sysFlowSession = sysFlowSessions.get(sysFlowSessions.size() - 1);
+                if (sysFlowSession.getApprover() != null && sysFlowSession.getPass() == 1) {
+                    //下一个节点丢失，直接通过
+                    passMap.put(id, 1);
+                    return;
+                }
+            }
+            
             if (MyCollections.isEmpty(sysFlowSessions)) {
                 //没有审批流的数据直接通过
                 passMap.put(id, 1);
             } else {
                 //有审批流数据判断是否完成审批
                 Map<Long, Integer> map = MyCollections.list2MapL(sysFlowSessions, SysFlowSession::getPointId, SysFlowSession::getPass);
-                Integer pass = map.get(LastFlowPoint.getId());
+                Integer pass = map.get(lastFlowPoint.getId());
                 //未到达最后一个节点
                 if (pass == null) {
                     //未审批
@@ -111,6 +130,7 @@ public class SysFlowSessionServiceImpl extends ServiceImpl<SysFlowSessionMapper,
                             passMap.put(id, 2);
                         }
                     });
+                    
                 }else {
                     //到达最后一个节点
                     passMap.put(id, pass);

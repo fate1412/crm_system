@@ -86,7 +86,7 @@ public class CustomTableServiceImpl implements ICustomTableService {
         JSONObject jsonObject = new JSONObject();
         
         //加入审批状态
-        TableColumnDict pass = TableColumnDict.create(tableName, "pass", "", "是否通过", 1000).setDisabled(true).setCustom(false).setColumnType(4);
+        TableColumnDict pass = TableColumnDict.create(tableName, "pass", "", "是否通过", 1000).setDisabled(true).setCustom(false).setColumnType(FormType.String.getIndex());
         
         tableColumnDictList.add(pass);
         tableColumnDictList.forEach(tableColumnDict -> {
