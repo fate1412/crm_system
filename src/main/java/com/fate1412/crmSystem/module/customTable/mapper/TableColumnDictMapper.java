@@ -17,6 +17,9 @@ import java.util.List;
  */
 @Mapper
 public interface TableColumnDictMapper extends BaseMapper<TableColumnDict> {
-
+    
+    /**
+     * 批量插入字段
+     */
     int insertList(@Param("list") List<TableColumnDict> list);
 }
