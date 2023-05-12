@@ -284,6 +284,17 @@ public class TableColumnDictServiceImpl extends ServiceImpl<TableColumnDictMappe
                 child.setColumnName(tableColumnDict.getColumnName());
             });
             List<TableOption> tableOptionList = MyCollections.copyListProperties(childList, TableOption::new);
+            tableOptionList.forEach(tableOption -> {
+                //key值不能小于0
+                if (tableOption.getOptionKey()<=0) {
+                    throw new DataCheckingException(ResultCode.PARAM_NOT_VALID);
+                }
+                //value值不能为空
+                if (StringUtils.isBlank(tableOption.getOption())) {
+                    throw new DataCheckingException(ResultCode.PARAM_IS_BLANK);
+                }
+                tableOption.setOption(tableOption.getOption().trim());
+            });
             return tableOptionService.saveBatch(tableOptionList);
         }
         return b;

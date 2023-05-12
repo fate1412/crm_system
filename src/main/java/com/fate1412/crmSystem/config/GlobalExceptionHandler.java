@@ -33,7 +33,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(value = NullPointerException.class)
     public JsonResult<?> NullPointerExceptionHandler(NullPointerException e) {
-        log.error("数据校验异常！ msg: -> ", e);
+//        log.error("数据校验异常！ msg: -> ", e);
         return ResultTool.fail(ResultCode.PARAM_IS_BLANK);
     }
     
@@ -43,7 +43,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(value = HttpMessageNotReadableException.class)
     public JsonResult<?> HttpMessageNotReadableExceptionHandler(HttpMessageNotReadableException e) {
-        log.error("数据校验异常！ msg: -> ", e);
+//        log.error("数据校验异常！ msg: -> ", e);
         return ResultTool.fail(ResultCode.PARAM_TYPE_ERROR);
     }
 }
