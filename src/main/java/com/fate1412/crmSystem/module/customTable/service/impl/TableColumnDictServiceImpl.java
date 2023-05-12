@@ -216,7 +216,7 @@ public class TableColumnDictServiceImpl extends ServiceImpl<TableColumnDictMappe
                 }
                 QueryWrapper<TableDict> tableDictWrapper = new QueryWrapper<>();
                 queryWrapper.lambda().eq(TableDict::getId, tableColumnDict.getLinkTable());
-                TableDict linkTableDict = tableDictMapper.selectOne(tableDictWrapper);
+                TableDict linkTableDict = tableDictMapper.selectById(tableColumnDict.getLinkTable());
                 if (linkTableDict == null) {
                     return ResultCode.PARAM_NOT_VALID;
                 }

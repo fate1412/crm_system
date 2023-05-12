@@ -373,8 +373,19 @@ public class CustomTableServiceImpl implements ICustomTableService {
                 //取出该属性的id
                 List<Object> ids = MyCollections.objects2List(jsonObjectList, (jsonObject -> jsonObject.getLong(column.getColumnName())));
                 SQLFactors sqlFactors = new SQLFactors();
-                sqlFactors.in("id", ids);
+                if (column.getLinkTable().equals(9L)) {
+                    //特殊处理用户
+                    sqlFactors.in("user_id", ids);
+                } else {
+                    sqlFactors.in("id", ids);
+                }
                 List<JSONObject> select = mapper.select(realTableMap.get(column.getLinkTable()), sqlFactors.getSqlFactors());
+                //特殊处理用户
+                List<Long> userId = MyCollections.objects2List(select, (data) -> data.getLong("user_id"));
+                if (!MyCollections.isEmpty(userId)) {
+                    select.forEach(data -> data.put("id",data.get("user_id")));
+                    select.forEach(data -> data.put("name",data.get("real_name")));
+                }
                 Map<Long, String> map = MyCollections.list2MapL(select, (k) -> k.getLong("id"),
                         (v) -> v.getString("name") == null ? v.getString("id") : v.getString("name"));
                 jsonObjectList.forEach(object -> {
