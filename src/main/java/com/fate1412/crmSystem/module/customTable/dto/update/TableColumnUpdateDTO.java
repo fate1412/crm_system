@@ -36,6 +36,10 @@ public class TableColumnUpdateDTO {
     
     @TableField("table_name")
     private String tableName;
+    
+    @TableField("inserted")
+    @TableTitle(value = "新建可填写",formType = FormType.Boolean,inserted = true)
+    private Boolean inserted;
 
     @TableField("disabled")
     @TableTitle(value = "不可修改",formType = FormType.Boolean,inserted = true)

@@ -170,6 +170,7 @@ public class CustomTableServiceImpl implements ICustomTableService {
         List<TableColumnDict> columnDictList = tableColumnDictService.listByTableName(tableDict.getTableName());
         //获取当前用户
         SysUser thisUser = sysUserService.thisUser();
+        Long id = IdWorker.getId();
         SQLFactors sqlFactors = new SQLFactors();
         //设置在新增时可填写的数据
         columnDictList.forEach(column -> {
@@ -180,11 +181,14 @@ public class CustomTableServiceImpl implements ICustomTableService {
                     //Select类型处理空字符串为null
                     columnData = null;
                 }
+                //name不填时默认值为id
+                if (column.getColumnName().equals("name") && StringUtils.isBlank((String) columnData)) {
+                    columnData = id.toString();
+                }
                 sqlFactors.eq(column.getRealColumnName(), columnData);
             }
         });
         //设置必备字段数据
-        Long id = IdWorker.getId();
         sqlFactors.eq("id", id);
         sqlFactors.eq("create_time", new Date());
         sqlFactors.eq("update_time", new Date());
@@ -367,6 +371,22 @@ public class CustomTableServiceImpl implements ICustomTableService {
                     object.put(column.getColumnName(), object.getDate(column.getColumnName()));
                 });
             }
+            //不可链接的Select
+            if (column.getColumnType().equals(FormType.Select.getIndex()) && !column.getLink()) {
+                List<OptionDTO> options = tableOptionService.getOptions(tableName, column.getColumnName());
+                Map<Integer, String> optionMap = MyCollections.list2MapL(options, OptionDTO::getOptionKey, OptionDTO::getOption);
+                jsonObjectList.forEach(object -> {
+                    String columnName = column.getColumnName();
+                    String columnNameR = column.getColumnName() + "R";
+                    Integer id = object.getInteger(columnName);
+                    //多条查询时覆盖原值
+                    if (one) {
+                        object.put(columnNameR, new IdToName(id, optionMap.get(id), tableMap.get(column.getLinkTable())));
+                    } else {
+                        object.put(columnName, new IdToName(id, optionMap.get(id), tableMap.get(column.getLinkTable())));
+                    }
+                });
+            }
             
             //可链接的定制属性
             if (column.getLink() && column.getCustom()) {
@@ -383,8 +403,16 @@ public class CustomTableServiceImpl implements ICustomTableService {
                 //特殊处理用户
                 List<Long> userId = MyCollections.objects2List(select, (data) -> data.getLong("user_id"));
                 if (!MyCollections.isEmpty(userId)) {
-                    select.forEach(data -> data.put("id",data.get("user_id")));
-                    select.forEach(data -> data.put("name",data.get("real_name")));
+                    select.forEach(data -> {
+                        if (data.get("user_id") != null) {
+                            data.put("id", data.get("user_id"));
+                        }
+                    });
+                    select.forEach(data -> {
+                        if (data.get("user_id") != null) {
+                            data.put("name", data.get("real_name"));
+                        }
+                    });
                 }
                 Map<Long, String> map = MyCollections.list2MapL(select, (k) -> k.getLong("id"),
                         (v) -> v.getString("name") == null ? v.getString("id") : v.getString("name"));

@@ -51,6 +51,10 @@ public class TableColumnInsertDTO {
     @TableField("disabled")
     @TableTitle(value = "不可修改",formType = FormType.Boolean,inserted = true)
     private Boolean disabled;
+    
+    @TableField("inserted")
+    @TableTitle(value = "新建可填写",formType = FormType.Boolean,inserted = true)
+    private Boolean inserted;
 
     @TableField("link")
     @TableTitle(value = "可链接",formType = FormType.Boolean,inserted = true)
